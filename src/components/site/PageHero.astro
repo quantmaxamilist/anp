@@ -1,0 +1,147 @@
+---
+// Inner-page hero in the v5 language: mono crumbs/eyebrow, big Mona Sans Black title (line-mask reveal),
+// optional lead, optional full-bleed photo or the client's crane video, ANP-mark detail drawn in.
+import Mark from './Mark.astro';
+import Img from './Img.astro';
+
+type ImgData = { src: string; sm: string; md?: string; w: number; h: number };
+interface Props {
+  lines: string[];                       // the title, broken by hand (verbatim words), one entry per line
+  label?: string;                        // accessible full title (defaults to lines joined)
+  eyebrow?: string;                      // mono line above the title, e.g. "[ 09 ] Trade packages" text without brackets
+  num?: string;                          // mono numeral shown in the eyebrow tag, e.g. "04" → "[ 04 ]"
+  crumbs?: { label: string; href?: string }[]; // breadcrumb trail; last item is the current page (no href)
+  lead?: string;                         // verbatim paragraph under the title
+  image?: ImgData;                       // full-bleed photo (navy variant only)
+  imageAlt?: string;
+  position?: string;                     // object-position for the photo
+  video?: boolean;                       // use the crane timelapse instead of a photo
+  variant?: 'navy' | 'light';
+  size?: 'xl' | 'l' | 'm';               // xl = --fs-hero, l = --fs-display-2, m = --fs-display-3
+  em?: number;                           // em-width of the longest line at 125% (fit cap); default derived from length
+  mark?: boolean;                        // ANP mark detail (default true)
+  id?: string;
+}
+const {
+  lines, label, eyebrow, num, crumbs = [], lead, image, imageAlt = '', position, video = false,
+  variant = 'navy', size = 'l', em, mark = true, id = 'page-h',
+} = Astro.props;
+const media = variant === 'navy' && (image || video);
+const longest = Math.max(...lines.map((l) => l.length));
+// Mona Sans Black uppercase at 125% averages ~0.8em per char; cap so the longest line always fits.
+const emW = em ?? Math.max(4, longest * 0.8);
+const theme = variant === 'light' ? 'light' : 'dark';
+---
+<section
+  class:list={['ph', `ph--${variant}`, `ph--${size}`, media && 'ph--media']}
+  data-header-theme={theme}
+  data-cursor-theme={theme}
+  aria-labelledby={id}
+  style={`--ph-em:${emW.toFixed(2)}`}
+>
+  {media && (
+    <div class="ph__media" data-ph-media aria-hidden="true">
+      {video ? (
+        <video class="ph__video" autoplay muted loop playsinline preload="metadata" poster="/media/hero-london-poster.webp" data-ph-video>
+          <source src="/media/hero-london.mp4" type="video/mp4" />
+        </video>
+      ) : image && (
+        <Img img={image} alt={imageAlt} priority sizes="100vw" position={position} class="ph__img" />
+      )}
+      <div class="ph__veil"></div>
+    </div>
+  )}
+  {mark && <Mark class="ph__mark" data-reveal="draw" data-delay="0.2" />}
+  <div class="ph__in container">
+    {(crumbs.length > 0 || eyebrow) && (
+      <div class="ph__top" data-reveal="fade">
+        {crumbs.length > 0 && (
+          <nav class="ph__crumbs mono" aria-label="Breadcrumb">
+            <ol role="list">
+              {crumbs.map((c, i) => (
+                <li>{c.href && i < crumbs.length - 1 ? <a href={c.href} class="ulink" data-cursor="link">{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        {eyebrow && <p class="mono tag ph__eyebrow">{num && <b>[ {num} ]</b>} {eyebrow}</p>}
+      </div>
+    )}
+    <h1 class="ph__h display" id={id} data-reveal="lines" data-delay="0.1" aria-label={label ?? lines.join(' ')}>
+      {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+    </h1>
+    {(lead || Astro.slots.has('default')) && (
+      <div class="ph__foot">
+        {lead && <p class="ph__lead" data-reveal="fade" data-delay="0.35">{lead}</p>}
+        {Astro.slots.has('default') && <div class="ph__actions" data-reveal="fade" data-delay="0.45"><slot /></div>}
+      </div>
+    )}
+  </div>
+  <div class="container ph__datum"><div class="datum" data-reveal="datum"></div></div>
+</section>
+
+<script>
+  // Pick the right crane file for the viewport before it loads (same rule as the homepage hero).
+  document.querySelectorAll<HTMLVideoElement>('video[data-ph-video]').forEach((v) => {
+    const w = innerWidth;
+    const save = (navigator as any).connection?.saveData;
+    if (save || matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); v.pause(); v.preload = 'none'; return; }
+    const src = w >= 900 ? '/media/hero-london-1080.mp4' : w < 640 && innerHeight > w ? '/media/hero-london-portrait.mp4' : '/media/hero-london.mp4';
+    const s = v.querySelector('source');
+    if (s && s.getAttribute('src') !== src) { s.src = src; v.load(); }
+  });
+</script>
+
+<style>
+  .ph {
+    position: relative; isolation: isolate; overflow: clip;
+    padding-top: calc(var(--header-h) + var(--space-fluid-l));
+    padding-bottom: var(--space-fluid-m);
+    min-height: min(78svh, 860px);
+    display: grid; align-content: end;
+    background: var(--navy-950); color: var(--white);
+  }
+  .ph--media { min-height: 100svh; }
+  .ph--light { background: var(--concrete-50); color: var(--navy-700); }
+  .ph__media { position: absolute; inset: 0; z-index: -1; }
+  .ph__media :global(.ph__img), .ph__video { width: 100%; height: 100%; object-fit: cover; }
+  .ph__veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgb(14 22 48 / 0.7) 0%, rgb(14 22 48 / 0.42) 30%, rgb(14 22 48 / 0.4) 55%, rgb(14 22 48 / 0.94) 100%);
+  }
+  .ph__media::after { content: ''; position: absolute; inset: 0; background: var(--navy-700); mix-blend-mode: multiply; opacity: 0.18; }
+  .ph :global(.ph__mark) {
+    position: absolute; z-index: -1; pointer-events: none;
+    right: calc(var(--gutter) * -0.6); top: calc(var(--header-h) + var(--space-5));
+    width: clamp(220px, 42vw, 720px); height: auto; overflow: visible; opacity: 0.16;
+  }
+  .ph--media :global(.ph__mark) { opacity: 0.32; }
+  .ph--light :global(.ph__mark path) { stroke: var(--mint-600); }
+  .ph__in { position: relative; display: grid; gap: var(--space-6); }
+  .ph__top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-3) var(--space-6); }
+  /* Inline flow so a long current crumb wraps like a sentence (no ragged indent under the separator) */
+  .ph__crumbs ol { display: block; line-height: 1.7; }
+  .ph__crumbs li { display: inline; }
+  .ph__crumbs li + li::before { content: '/'; margin-inline: 0.6em; opacity: 0.5; }
+  .ph__crumbs, .ph__eyebrow { color: var(--navy-300); }
+  /* Over bright site photos the mono row needs more weight than navy-300 */
+  .ph--media .ph__crumbs, .ph--media .ph__eyebrow { color: rgb(255 255 255 / 0.84); text-shadow: 0 1px 12px rgb(14 22 48 / 0.6); }
+  .ph--media .ph__eyebrow b { color: var(--mint-500); }
+  .ph--light .ph__crumbs, .ph--light .ph__eyebrow { color: var(--concrete-600); }
+  .ph--light .ph__eyebrow b { color: var(--navy-700); }
+  .ph__crumbs [aria-current] { color: var(--white); }
+  .ph--light .ph__crumbs [aria-current] { color: var(--navy-700); }
+  .ph__h { --fs: var(--fs-display-2); font-size: min(var(--fs), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ph-em))); }
+  .ph--xl .ph__h { --fs: var(--fs-hero); }
+  .ph--m .ph__h { --fs: var(--fs-display-3); }
+  @media (max-width: 899px) { .ph__h { font-size: min(var(--fs), calc((100vw - 2 * var(--gutter)) / (var(--ph-em) * 0.92))); } }
+  @media (max-width: 639px) { .ph__h { font-size: min(calc(var(--fs) * 1.5), calc((100vw - 2 * var(--gutter)) / (var(--ph-em) * 0.62))); } }
+  .ph__foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5) var(--space-8); }
+  .ph__lead { max-width: 52ch; font-size: var(--fs-lead); line-height: 1.45; color: var(--navy-200); }
+  .ph--light .ph__lead { color: var(--navy-700); }
+  .ph__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .ph__datum { margin-top: var(--space-fluid-m); }
+  .ph--light .ph__datum { --line: var(--line-on-light); }
+  .ph--light .ph__datum :global(.datum) { background: var(--line-on-light); }
+  .ph--light .ph__datum :global(.datum::after) { background: var(--mint-600); }
+</style>

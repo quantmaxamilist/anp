@@ -1,0 +1,11 @@
+---
+import Arrow from './Arrow.astro';
+interface Props { href?: string; variant?: 'mint' | 'ghost' | 'navy'; size?: 'm' | 'sm'; type?: 'button' | 'submit'; class?: string; [k: string]: unknown }
+const { href, variant = 'mint', size = 'm', type = 'button', class: cls, ...rest } = Astro.props;
+const classes = ['pill', variant !== 'mint' && `pill--${variant}`, size === 'sm' && 'pill--sm', cls];
+---
+{href ? (
+  <a href={href} class:list={classes} data-magnetic data-cursor="link" {...rest}><span class="pill__in" data-magnetic-inner><span class="pill__label"><slot /></span><span class="pill__dot"><Arrow /></span></span></a>
+) : (
+  <button type={type} class:list={classes} data-magnetic data-cursor="link" {...rest}><span class="pill__in" data-magnetic-inner><span class="pill__label"><slot /></span><span class="pill__dot"><Arrow /></span></span></button>
+)}

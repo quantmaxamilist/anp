@@ -1,0 +1,178 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import TenderBand from '../components/site/TenderBand.astro';
+import Pill from '../components/site/Pill.astro';
+import HeroFold from '../components/company/HeroFold.astro';
+import Img from '../components/site/Img.astro';
+import Mark from '../components/site/Mark.astro';
+import { company, careers, contact, services } from '../data/site';
+
+// Hero: a landscape Structural Carpentry photo with an operative under the joists. images[0] is that
+// service's cover, so it is not used here. Body photo: joists over the steel beam (images[7]; images[6] is too dim).
+const carp = services[5];
+const heroImg = carp.images[5];
+const bodyImg = carp.images[7];
+const pad = (n: number) => String(n).padStart(2, '0');
+const [mailUser, mailDomain] = company.email.split('@');
+---
+<Base title="Careers" description={careers.sub} image="/og/structural-carpentry-01.jpg" preloadImage={heroImg.md ?? heroImg.src}>
+  <PageHero
+    lines={['Careers at', 'ANP Construction']}
+    label={careers.heading}
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Careers' }]}
+    lead={careers.sub}
+    image={heroImg}
+    imageAlt=""
+    position="50% 55%"
+    size="xl"
+  >
+    <Pill href="#cr-apply">Apply by e-mail</Pill>
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+
+  <!-- Body -->
+  <section class="cr-body on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="page-h">
+    <div class="container cr-body__grid">
+      <div class="datum cr-body__datum" data-reveal="datum"></div>
+      <p class="cr-statement" data-co-words>{careers.body[0]}</p>
+      <div class="cr-body__photo" data-reveal="photo" data-co-parallax>
+        <Img img={bodyImg} alt={`${carp.name}, site photograph`} sizes="(min-width: 900px) 42vw, 92vw" />
+      </div>
+      <ol class="cr-body__list" role="list">
+        {careers.body.slice(1).map((p, i) => (
+          <li data-reveal="fade" data-delay={String(i * 0.1)}>
+            <span class="mono cr-body__n" aria-hidden="true">{pad(i + 2)}</span>
+            <p>{p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Roles -->
+  <section class="cr-roles" data-header-theme="dark" aria-labelledby="cr-roles-h">
+    <div class="container">
+      <div class="cr-roles__head">
+        <div class="datum" data-reveal="datum"></div>
+        <h2 class="mono tag cr-roles__h" id="cr-roles-h" data-reveal="fade"><b>[ {pad(careers.roles.length)} ]</b> Site roles</h2>
+      </div>
+      <ol class="cr-roles__list" role="list">
+        {careers.roles.map((r, i) => (
+          <li class="cr-role" data-co-fill>
+            <span class="mono cr-role__n" aria-hidden="true">{pad(i + 1)}</span>
+            <span class="cr-role__t display" data-reveal="fade">
+              <span class="cr-role__o">{r.split(' ').map((w) => <span class="cr-role__w">{w} </span>)}</span>
+              <span class="cr-role__f" aria-hidden="true" data-co-fill-layer>{r.split(' ').map((w) => <span class="cr-role__w">{w} </span>)}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <Mark class="cr-roles__mark" data-reveal="draw" />
+    </div>
+  </section>
+
+  <!-- Apply -->
+  <section class="cr-apply on-light" id="cr-apply" data-header-theme="light" data-cursor-theme="light" aria-labelledby="cr-apply-h">
+    <div class="container cr-apply__in">
+      <div class="datum" data-reveal="datum"></div>
+      <h2 class="cr-apply__h" id="cr-apply-h" data-reveal="fade">{contact.jobs}</h2>
+      <a class="cr-apply__mail" href={`mailto:${company.email}`} data-cursor="link" data-reveal="fade" data-delay="0.1">
+        <span>{mailUser}@</span><span>{mailDomain}</span>
+      </a>
+      <div class="cr-apply__row" data-reveal="fade" data-delay="0.2">
+        <button type="button" class="cr-apply__copy mono" data-co-copy={company.email} data-cursor="link">
+          <span class="cr-apply__ico" aria-hidden="true"></span><span data-co-copy-label>Copy email</span>
+        </button>
+        <a class="cr-apply__phone" href={company.phoneHref} data-cursor="link"><span class="mono">Phone</span> <span class="cr-apply__num">{company.phone}</span></a>
+      </div>
+    </div>
+  </section>
+
+  <TenderBand />
+  <HeroFold />
+</Base>
+
+<script>import '../scripts/company-fx.js';</script>
+
+<style>
+  /* ---- body ------------------------------------------------------------- */
+  .cr-body { background: var(--concrete-50); color: var(--navy-700); padding-block: var(--section-y); }
+  .cr-body__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-fluid-m) var(--grid-gap); align-items: start; }
+  .cr-body__datum { grid-column: 1 / -1; }
+  .cr-statement {
+    grid-column: 1 / span 11;
+    font-family: var(--font-display); font-stretch: var(--wdth-text-display); font-weight: 680;
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: -0.018em; max-width: 25em; text-wrap: pretty;
+  }
+  .cr-body__photo { grid-column: 1 / span 5; position: relative; overflow: clip; aspect-ratio: 4 / 3; border-radius: var(--radius-m); background: var(--concrete-200); }
+  .cr-body__photo :global(img) { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; }
+  .cr-body__list { grid-column: 7 / -1; display: grid; }
+  .cr-body__list li { display: grid; grid-template-columns: 3.5em 1fr; gap: var(--space-4); padding-block: var(--space-5); border-top: 1px solid var(--line-on-light); }
+  .cr-body__list p { font-size: var(--fs-lead); line-height: 1.5; max-width: 46ch; }
+  .cr-body__n { color: color-mix(in srgb, var(--mint-700) 86%, var(--navy-950)); padding-top: 0.35em; }
+  @media (max-width: 899px) { .cr-statement, .cr-body__photo, .cr-body__list { grid-column: 1 / -1; } }
+
+  /* ---- roles ------------------------------------------------------------ */
+  .cr-roles { --cr-numw: clamp(2.5rem, 5vw, 5rem); background: var(--navy-900); color: var(--white); padding-block: var(--section-y); position: relative; overflow: clip; isolation: isolate; }
+  .cr-roles__head { display: grid; gap: var(--space-5); margin-bottom: var(--space-fluid-m); }
+  .cr-roles__h { color: var(--navy-300); }
+  .cr-roles__list { display: grid; }
+  .cr-role {
+    display: grid; grid-template-columns: var(--cr-numw) minmax(0, 1fr); align-items: start;
+    padding-block: clamp(1rem, 2vw, 2rem); border-bottom: 1px solid var(--line-on-dark);
+  }
+  .cr-role__n { color: var(--mint-500); padding-top: 0.6em; }
+  .cr-role__t {
+    position: relative; display: block; font-stretch: 75%; line-height: 0.84;
+    font-size: min(var(--fs-display-1), calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - var(--cr-numw)) / 9.6));
+  }
+  .cr-role__o { display: block; color: rgb(255 255 255 / 0.1); }
+  .cr-role__f { position: absolute; inset: 0; display: block; color: var(--white); transition: color var(--dur-base) var(--ease-out-soft); }
+  .cr-role__w { white-space: nowrap; }
+  @media (hover: hover) and (pointer: fine) { .cr-role:hover .cr-role__f { color: var(--mint-500); } }
+  @media (max-width: 639px) {
+    .cr-role__w { display: block; }
+    .cr-role__t { font-size: calc((100vw - 2 * var(--gutter) - var(--cr-numw)) / 4.7); }
+  }
+  .cr-roles :global(.cr-roles__mark) {
+    position: absolute; z-index: -1; right: calc(var(--gutter) * -1); bottom: calc(var(--section-y) * -0.4);
+    width: clamp(240px, 38vw, 640px); height: auto; overflow: visible; opacity: 0.12; pointer-events: none;
+  }
+
+  /* ---- apply ------------------------------------------------------------ */
+  .cr-apply { background: var(--white); color: var(--navy-700); padding-block: var(--section-y); }
+  .cr-apply__in { display: grid; gap: var(--space-fluid-m); }
+  .cr-apply__h {
+    font-family: var(--font-display); font-stretch: var(--wdth-text-display); font-weight: 680;
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: -0.018em; max-width: 24em; padding-top: var(--space-5);
+  }
+  .cr-apply__mail {
+    justify-self: start; position: relative; display: block; max-width: 100%;
+    font-family: var(--font-display); font-weight: 900; font-stretch: 100%; letter-spacing: -0.02em; line-height: 0.95;
+    font-size: min(var(--fs-display-3), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / 18.5));
+    color: var(--navy-700); padding-bottom: 0.12em; overflow-wrap: anywhere;
+  }
+  .cr-apply__mail::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--mint-600);
+    transform: scaleX(0.18); transform-origin: left; transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .cr-apply__mail:hover::after, .cr-apply__mail:focus-visible::after { transform: scaleX(1); }
+  .cr-apply__mail:hover { color: var(--navy-950); }
+  @media (max-width: 639px) {
+    .cr-apply__mail span { display: block; }
+    .cr-apply__mail { font-size: calc((100vw - 2 * var(--gutter)) / 14.2); }
+  }
+  .cr-apply__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-7); }
+  .cr-apply__copy {
+    display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px; border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1.5px var(--navy-700); color: var(--navy-700); transition: background var(--dur-fast), color var(--dur-fast);
+  }
+  .cr-apply__copy:hover { background: var(--navy-700); color: var(--mint-500); }
+  .cr-apply__ico { width: 12px; height: 14px; border: 1.5px solid currentColor; border-radius: 2px; box-shadow: 3px -3px 0 -1.5px var(--white), 3px -3px 0 0 currentColor; }
+  .cr-apply__copy:hover .cr-apply__ico { box-shadow: 3px -3px 0 -1.5px var(--navy-700), 3px -3px 0 0 currentColor; }
+  .cr-apply__phone { display: inline-flex; align-items: baseline; gap: var(--space-4); }
+  .cr-apply__phone .mono { color: var(--concrete-600); }
+  .cr-apply__num { font-family: var(--font-display); font-weight: 900; font-stretch: 100%; font-size: var(--fs-h2); line-height: 1; }
+  .cr-apply__phone:hover .cr-apply__num { color: var(--mint-700); }
+</style>

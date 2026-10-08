@@ -1,0 +1,93 @@
+---
+import { home, projects } from '../../data/site';
+const total = String(projects.length).padStart(2, '0');
+const capped = (src?: string) => !!src && /(eversholt|leadenhall)/.test(src);
+---
+<section class="pj" id="projects" data-header-theme="dark" aria-labelledby="pj-h">
+  <div class="container pj__head">
+    <div>
+      <p class="mono tag" data-reveal="fade"><b>[ {total} ]</b> Projects</p>
+      <h2 class="pj__h display" id="pj-h" data-reveal="lines" aria-label={home.projectsHeading}>
+        <span class="line" aria-hidden="true"><span>Our</span></span>
+        <span class="line" aria-hidden="true"><span>Projects</span></span>
+      </h2>
+    </div>
+    <div class="pj__nav">
+      <span class="mono pj__count" aria-live="polite"><span data-pj-cur>01</span> / {total}</span>
+      <button type="button" class="pj__btn" data-pj-prev aria-label="Previous project" data-magnetic data-cursor="link"><span data-magnetic-inner aria-hidden="true">←</span></button>
+      <button type="button" class="pj__btn" data-pj-next aria-label="Next project" data-magnetic data-cursor="link"><span data-magnetic-inner aria-hidden="true">→</span></button>
+    </div>
+  </div>
+
+  <div class="pj__viewport" data-pj-viewport data-cursor="drag">
+    <ol class="pj__track" role="list" data-pj-track>
+      {projects.map((p, i) => (
+        <li class:list={['pj__card', !p.image && 'pj__card--type', capped(p.image?.src) && 'pj__card--cap']} data-pj-card>
+          <a href="/additional-projects" class="pj__link" draggable="false" aria-label={`${p.name}${p.client ? `, ${p.client}` : ''}. Project ${i + 1} of ${projects.length}`}>
+            <div class="pj__media">
+              {p.image ? (
+                <img class="grade" src={p.image.src} srcset={p.image.w > 720 ? `${p.image.sm} 720w, ${p.image.md ? p.image.md + ' 1200w, ' : ''}${p.image.src} ${p.image.w}w` : undefined}
+                  sizes="(min-width: 900px) 30vw, 78vw" width={p.image.w} height={p.image.h} alt="" loading="lazy" decoding="async" draggable="false" />
+              ) : (
+                <div class="pj__typo" aria-hidden="true"><span class="display">{p.name}</span>{p.client && <span class="mono">{p.client}</span>}</div>
+              )}
+            </div>
+            <div class="pj__meta">
+              <span class="mono pj__i">{String(i + 1).padStart(2, '0')} / {total}</span>
+              <span class="pj__name display">{p.name}</span>
+              <span class="mono pj__sub">{[p.note, p.client].filter(Boolean).join(' · ')}</span>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <div class="container"><div class="pj__progress" aria-hidden="true"><i data-pj-bar></i></div></div>
+</section>
+
+<style>
+  .pj { background: var(--navy-900); color: var(--white); padding-block: var(--section-y); position: relative; z-index: 2; }
+  .pj__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-8); flex-wrap: wrap; }
+  .pj__h { font-size: var(--fs-display-2); margin-top: var(--space-4); }
+  .pj__nav { display: flex; align-items: center; gap: var(--space-3); }
+  .pj__count { margin-right: var(--space-3); color: var(--navy-300); }
+  .pj__count span { color: var(--white); }
+  .pj__btn {
+    width: 60px; height: 60px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.35);
+    display: grid; place-items: center; font-size: 1.25rem; transition: background var(--dur-fast), color var(--dur-fast);
+  }
+  .pj__btn:hover { background: var(--mint-500); color: var(--navy-950); box-shadow: none; }
+  .pj__btn span { display: block; }
+
+  .pj__viewport { overflow-x: clip; padding-inline: max(var(--gutter), calc((100vw - var(--container-max)) / 2 + var(--gutter))); touch-action: pan-y; }
+  .pj__track { display: flex; gap: var(--grid-gap); width: max-content; align-items: flex-start; will-change: transform; }
+  .pj__card { width: clamp(260px, 28vw, 460px); flex: none; }
+  .pj__card--cap { width: min(clamp(260px, 28vw, 460px), 373px); }
+  .pj__link { display: block; user-select: none; -webkit-user-drag: none; }
+  .pj__media { position: relative; aspect-ratio: 4 / 5; overflow: clip; background: var(--navy-800); border-radius: var(--radius-s); }
+  .pj__media img { position: absolute; inset: 0 -8%; width: 116%; max-width: none; height: 100%; object-fit: cover; transition: scale var(--dur-slow) var(--ease-out); }
+  .pj__card--cap .pj__media img { inset: 0; width: 100%; object-fit: cover; }
+  .pj__media::after { content: ''; position: absolute; inset: 0; background: var(--navy-700); mix-blend-mode: multiply; opacity: 0.18; pointer-events: none; }
+  @media (hover: hover) and (pointer: fine) { .pj__link:hover .pj__media img { scale: 1.04; } }
+  .pj__typo { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: var(--space-5); background: var(--navy-800); }
+  .pj__typo .display { font-size: clamp(2rem, 3.4vw, 3.4rem); font-stretch: 75%; line-height: 0.9; }
+  .pj__typo .mono { color: var(--mint-500); }
+  .pj__meta { display: grid; gap: var(--space-2); padding-top: var(--space-4); }
+  .pj__i { color: var(--mint-500); }
+  .pj__name { font-size: var(--fs-h3); font-stretch: 100%; line-height: 1; }
+  .pj__sub { color: var(--navy-300); min-height: 1.3em; }
+  .pj__progress { height: 2px; background: var(--line-on-dark); margin-top: var(--space-8); position: relative; overflow: clip; }
+  .pj__progress i { position: absolute; inset: 0; background: var(--mint-500); transform-origin: left; transform: scaleX(0.1); }
+
+  /* Touch: native scroll-snap */
+  :global(html:not(.has-drag)) .pj__viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: auto; scroll-padding-inline: var(--gutter); }
+  :global(html:not(.has-drag)) .pj__viewport::-webkit-scrollbar { display: none; }
+  :global(html:not(.has-drag)) .pj__card { scroll-snap-align: start; }
+  @media (max-width: 899px) {
+    .pj__card { width: 78vw; }
+    .pj__card--cap { width: min(78vw, 373px); }
+    .pj__media { aspect-ratio: 3 / 4; }
+    .pj__btn { width: 48px; height: 48px; }
+    .pj__head { margin-bottom: var(--space-6); }
+  }
+</style>

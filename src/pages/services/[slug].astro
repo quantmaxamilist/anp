@@ -1,0 +1,196 @@
+---
+// /services/<slug>: one page per trade package. Photo hero, verbatim body (first paragraph as a scrubbed
+// statement), sticky aside with the line drawing, the photo gallery + lightbox, the other packages, next teaser.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import SectionHead from '../../components/site/SectionHead.astro';
+import Pill from '../../components/site/Pill.astro';
+import Gallery from '../../components/site/Gallery.astro';
+import NextTeaser from '../../components/site/NextTeaser.astro';
+import TenderBand from '../../components/site/TenderBand.astro';
+import AddChip from '../../components/services/AddChip.astro';
+import { services, company } from '../../data/site';
+import { zones, lineBySlug } from '../../data/extra';
+import { wrap } from '../../data/wrap';
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const i = services.findIndex((x) => x.slug === slug);
+const s = services[i];
+const N = services.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+const num = pad(i + 1);
+const next = services[(i + 1) % N];
+const z = zones[s.slug];
+const cover = s.images[s.cover];
+
+// hand-broken hero lines (verbatim words); anything not listed falls back to wrap()
+const heroBreaks: Record<string, string[]> = {
+  'soft-strip-out': ['Soft', 'Strip Out'],
+  'structural-alterations-demolition': ['Structural', 'Alterations /', 'Demolition'],
+  'groundworks-and-drainage': ['Groundworks', 'and Drainage'],
+  'landscaping-and-external-works': ['Landscaping and', 'External Works'],
+};
+const lines = heroBreaks[s.slug] ?? wrap(s.title, 13);
+
+// meta description: the first paragraph, cut on a word at ≤155 chars
+const cut = (t: string, max = 155) => {
+  if (t.length <= max) return t;
+  const c = t.slice(0, max - 1);
+  return c.slice(0, c.lastIndexOf(' ')).replace(/[,;:—–-]\s*$/, '') + '…';
+};
+const [first, ...rest] = s.body;
+const words = first.split(' ');
+// share card: the cover's 1200px JPG in /public/og (one per service), not the generic default
+const og = `/og/${cover.src.split('/').pop()!.replace(/\.\w+$/, '.jpg')}`;
+// no <link rel=preload> for the hero photo: it has no imagesrcset, so the browser fetched the -md file *and*
+// the srcset pick (a double download + console warning); the hero <img> is already eager + fetchpriority=high
+const others = services.map((x, k) => ({ ...x, n: pad(k + 1) })).filter((x) => x.slug !== s.slug);
+---
+<Base title={s.metaTitle} description={cut(first)} image={og}>
+  <PageHero
+    lines={lines}
+    label={s.title}
+    num={num}
+    eyebrow={z.tag}
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'What We Do', href: '/services' }, { label: s.name }]}
+    image={cover}
+    imageAlt=""
+    size="xl"
+    id="sd-h"
+  >
+    <Pill href={`/contact?package=${s.slug}`}>Send a tender</Pill>
+    <AddChip slug={s.slug} name={s.name} theme="dark" size="l" />
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+
+  <section class="sd-body on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="sd-body-h">
+    <div class="container sd-body__in">
+      <aside class="sd-aside" aria-label={`${s.name} at a glance`}>
+        <div class="sd-aside__in">
+          <div class="datum" data-reveal="datum"></div>
+          <p class="mono sd-aside__n" data-reveal="fade"><b>[ {num} / {pad(N)} ]</b></p>
+          <p class="mono sd-aside__tag" data-reveal="fade">{z.tag}</p>
+          <div class="sd-sheet" data-reveal="fade" data-delay="0.1" aria-hidden="true"><div class="sd-line" style={`--sd-line:url(${lineBySlug[s.slug]})`}></div></div>
+          <div class="sd-aside__acts" data-reveal="fade" data-delay="0.15">
+            <Pill href={`/contact?package=${s.slug}`} size="sm" variant="navy">Send a tender</Pill>
+            <AddChip slug={s.slug} name={s.name} />
+          </div>
+        </div>
+      </aside>
+      <div class="sd-copy">
+        <h2 class="sr-only" id="sd-body-h">{s.title}</h2>
+        <p class="sd-statement" data-sv-words>
+          {words.map((w, k) => <><span class="sd-w">{w}</span>{k < words.length - 1 ? ' ' : ''}</>)}
+        </p>
+        {rest.length > 0 && (
+          <div class="sd-rest">
+            {rest.map((p, k) => <p data-reveal="fade" data-delay={String(k * 0.08)}>{p}</p>)}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="sd-photos on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="sd-photos-h">
+    <div class="container">
+      <SectionHead label={s.name} num={s.images.length} title={[`${s.images.length} Photos`]} id="sd-photos-h" theme="light" size="l" />
+      <Gallery images={s.images} alt={s.name} label={`${s.name} photos`} />
+    </div>
+  </section>
+
+  <section class="sd-more" data-header-theme="dark" aria-labelledby="sd-more-h">
+    <div class="container">
+      <SectionHead label="Trade packages" num={N} title={['What We Do']} id="sd-more-h" size="s" />
+      <ol class="sd-more__list" role="list">
+        {others.map((o) => (
+          <li>
+            <a href={`/services/${o.slug}`} class="sd-more__a" data-cursor="link">
+              <span class="mono sd-more__n">{o.n}</span>
+              <span class="sd-more__t">{o.name.split('/').map((part, k) => <>{k > 0 && <>/<wbr /></>}{part}</>)}</span>
+              <span class="sd-more__ar" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <NextTeaser href={`/services/${next.slug}`} title={next.name} label="Next package" num={`${pad(((i + 1) % N) + 1)} / ${pad(N)}`} image={next.images[next.cover]} />
+
+  <TenderBand slug={s.slug} />
+</Base>
+
+<script>import '../../scripts/services.js';</script>
+
+<style>
+  /* page-scoped: a deeper veil on the photo hero so the mono crumbs and tag read on bright site photos */
+  :global(body[data-page='services'] .ph--media .ph__veil) {
+    background: linear-gradient(180deg, rgb(14 22 48 / 0.72) 0%, rgb(14 22 48 / 0.5) 30%, rgb(14 22 48 / 0.5) 55%, rgb(14 22 48 / 0.95) 100%);
+  }
+  :global(body[data-page='services'] .ph--media :is(.ph__crumbs, .ph__eyebrow)) { color: rgb(255 255 255 / 0.84); }
+
+  /* ---- body ---------------------------------------------------------------------- */
+  .sd-body { background: var(--concrete-50); color: var(--navy-700); padding-block: var(--section-y); }
+  .sd-body__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8) var(--grid-gap); align-items: start; }
+  .sd-aside { grid-column: 1 / 4; position: sticky; top: calc(var(--header-h) + var(--space-6)); }
+  .sd-aside__in { display: grid; gap: var(--space-4); justify-items: start; }
+  .sd-aside__in > .datum { width: 100%; margin-bottom: var(--space-2); }
+  .sd-aside__n { color: var(--navy-700); }
+  .sd-aside__n b { font-weight: var(--wght-mono); }
+  .sd-aside__tag { color: var(--concrete-600); }
+  .sd-sheet { width: 100%; margin-block: var(--space-2); padding: var(--space-4); border: 1px solid var(--line-on-light); border-radius: var(--radius-m); background: var(--white); }
+  .sd-line {
+    width: 100%; aspect-ratio: 4 / 3;
+    background: var(--navy-700);
+    -webkit-mask: var(--sd-line) center / contain no-repeat; mask: var(--sd-line) center / contain no-repeat;
+  }
+  .sd-aside__acts { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .sd-copy { grid-column: 5 / -1; display: grid; gap: var(--space-8); }
+  .sd-statement {
+    margin: 0; max-width: 34ch;
+    font-family: var(--font-display); font-stretch: var(--wdth-text-display); font-weight: 650;
+    /* the first paragraphs are long: cap the statement so it stays a read, not a wall */
+    font-size: min(var(--fs-statement), 2.6rem); line-height: var(--lh-statement); letter-spacing: var(--tr-heading);
+    color: var(--navy-700);
+  }
+  .sd-rest { display: grid; gap: var(--space-5); max-width: var(--measure); }
+  .sd-rest p { font-size: var(--fs-lead); line-height: 1.5; color: var(--navy-700); }
+  @media (max-width: 899px) {
+    .sd-aside { grid-column: 1 / -1; position: static; grid-row: 2; }
+    .sd-copy { grid-column: 1 / -1; grid-row: 1; }
+    .sd-sheet { max-width: 360px; }
+    .sd-rest p { font-size: var(--fs-body); line-height: var(--lh-body); }
+  }
+
+  /* ---- photos -------------------------------------------------------------------- */
+  .sd-photos { background: var(--white); color: var(--navy-700); padding-block: var(--section-y); }
+
+  /* ---- the other packages (compact) ------------------------------------------------ */
+  .sd-more { background: var(--navy-900); color: var(--white); padding-block: var(--space-fluid-l); }
+  .sd-more__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+  .sd-more__a {
+    display: grid; grid-template-columns: 3.5rem 1fr auto; align-items: center; gap: var(--space-4);
+    padding: var(--space-4) 0; min-height: 64px; border-top: 1px solid var(--line-on-dark); color: var(--white); text-decoration: none;
+  }
+  .sd-more__n { color: var(--mint-500); }
+  .sd-more__t {
+    font-family: var(--font-display); font-weight: var(--wght-display-soft); font-stretch: 100%; text-transform: uppercase;
+    font-size: clamp(1.125rem, 0.9rem + 0.7vw, 1.625rem); line-height: 1.08; min-width: 0; overflow-wrap: break-word; letter-spacing: var(--tr-heading); transition: color var(--dur-fast) var(--ease-out-soft), transform var(--dur-base) var(--ease-out);
+  }
+  .sd-more__ar {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.4); color: var(--white);
+    transition: background-color var(--dur-fast), color var(--dur-fast), transform var(--dur-base) var(--ease-out), box-shadow var(--dur-fast);
+  }
+  .sd-more__a:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  @media (hover: hover) and (pointer: fine) {
+    .sd-more__a:hover .sd-more__t { color: var(--mint-500); transform: translateX(6px); }
+    .sd-more__a:hover .sd-more__ar { background: var(--mint-500); color: var(--navy-950); box-shadow: none; transform: rotate(-45deg); }
+  }
+  @media (max-width: 899px) { .sd-more__list { grid-template-columns: 1fr; } }
+  @media (max-width: 639px) { .sd-more__a { grid-template-columns: 2.5rem 1fr auto; gap: var(--space-3); } .sd-more__t { font-size: 1.125rem; } }
+</style>

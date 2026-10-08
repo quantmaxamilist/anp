@@ -1,0 +1,53 @@
+---
+// Section heading: mono tag "[ 04 ] Label", display title in line masks, optional intro and a right-hand slot.
+interface Props {
+  title: string | string[];   // string → one line; array → manual lines (verbatim words)
+  label?: string;              // mono tag text
+  num?: string | number;       // tag numeral, padded to 2 digits
+  intro?: string;              // verbatim paragraph under the title
+  as?: 'h1' | 'h2' | 'h3';
+  id?: string;
+  size?: 'l' | 'm' | 's';      // l = --fs-display-2, m = --fs-display-3, s = --fs-h2
+  theme?: 'dark' | 'light' | 'mint';
+  em?: number;                 // em-width of longest line at 125% (overrides the estimate)
+  datum?: boolean;             // setting-out line above (default true)
+  class?: string;
+}
+const { title, label, num, intro, as: Tag = 'h2', id, size = 'm', theme = 'dark', em, datum = true, class: cls } = Astro.props;
+const lines = Array.isArray(title) ? title : [title];
+const longest = Math.max(...lines.map((l) => l.length));
+const emW = em ?? Math.max(4, longest * 0.8);
+const n = num !== undefined ? String(num).padStart(2, '0') : undefined;
+---
+<header class:list={['sh', `sh--${size}`, `sh--${theme}`, theme !== 'dark' && 'on-light', cls]} style={`--sh-em:${emW.toFixed(2)}`}>
+  {datum && <div class="datum" data-reveal="datum"></div>}
+  <div class="sh__row">
+    <div class="sh__main">
+      {(label || n) && <p class="mono tag sh__tag" data-reveal="fade">{n && <b>[ {n} ]</b>} {label}</p>}
+      <Tag class="sh__h display" id={id} data-reveal="lines" aria-label={lines.join(' ')}>
+        {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+      </Tag>
+    </div>
+    {Astro.slots.has('default') && <div class="sh__aside" data-reveal="fade" data-delay="0.2"><slot /></div>}
+  </div>
+  {intro && <p class="sh__intro" data-reveal="fade" data-delay="0.15">{intro}</p>}
+</header>
+
+<style>
+  .sh { display: grid; gap: var(--space-6); margin-bottom: var(--space-fluid-m); }
+  .sh__row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5) var(--space-7); padding-top: var(--space-5); }
+  .sh__main { display: grid; gap: var(--space-5); min-width: 0; }
+  .sh__tag { color: var(--navy-300); }
+  .on-light .sh__tag { color: var(--concrete-600); }
+  .sh--mint .sh__tag { color: var(--navy-700); }
+  .sh__h { --fs: var(--fs-display-3); font-size: min(var(--fs), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--sh-em))); }
+  .sh--l .sh__h { --fs: var(--fs-display-2); }
+  .sh--s .sh__h { --fs: var(--fs-h2); line-height: var(--lh-heading); }
+  @media (max-width: 899px) { .sh__h { font-size: min(var(--fs), calc((100vw - 2 * var(--gutter)) / (var(--sh-em) * 0.92))); } }
+  @media (max-width: 639px) { .sh__h { font-size: min(var(--fs), calc((100vw - 2 * var(--gutter)) / (var(--sh-em) * 0.6))); } }
+  .sh--dark .sh__h { color: var(--white); }
+  .on-light .sh__h { color: var(--navy-700); }
+  .sh__aside { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+  .sh__intro { max-width: var(--measure); font-size: var(--fs-lead); line-height: 1.45; color: var(--navy-200); }
+  .on-light .sh__intro { color: var(--navy-700); }
+</style>

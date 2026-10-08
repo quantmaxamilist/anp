@@ -1,0 +1,106 @@
+---
+// One of the nine package rows on /services: numeral, zones tag, name, verbatim quote, cover photo,
+// "View service" (the whole row is the link) and an "Add to tender" toggle. Alternates sides on desktop.
+import Img from '../site/Img.astro';
+import AddChip from './AddChip.astro';
+import { zones } from '../../data/extra';
+import { wrap } from '../../data/wrap';
+import type { Service } from '../../data/site';
+
+interface Props { s: Service; i: number; total: number }
+const { s, i, total } = Astro.props;
+const n = String(i + 1).padStart(2, '0');
+const z = zones[s.slug];
+const lines = wrap(s.name.toUpperCase(), 14);
+const longest = Math.max(...lines.map((l) => l.length));
+const href = `/services/${s.slug}`;
+---
+<li class:list={['sv-row', i % 2 === 1 && 'sv-row--flip']} style={`--sv-len:${Math.max(7, longest)}`}>
+  <div class="datum sv-row__datum" data-reveal="datum"></div>
+  <a class="sv-row__hit" href={href} tabindex="-1" aria-hidden="true" data-cursor="view"></a>
+  <div class="sv-row__ph" data-reveal="photo">
+    <Img img={s.images[s.cover]} alt={`${s.name}, photo ${s.cover + 1} of ${s.images.length}`} sizes="(min-width: 900px) 40vw, 100vw" />
+  </div>
+  <div class="sv-row__txt">
+    <div class="sv-row__top">
+      <span class="sv-row__num" aria-hidden="true">{n}</span>
+      <p class="mono tag sv-row__tag" data-reveal="fade"><b>[ {n} / {String(total).padStart(2, '0')} ]</b> {z.tag}</p>
+    </div>
+    <h3 class="sv-row__name display" data-reveal="lines" aria-label={s.name}>
+      {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+    </h3>
+    <p class="sv-row__quote" data-reveal="fade" data-delay="0.1">{z.quote}</p>
+    <div class="sv-row__acts" data-reveal="fade" data-delay="0.18">
+      <a class="sv-row__link" href={href} data-cursor="view" aria-label={`View service: ${s.name}`}>
+        <span class="sv-row__lbl">View service</span>
+        <span class="sv-row__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+      </a>
+      <AddChip slug={s.slug} name={s.name} />
+    </div>
+  </div>
+</li>
+
+<style>
+  .sv-row {
+    position: relative; isolation: isolate;
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); row-gap: var(--space-6);
+    align-items: center; padding-block: var(--space-fluid-m);
+  }
+  .sv-row__datum { position: absolute; left: 0; right: 0; top: 0; }
+  .sv-row__ph {
+    grid-column: 1 / 6; grid-row: 1; overflow: clip; aspect-ratio: 4 / 3;
+    border-radius: var(--radius-m); background: var(--concrete-200);
+  }
+  .sv-row__ph :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-out); }
+  .sv-row__txt { grid-column: 7 / -1; grid-row: 1; display: grid; gap: var(--space-5); justify-items: start; container-type: inline-size; min-width: 0; }
+  .sv-row--flip .sv-row__ph { grid-column: 8 / -1; }
+  .sv-row--flip .sv-row__txt { grid-column: 1 / 7; }
+
+  .sv-row__top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3) var(--space-5); width: 100%; }
+  .sv-row__num {
+    font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed); font-variant-numeric: tabular-nums;
+    font-size: clamp(4.5rem, 2.5rem + 6vw, 10rem); line-height: 0.78; letter-spacing: -0.02em;
+    color: var(--navy-700);
+    transition: color var(--dur-base) var(--ease-out-soft);
+  }
+  .sv-row__tag { color: var(--concrete-600); padding-bottom: 0.2em; white-space: nowrap; }
+  .sv-row__name {
+    margin: 0; color: var(--navy-700);
+    /* the longest wrapped line always fits its column (≈0.78em per char at 125%) */
+    font-size: min(var(--fs-display-3), calc(100cqi / (var(--sv-len) * 0.78)));
+    transition: color var(--dur-base) var(--ease-out-soft);
+  }
+  @media (min-width: 640px) and (max-width: 899px) { .sv-row__name { font-size: min(var(--fs-display-3), calc(100cqi / (var(--sv-len) * 0.7))); } }
+  @media (max-width: 639px) { .sv-row__name { font-size: min(var(--fs-display-3), calc(100cqi / (var(--sv-len) * 0.47))); } }
+  .sv-row__quote { max-width: 52ch; font-size: var(--fs-lead); line-height: 1.45; color: var(--navy-700); }
+  .sv-row__acts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
+
+  .sv-row__link {
+    display: inline-flex; align-items: center; gap: var(--space-3); min-height: 44px; padding: 0 6px 0 var(--space-5);
+    border-radius: var(--radius-pill); background: var(--navy-700); color: var(--white); text-decoration: none;
+    font-family: var(--font-text); font-weight: var(--wght-text-strong); font-size: var(--fs-small); letter-spacing: var(--tr-label); text-transform: uppercase;
+    transition: background-color var(--dur-fast) var(--ease-out-soft);
+  }
+  /* the whole row is the link: a hit area under the content, which passes clicks through
+     except on its own link and the toggle */
+  .sv-row__hit { position: absolute; inset: 0; z-index: 1; }
+  .sv-row__ph, .sv-row__txt { position: relative; z-index: 2; pointer-events: none; }
+  .sv-row__txt :is(a, button) { pointer-events: auto; }
+  .sv-row__arrow { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--mint-500); color: var(--navy-700); transition: transform var(--dur-base) var(--ease-out); }
+  .sv-row__link:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sv-row:hover .sv-row__ph :global(img) { transform: scale(1.04); }
+    .sv-row:hover .sv-row__num { color: var(--mint-700); }
+    .sv-row:hover .sv-row__name { color: var(--navy-950); }
+    .sv-row:hover .sv-row__arrow { transform: rotate(-45deg); }
+    .sv-row:hover .sv-row__link { background: var(--navy-950); }
+  }
+
+  @media (max-width: 899px) {
+    .sv-row { row-gap: var(--space-5); padding-block: var(--space-7); }
+    .sv-row__ph, .sv-row--flip .sv-row__ph { grid-column: 1 / -1; grid-row: 1; }
+    .sv-row__txt, .sv-row--flip .sv-row__txt { grid-column: 1 / -1; grid-row: 2; }
+    .sv-row__quote { font-size: var(--fs-body); line-height: var(--lh-body); }
+  }
+</style>

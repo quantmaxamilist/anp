@@ -1,0 +1,70 @@
+---
+// /contact tender section (solid mint, #tender): cta.heading in line masks + cta.body beside the shared
+// tick-your-trades TenderForm. contact.js adds the live "ticked" meter above the submit row.
+import { cta, services } from '../../data/site';
+import TenderForm from '../site/TenderForm.astro';
+import Mark from '../site/Mark.astro';
+const lines = ['Ready to', 'Discuss Your', 'Project?'];
+const total = String(services.length).padStart(2, '0');
+---
+<section class="ct-tender" id="tender" data-header-theme="mint" data-cursor-theme="light" aria-labelledby="ct-form-h">
+  <Mark class="ct-tender__mark" data-reveal="draw" />
+  <div class="container ct-tender__grid">
+    <div class="ct-tender__lead">
+      <p class="mono tag ct-tender__tag" data-reveal="fade"><b>[ {total} ]</b> Send a tender</p>
+      <h2 class="ct-tender__h display" id="ct-form-h" data-reveal="lines" aria-label={cta.heading}>
+        {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+      </h2>
+      <div class="ct-tender__body" data-reveal="fade" data-delay="0.15">{cta.body.map((p) => <p>{p}</p>)}</div>
+    </div>
+    <div class="ct-tender__form" data-reveal="fade" data-delay="0.1" data-ct-form data-total={services.length}>
+      <TenderForm id="contact-form" labelledby="ct-form-h" theme="mint" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ct-tender {
+    position: relative; isolation: isolate; overflow: clip;
+    background: var(--mint-500); color: var(--navy-700);
+    padding-block: var(--section-y);
+  }
+  .ct-tender :global(.ct-tender__mark) {
+    position: absolute; z-index: -1; pointer-events: none;
+    right: var(--gutter); bottom: var(--space-fluid-m); width: clamp(160px, 15vw, 280px); height: auto; overflow: visible; opacity: 0.4;
+  }
+  .ct-tender :global(.ct-tender__mark path) { stroke: var(--navy-700); stroke-width: 12; }
+  @media (max-width: 899px) { .ct-tender :global(.ct-tender__mark) { display: none; } }
+  .ct-tender__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8) var(--grid-gap); align-items: start; }
+  .ct-tender__lead { grid-column: 1 / 6; display: grid; gap: var(--space-6); align-content: start; position: sticky; top: calc(var(--header-h) + var(--space-6)); }
+  .ct-tender__tag b { color: var(--navy-700); }
+  .ct-tender__h {
+    --em: 8.9;
+    font-size: min(var(--fs-display-2), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--em)));
+  }
+  @media (min-width: 900px) { .ct-tender__h { font-size: min(var(--fs-display-3), 5.4vw); font-stretch: 100%; } }
+  .ct-tender__body { display: grid; gap: var(--space-3); font-size: var(--fs-lead); line-height: 1.45; max-width: 34ch; }
+  .ct-tender__form { grid-column: 7 / -1; min-width: 0; }
+
+  /* Live meter injected by contact.js above the submit row (styled here, scoped to this section) */
+  .ct-tender :global(.ct-meter) { display: grid; gap: var(--space-3); padding-top: var(--space-2); }
+  .ct-tender :global(.ct-meter__bar) { display: grid; grid-template-columns: repeat(var(--n, 9), minmax(0, 1fr)); gap: 4px; }
+  .ct-tender :global(.ct-meter__bar i) {
+    height: 6px; border-radius: 2px; background: rgb(35 52 103 / 0.18);
+    transition: background var(--dur-fast) var(--ease-out-soft), transform var(--dur-base) var(--ease-spring);
+    transform-origin: left center;
+  }
+  .ct-tender :global(.ct-meter__bar i.is-on) { background: var(--navy-700); }
+  .ct-tender :global(.ct-meter__txt) { display: flex; align-items: baseline; gap: 0.8em; }
+  .ct-tender :global(.ct-meter__n) {
+    font-family: var(--font-display); font-weight: 900; font-stretch: 75%;
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3.5rem); line-height: 0.8; color: var(--navy-700);
+  }
+  .ct-tender :global(.ct-meter__n.is-pop) { animation: ct-pop 520ms var(--ease-spring); }
+  @keyframes ct-pop { 0% { transform: scale(0.8); } 60% { transform: scale(1.08); } 100% { transform: none; } }
+
+  @media (max-width: 899px) {
+    .ct-tender__lead, .ct-tender__form { grid-column: 1 / -1; }
+    .ct-tender__lead { position: static; }
+  }
+</style>

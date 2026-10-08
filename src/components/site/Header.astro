@@ -1,0 +1,206 @@
+---
+import { company, nav, services } from '../../data/site';
+import Mark from './Mark.astro';
+import Pill from './Pill.astro';
+// Flatten nav so Our Team and Clients are visible top-level items (brief: clearly in nav).
+const items = [
+  { label: 'About', href: '/about' },
+  { label: 'Our Team', href: '/team' },
+  { label: 'Clients', href: '/clients' },
+  { label: 'What We Do', href: '/services' },
+  { label: 'Additional Projects', href: '/additional-projects' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'Contact', href: '/contact' },
+];
+// guard: every label above exists in site.ts nav (top-level or children); Contact is the live footer/contact page
+const known = new Set([...nav.flatMap((n) => [n.label, ...(n.children || []).map((c) => c.label)]), 'Contact']);
+const navItems = items.filter((i) => known.has(i.label));
+// Active state: exact page, and /services/<slug> keeps "What We Do" current
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'));
+// Pages that carry the #tender form keep the CTA on-page (no reload, no transition).
+const tenderHref = path === '/' || path === '/contact' ? '#tender' : '/contact';
+void services;
+---
+<header class="hdr" id="hdr" data-theme="dark">
+  <div class="hdr__bg" aria-hidden="true"></div>
+  <div class="hdr__in container">
+    <a href="/" class="hdr__brand" aria-label={`${company.name}, home`} data-cursor="link">
+      <Mark class="hdr__mark" />
+      <span class="hdr__word">
+        <img class="hdr__wm hdr__wm--light" src="/images/brand/wordmark-light.png" alt="" width="805" height="62" />
+        <img class="hdr__wm hdr__wm--dark" src="/images/brand/wordmark.png" alt="" width="805" height="62" />
+      </span>
+    </a>
+    <nav class="hdr__nav" aria-label="Main">
+      <ul role="list">
+        {navItems.map((n) => <li><a class="hdr__link" href={n.href} data-cursor="link" aria-current={path === n.href ? 'page' : isCurrent(n.href) ? 'true' : undefined}><span>{n.label}</span></a></li>)}
+      </ul>
+    </nav>
+    <div class="hdr__right">
+      <a class="hdr__phone mono" href={company.phoneHref} data-cursor="link"><span class="ulink">{company.phone}</span></a>
+      <Pill href={tenderHref} size="sm" class="hdr__cta">Send a tender</Pill>
+      <a class="hdr__icon hdr__call" href={company.phoneHref} aria-label={`Call ${company.phone}`}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h3l1.5 4-2 1.3a11 11 0 0 0 6.1 6.1l1.3-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </a>
+      <button class="hdr__icon hdr__burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu" data-menu-open>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="menu__top container">
+    <a href="/" class="hdr__brand" aria-label={`${company.name}, home`}>
+      <Mark class="hdr__mark" />
+      <img class="hdr__wm" src="/images/brand/wordmark-light-483.png" alt="" width="483" height="37" />
+    </a>
+    <button class="hdr__icon menu__close" type="button" aria-label="Close menu" data-menu-close>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <Mark class="menu__mark" />
+  <nav class="menu__nav container" aria-label="Mobile">
+    <ol role="list">
+      {navItems.map((n, i) => (
+        <li><a href={n.href} class="menu__link display" aria-current={path === n.href ? 'page' : isCurrent(n.href) ? 'true' : undefined}><span class="mono menu__n">{String(i + 1).padStart(2, '0')}</span><span class="line"><span>{n.label}</span></span></a></li>
+      ))}
+    </ol>
+  </nav>
+  <div class="menu__foot container">
+    <div class="menu__contact">
+      <a class="menu__phone display" href={company.phoneHref}>{company.phone}</a>
+      <a class="mono" href={`mailto:${company.email}`}>{company.email}</a>
+      <p class="mono menu__addr">{company.address.line1}, {company.address.line2}, {company.address.locality} {company.address.postcode}</p>
+    </div>
+    <Pill href={tenderHref}>Send a tender</Pill>
+  </div>
+</div>
+
+<style>
+  .hdr {
+    position: fixed; inset: 0 0 auto 0; z-index: var(--z-header);
+    height: var(--header-h);
+    color: var(--white);
+    transition: color var(--dur-base) var(--ease-out-soft);
+  }
+  .hdr__bg {
+    position: absolute; inset: 0;
+    background: rgb(14 22 48 / 0.82);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    opacity: 0; transition: opacity var(--dur-base) var(--ease-out-soft), background var(--dur-base);
+    border-bottom: 1px solid var(--line-on-dark);
+  }
+  .hdr.is-solid .hdr__bg { opacity: 1; }
+  /* Soft navy band under the transparent header so links stay legible over bright footage */
+  .hdr::before {
+    content: ''; position: absolute; inset: 0 0 -48px 0; pointer-events: none;
+    background: linear-gradient(180deg, rgb(14 22 48 / 0.5) 0%, rgb(14 22 48 / 0.22) 55%, rgb(14 22 48 / 0) 100%);
+    transition: opacity var(--dur-base) var(--ease-out-soft);
+  }
+  .hdr.is-solid::before, .hdr:not([data-theme='dark'])::before { opacity: 0; }
+  .hdr[data-theme='light'] { color: var(--navy-700); }
+  .hdr[data-theme='light'] .hdr__bg { background: rgb(244 244 241 / 0.86); border-color: var(--line-on-light); }
+  .hdr[data-theme='mint'] { color: var(--navy-700); }
+  .hdr[data-theme='mint'] .hdr__bg { background: rgb(141 209 186 / 0.9); border-color: rgb(35 52 103 / 0.2); }
+  .hdr__in { position: relative; height: 100%; display: flex; align-items: center; gap: var(--space-6); }
+  .hdr__brand { display: flex; align-items: center; gap: var(--space-3); flex: none; }
+  .hdr__brand :global(.hdr__mark) { width: 46px; height: auto; }
+  .hdr[data-theme='mint'] .hdr__brand :global(.hdr__mark path) { stroke: var(--navy-700); }
+  .hdr[data-theme='light'] .hdr__brand :global(.hdr__mark path) { stroke: var(--mint-600); }
+  .hdr__word { position: relative; display: block; width: 168px; transition: opacity var(--dur-base) var(--ease-out-soft); }
+  .hdr__wm { width: 100%; height: auto; transition: opacity var(--dur-base); }
+  .hdr__wm--dark { position: absolute; inset: 0; opacity: 0; }
+  .hdr[data-theme='light'] .hdr__wm--light, .hdr[data-theme='mint'] .hdr__wm--light { opacity: 0; }
+  .hdr[data-theme='light'] .hdr__wm--dark, .hdr[data-theme='mint'] .hdr__wm--dark { opacity: 1; }
+  .hdr__nav { margin-left: auto; }
+  .hdr__nav ul { display: flex; gap: clamp(1rem, 1.6vw, 2rem); }
+  .hdr__link {
+    position: relative; display: block; padding: var(--space-2) 0;
+    font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em; white-space: nowrap;
+  }
+  .hdr__link span { position: relative; }
+  .hdr__link span::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1.5px; background: var(--mint-500);
+    transform: scaleX(0); transform-origin: right; transition: transform var(--dur-base) var(--ease-out);
+  }
+  .hdr[data-theme='light'] .hdr__link span::after, .hdr[data-theme='mint'] .hdr__link span::after { background: var(--navy-700); }
+  .hdr__link:hover span::after, .hdr__link:focus-visible span::after, .hdr__link[aria-current] span::after { transform: scaleX(1); transform-origin: left; }
+  .hdr__right { display: flex; align-items: center; gap: var(--space-5); }
+  .hdr__phone { display: inline-flex; align-items: center; min-height: 44px; white-space: nowrap; letter-spacing: 0.08em; }
+  .hdr[data-theme='mint'] :global(.hdr__cta) { --pill-bg: var(--navy-700); --pill-fg: var(--white); --pill-dot: var(--mint-500); --pill-dot-fg: var(--navy-700); }
+  .hdr__icon {
+    width: 44px; height: 44px; border-radius: 50%; display: none; place-items: center;
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.3);
+  }
+  .hdr[data-theme='light'] .hdr__icon, .hdr[data-theme='mint'] .hdr__icon { box-shadow: inset 0 0 0 1.5px rgb(35 52 103 / 0.35); }
+  .hdr__icon svg { width: 20px; height: 20px; }
+  .hdr__burger { position: relative; }
+  .hdr__burger span { position: absolute; left: 13px; right: 13px; height: 1.5px; background: currentColor; }
+  .hdr__burger span:first-child { top: 18px; }
+  .hdr__burger span:last-child { top: 25px; }
+
+  @media (max-width: 1279px) { .hdr__phone { display: none; } }
+  @media (max-width: 1099px) {
+    .hdr__nav { display: none; }
+    .hdr__right { margin-left: auto; gap: var(--space-3); }
+    .hdr__icon { display: grid; }
+  }
+  @media (max-width: 899px) {
+    .hdr__right :global(.hdr__cta) { display: none; }
+    /* Inside the wow the header stays put and carries the tender CTA; the mark alone signs the brand */
+    .hdr.is-wow .hdr__right :global(.hdr__cta) { display: inline-flex; }
+    .hdr.is-wow .hdr__in { gap: var(--space-3); }
+    .hdr.is-wow .hdr__word { opacity: 0; width: 0; margin-left: calc(-1 * var(--space-3)); }
+    .hdr.is-wow .hdr__right :global(.hdr__cta) { font-size: 0.75rem; letter-spacing: 0.1em; padding-left: 14px; }
+  }
+  @media (max-width: 369px) {
+    .hdr.is-wow .hdr__call { display: none; }
+  }
+  @media (max-width: 420px) {
+    .hdr__word { width: 128px; }
+    .hdr__brand :global(.hdr__mark) { width: 38px; }
+  }
+  /* 320–374: brand + call + menu must fit inside the gutters (menu button was clipped at 320) */
+  @media (max-width: 374px) {
+    .hdr__in { gap: var(--space-3); }
+    .hdr__brand { gap: var(--space-2); }
+    .hdr__word { width: 104px; }
+    .hdr__brand :global(.hdr__mark) { width: 34px; }
+    .hdr__right { gap: var(--space-2); }
+  }
+
+  /* Mobile menu */
+  .menu {
+    position: fixed; inset: 0; z-index: var(--z-menu);
+    background: var(--navy-950); color: var(--white);
+    display: grid; grid-template-rows: auto 1fr auto;
+    overflow-y: auto; overscroll-behavior: contain;
+    clip-path: inset(0 0 100% 0);
+  }
+  .menu.is-open { clip-path: inset(0); }
+  .menu__top { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; }
+  .menu__top .hdr__wm { width: 150px; }
+  .menu__close { display: grid; color: var(--white); }
+  .menu :global(.menu__mark) {
+    position: absolute; right: calc(var(--gutter) * -0.5); top: 18%; width: min(70vw, 440px); opacity: 0.12; pointer-events: none;
+  }
+  .menu__nav { align-self: center; padding-block: var(--space-6); position: relative; }
+  .menu__nav ol { display: grid; gap: var(--space-2); }
+  .menu__link {
+    display: flex; align-items: baseline; gap: var(--space-4);
+    font-size: min(var(--fs-display-2), calc((100vw - 2 * var(--gutter) - 3rem) / 8));
+    font-stretch: var(--wdth-condensed);
+  }
+  .menu__link .line { flex: 1; }
+  .menu__n { color: var(--mint-500); flex: none; width: 2.5em; }
+  .menu__link:hover .line span, .menu__link:focus-visible .line span, .menu__link[aria-current] .line span { color: var(--mint-500); }
+  .menu__foot {
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5);
+    padding-block: var(--space-5) var(--space-7); border-top: 1px solid var(--line-on-dark);
+  }
+  .menu__contact { display: grid; gap: var(--space-2); color: var(--navy-300); }
+  .menu__phone { font-size: var(--fs-h2); color: var(--white); font-stretch: var(--wdth-condensed); }
+  .menu__addr { text-transform: none; letter-spacing: 0.04em; }
+</style>

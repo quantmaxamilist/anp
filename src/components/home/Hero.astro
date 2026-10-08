@@ -1,0 +1,194 @@
+---
+import { company, home, services } from '../../data/site';
+import Pill from '../site/Pill.astro';
+// home.heading split by hand into the 4 display lines (spec 2.1).
+const lines = ['Specialist', 'Trade packages', 'For complex', 'Construction.'];
+const count = String(services.length).padStart(2, '0');
+// The ANP mark (1600 space, viewBox "540 540 545 375"): the intro window's beams.
+const MARK = [
+  'M562 893 L731 560 L897 560 L897 893 Z',
+  'M897 560 L1065 727 L897 727',
+  'M731 560 L731 893',
+  'M731 560 L897 893',
+  'M647 727 L732 727',
+];
+---
+<section class="hero" id="top" data-header-theme="dark" aria-labelledby="hero-h" data-intro>
+  <div class="hero__stage">
+    <div class="hero__frame" data-hero-frame>
+      <video class="hero__video grade" data-hero-video muted loop playsinline preload="none" poster="/media/hero-london-poster.webp" aria-hidden="true" tabindex="-1">
+        <source src="/media/hero-london.mp4" type="video/mp4" />
+      </video>
+      <script is:inline>
+        (function () {
+          var v = document.querySelector('[data-hero-video]');
+          if (!v) return;
+          var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var c = navigator.connection || {};
+          if (rm || c.saveData || /2g/.test(c.effectiveType || '')) { v.removeAttribute('autoplay'); return; }
+          var w = innerWidth, portrait = innerHeight > innerWidth;
+          var src = w >= 900 ? '/media/hero-london-1080.mp4' : (w < 640 && portrait) ? '/media/hero-london-portrait.mp4' : '/media/hero-london.mp4';
+          if (w < 640 && portrait) v.poster = '/media/hero-london-poster.webp';
+          v.querySelector('source').src = src;
+          v.preload = 'auto';
+          v.autoplay = true;
+          v.load();
+          var p = v.play(); if (p && p.catch) p.catch(function () {});
+        })();
+      </script>
+      <div class="hero__grade" aria-hidden="true"></div>
+      <div class="hero__scrim" aria-hidden="true"></div>
+    </div>
+
+    <div class="hero__content container">
+      <p class="hero__row mono" data-hero-fade>
+        <span class="tag"><b>[ {count} ]</b> Trade packages</span>
+        <span class="hero__sep" aria-hidden="true"></span>
+        <span>London {company.address.postcode}</span>
+      </p>
+      <h1 class="hero__h display" id="hero-h" aria-label={home.heading}>
+        {lines.map((l, i) => <span class="line" aria-hidden="true" data-hero-line={i}><span>{l}</span></span>)}
+      </h1>
+      <div class="hero__bar">
+        <div class="hero__ctas" data-hero-fade>
+          <Pill href="#tender">Send a tender</Pill>
+          <Pill href={company.phoneHref} variant="ghost" class="hero__phone">{company.phone}</Pill>
+        </div>
+        <a href="#wow" class="hero__scroll mono" data-hero-fade data-cursor="link">Scroll <i aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intro: a navy field with the ANP mark cut out as a window onto the live footage; the window
+       then scales up past the camera into the full-bleed timelapse (home-hero.js). -->
+  <svg class="hero__window" data-hero-window aria-hidden="true" focusable="false">
+    <path class="hero__veil" fill-rule="evenodd" d=""></path>
+    <g class="hero__beams">
+      {MARK.map((d) => <path d={d} pathLength="1"></path>)}
+    </g>
+  </svg>
+  <script is:inline>
+    // First paint = the intro's opening frame (geometry mirrored in src/scripts/home-hero.js).
+    (function () {
+      var h = document.querySelector('.hero[data-intro]');
+      var svg = h && h.querySelector('[data-hero-window]');
+      if (!svg) return;
+      var c = navigator.connection || {};
+      if (c.saveData || /2g/.test(c.effectiveType || '')) h.classList.add('is-calm');
+      if (scrollY > innerHeight * 0.5 || matchMedia('(prefers-reduced-motion: reduce)').matches || h.classList.contains('is-calm')) return;
+      var W = innerWidth, H = innerHeight, mob = matchMedia('(max-width: 899px), (pointer: coarse)').matches && H > W * 1.05;
+      var s = mob ? Math.min(W * 0.74 / 545, H * 0.3 / 375) : Math.min(W * 0.5 / 545, H * 0.46 / 375);
+      var ox = W / 2 - 812.5 * s, oy = H * 0.49 - 727.5 * s;
+      var pt = function (p) { return (p[0] * s + ox).toFixed(2) + ' ' + (p[1] * s + oy).toFixed(2); };
+      svg.firstElementChild.setAttribute('d', 'M-20 -20H' + (W + 20) + 'V' + (H + 20) + 'H-20Z M' + [[562, 893], [731, 560], [897, 560], [897, 893]].map(pt).join('L') + 'Z M' + [[897, 560], [1065, 727], [897, 727]].map(pt).join('L') + 'Z');
+      svg.lastElementChild.setAttribute('transform', 'matrix(' + s.toFixed(4) + ' 0 0 ' + s.toFixed(4) + ' ' + ox.toFixed(2) + ' ' + oy.toFixed(2) + ')');
+    })();
+  </script>
+  <script is:inline>setTimeout(function(){var h=document.querySelector('.hero[data-intro]');if(h&&!h.dataset.introRun)h.removeAttribute('data-intro');},4000);</script>
+</section>
+
+<style>
+  .hero { position: relative; height: 150svh; background: var(--navy-950); }
+  .hero__stage { position: sticky; top: 0; height: var(--stage-h); overflow: clip; }
+  .hero__frame {
+    position: absolute; inset: 0; overflow: clip; background: var(--navy-900);
+    clip-path: inset(0% 0% 0% 0% round 0px);
+    will-change: clip-path;
+  }
+  .hero__video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; transform-origin: 50% 60%; }
+  /* Navy multiply grade (~15%) so cloud highlights never out-shout the type */
+  .hero__grade { position: absolute; inset: 0; background: var(--navy-700); mix-blend-mode: multiply; opacity: 0.16; pointer-events: none; }
+  /* Scrims: soft top band under the header, a bottom-left pool under the headline, and the base fade */
+  .hero__scrim {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(180deg, rgb(14 22 48 / 0.5) 0%, rgb(14 22 48 / 0.18) 12%, rgb(14 22 48 / 0) 24%),
+      radial-gradient(140% 120% at 0% 100%, rgb(14 22 48 / 0.62) 0%, rgb(14 22 48 / 0.42) 38%, rgb(14 22 48 / 0) 78%),
+      linear-gradient(180deg, rgb(14 22 48 / 0) 40%, rgb(14 22 48 / 0.3) 70%, rgb(14 22 48 / 0.78) 100%);
+  }
+  .hero__content {
+    position: relative; z-index: 2; height: 100%;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding-bottom: clamp(4.75rem, 9svh, 6rem);
+  }
+  /* HUD chip: the eyebrow carries its own navy glass so it reads over any cloud or crane */
+  .hero__row {
+    display: flex; align-items: center; gap: var(--space-4); color: var(--white); margin-bottom: var(--space-5); flex-wrap: wrap;
+    width: fit-content; max-width: 100%; padding: 9px 16px; margin-left: -16px;
+    background: rgb(14 22 48 / 0.5); border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+    backdrop-filter: blur(10px) saturate(1.2); -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  }
+  .hero__row :global(.tag b) { color: var(--mint-500); }
+  .hero__sep { width: 32px; height: 1px; background: var(--mint-500); }
+  @media (max-width: 639px) {
+    .hero__row { margin-left: -12px; padding: 8px 12px; gap: 4px 10px; letter-spacing: 0.1em; border-radius: 12px; }
+    .hero__sep { width: 3px; height: 3px; border-radius: 50%; }
+  }
+  /* Longest line is TRADE PACKAGES; fit cap keeps it inside the container at every wdth step */
+  .hero__h {
+    --hero-em: 7.4;
+    font-size: min(var(--fs-hero), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--hero-em)));
+    color: var(--white);
+  }
+  @media (min-width: 640px) { .hero__h { --hero-em: 10; } }
+  @media (min-width: 900px) { .hero__h { --hero-em: 11.4; } }
+  .hero__h .line > span { will-change: transform; }
+  .hero__bar {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-5);
+    margin-top: clamp(1.25rem, 4svh, 3rem);
+  }
+  .hero__ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  .hero__scroll { display: grid; justify-items: center; gap: var(--space-3); color: var(--white); padding-bottom: 4px; }
+  .hero__scroll i { position: relative; width: 1px; height: 40px; background: var(--line-on-dark); overflow: clip; }
+  .hero__scroll i::after {
+    content: ''; position: absolute; inset: 0; background: var(--mint-500);
+    transform-origin: top; animation: hero-cue 1.8s var(--ease-in-out) infinite;
+  }
+  @keyframes hero-cue {
+    0% { transform: scaleY(0); transform-origin: top; }
+    45% { transform: scaleY(1); transform-origin: top; }
+    55% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  /* Intro window: fixed over everything (incl. the header) until the scale-through ends. Sits under the
+     page-transition panel on arrive, so the panel lifts off it. */
+  .hero__window {
+    position: fixed; inset: 0; width: 100%; height: 100%; z-index: var(--z-loader);
+    overflow: visible; pointer-events: none; visibility: hidden;
+  }
+  :global(html.pt-arrive) .hero__window { z-index: calc(var(--z-transition) - 1); }
+  .hero__veil { fill: var(--navy-950); }
+  .hero__beams path {
+    fill: none; stroke: var(--mint-500); stroke-width: 19;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 1 1; stroke-dashoffset: 1;
+  }
+
+  /* JS pre-states so the first paint matches the intro start */
+  html.js:not(.rm) .hero[data-intro]:not(.is-calm) .hero__window { visibility: visible; }
+  html.js:not(.rm) .hero[data-intro]:not(.is-calm) .hero__frame { opacity: 0; }
+  html.js:not(.rm) .hero[data-intro]:not(.is-calm) [data-hero-line] > span { transform: translateY(110%); }
+  html.js:not(.rm) .hero[data-intro]:not(.is-calm) [data-hero-fade] { opacity: 0; }
+  /* Arrive from another page: the panel was covering, so the mark is already "drawn" */
+  :global(html.pt-arrive) .hero[data-intro] .hero__beams path { stroke-dashoffset: 0; }
+  :global(html.pt-arrive) .hero[data-intro]:not(.is-calm) .hero__frame { opacity: 1; }
+
+  @media (max-width: 639px) {
+    .hero { height: 130svh; }
+    .hero__bar { flex-direction: column; align-items: stretch; }
+    .hero__scroll { display: none; }
+    .hero__ctas :global(.pill) { flex: 1 1 auto; justify-content: space-between; }
+  }
+  @media (max-width: 359px) {
+    .hero__ctas :global(.hero__phone) { display: none; }
+  }
+  /* Reduced motion / Save-Data: a calm fade to the poster with the headline already set */
+  .hero.is-calm .hero__frame { animation: hero-calm 0.36s var(--ease-out-soft) both; }
+  @keyframes hero-calm { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hero { height: 100svh; }
+    .hero__frame { animation: hero-calm 0.36s var(--ease-out-soft) both; }
+    .hero__scroll i::after { animation: none; transform: scaleY(1); }
+  }
+</style>

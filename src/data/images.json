@@ -1,0 +1,947 @@
+{
+ "soft-strip-out": [
+  {
+   "src": "/images/work/soft-strip-out-01.webp",
+   "sm": "/images/work/soft-strip-out-01-sm.webp",
+   "md": "/images/work/soft-strip-out-01-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_0fc15bb16532433ea09043670bd83587~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-02.webp",
+   "sm": "/images/work/soft-strip-out-02-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_22820be39bab46649457031d751e8ab9~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-03.webp",
+   "sm": "/images/work/soft-strip-out-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_275126cba4bd4897b93d9bf2cfa59161~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-04.webp",
+   "sm": "/images/work/soft-strip-out-04-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_34c2a43c314a42cd96ca7f1bcecf6536~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-05.webp",
+   "sm": "/images/work/soft-strip-out-05-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_3679fa99e2c3471aa6135736055b9b8f~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-06.webp",
+   "sm": "/images/work/soft-strip-out-06-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_4a3feec1b79e4bac8279cfca585796d3~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-07.webp",
+   "sm": "/images/work/soft-strip-out-07-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_69d368ea567445b49490e68de8923d09~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-08.webp",
+   "sm": "/images/work/soft-strip-out-08-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_a2ac1740fa4c4ef7926ab8b9d8b5ad7a~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-09.webp",
+   "sm": "/images/work/soft-strip-out-09-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_e75be5da4bab485a99fbfb3048984666~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/soft-strip-out-10.webp",
+   "sm": "/images/work/soft-strip-out-10-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_e7677b964f6a4a818fb305adf26dc067~mv2.jpeg"
+  }
+ ],
+ "structural-alterations": [
+  {
+   "src": "/images/work/structural-alterations-01.webp",
+   "sm": "/images/work/structural-alterations-01-sm.webp",
+   "w": 1280,
+   "h": 1600,
+   "orig": "119fbe_029538e3436c4c0393cfbcddfb3413cf~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-02.webp",
+   "sm": "/images/work/structural-alterations-02-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_207fb41bd520467eb9599ec215c4340a~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-03.webp",
+   "sm": "/images/work/structural-alterations-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_451a2d90d35d4dd9a8926ab7c4703f36~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-04.webp",
+   "sm": "/images/work/structural-alterations-04-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_497f0a97959a43c6aff06be7e980ce08~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-05.webp",
+   "sm": "/images/work/structural-alterations-05-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_6238e167b8814416ad5eb803984ba7bb~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-06.webp",
+   "sm": "/images/work/structural-alterations-06-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_7414a7ef02824d348e2e7ce31e994fce~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-07.webp",
+   "sm": "/images/work/structural-alterations-07-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_88d15ec20bdd455199687e512b6cee13~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-08.webp",
+   "sm": "/images/work/structural-alterations-08-sm.webp",
+   "w": 1024,
+   "h": 768,
+   "orig": "119fbe_a201ca7d0ce4419c9b0256dd1c61d19d~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-09.webp",
+   "sm": "/images/work/structural-alterations-09-sm.webp",
+   "md": "/images/work/structural-alterations-09-md.webp",
+   "w": 1284,
+   "h": 1600,
+   "orig": "119fbe_a9c7d049a5b54e3abbb2fbb5f345103c~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-10.webp",
+   "sm": "/images/work/structural-alterations-10-sm.webp",
+   "w": 768,
+   "h": 1024,
+   "orig": "119fbe_b737174f63a04e43b6a3aac1c8366727~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-11.webp",
+   "sm": "/images/work/structural-alterations-11-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_c7be59dc264f49c29ec5eb222c401abe~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-12.webp",
+   "sm": "/images/work/structural-alterations-12-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_c8883d49d33f49e89b705c519e0826eb~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-13.webp",
+   "sm": "/images/work/structural-alterations-13-sm.webp",
+   "w": 1284,
+   "h": 1600,
+   "orig": "119fbe_e2081ff7ba0f4df6b32b7cb82595b769~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-14.webp",
+   "sm": "/images/work/structural-alterations-14-sm.webp",
+   "w": 1284,
+   "h": 1600,
+   "orig": "119fbe_f1cbd5deac304e51a8ce919b50672424~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-alterations-15.webp",
+   "sm": "/images/work/structural-alterations-15-sm.webp",
+   "w": 1284,
+   "h": 1600,
+   "orig": "119fbe_f51de39e5b3846b99a93ebe10fe691b0~mv2.jpeg"
+  }
+ ],
+ "diamond-drilling": [
+  {
+   "src": "/images/work/diamond-drilling-01.webp",
+   "sm": "/images/work/diamond-drilling-01-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_0fe8a18eba4f4a2282ad472a015f766f~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-02.webp",
+   "sm": "/images/work/diamond-drilling-02-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_2631ca5bba964363b519181cdd0963ac~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-03.webp",
+   "sm": "/images/work/diamond-drilling-03-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_2f208bbe099142bc9996e929d0ef6e73~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-04.webp",
+   "sm": "/images/work/diamond-drilling-04-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_2f68defa812f4c32935c25315684df24~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-05.webp",
+   "sm": "/images/work/diamond-drilling-05-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_35db17bdb948433bbdf044811db366a5~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-06.webp",
+   "sm": "/images/work/diamond-drilling-06-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_539e723c02b34d0993f727eddb74ef63~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-07.webp",
+   "sm": "/images/work/diamond-drilling-07-sm.webp",
+   "md": "/images/work/diamond-drilling-07-md.webp",
+   "w": 1152,
+   "h": 2048,
+   "orig": "119fbe_8589c35d838649d49648fdf9d32fe98e~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-08.webp",
+   "sm": "/images/work/diamond-drilling-08-sm.webp",
+   "w": 1152,
+   "h": 2048,
+   "orig": "119fbe_978fa2e8eb6b40fc9a80e2b71dfa07c7~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-09.webp",
+   "sm": "/images/work/diamond-drilling-09-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_97a31373327045ffa55f489e47407a28~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-10.webp",
+   "sm": "/images/work/diamond-drilling-10-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_abff8e7346a44e2ca371d4653ea7a26d~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-11.webp",
+   "sm": "/images/work/diamond-drilling-11-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_ac1cbe23949245d699334dcd06c580d5~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-12.webp",
+   "sm": "/images/work/diamond-drilling-12-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_c86017d32d4642729a440c174ca193d6~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-13.webp",
+   "sm": "/images/work/diamond-drilling-13-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_d0e493e16e1b472f87d1645490ba09be~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-14.webp",
+   "sm": "/images/work/diamond-drilling-14-sm.webp",
+   "w": 720,
+   "h": 1600,
+   "orig": "119fbe_e2638d32f7154a97a621a289c577cd26~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/diamond-drilling-15.webp",
+   "sm": "/images/work/diamond-drilling-15-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_e453654cdb5747c3afccd7e31520dc5e~mv2.jpeg"
+  }
+ ],
+ "groundworks-drainage": [
+  {
+   "src": "/images/work/groundworks-drainage-01.webp",
+   "sm": "/images/work/groundworks-drainage-01-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_011d968f740446539b3aba6a03534fc6~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-02.webp",
+   "sm": "/images/work/groundworks-drainage-02-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_0682705831674f37802dadc3c37d2eb3~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-03.webp",
+   "sm": "/images/work/groundworks-drainage-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_0e6253ba5f384827aeb190d142bc2729~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-04.webp",
+   "sm": "/images/work/groundworks-drainage-04-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_24aee95368b843e18e619057a31a2eaa~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-05.webp",
+   "sm": "/images/work/groundworks-drainage-05-sm.webp",
+   "md": "/images/work/groundworks-drainage-05-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_2843ff50982c40fc8f781bcd7e545482~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-06.webp",
+   "sm": "/images/work/groundworks-drainage-06-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_2f2eaaca3cb44515964f59970617a986~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-07.webp",
+   "sm": "/images/work/groundworks-drainage-07-sm.webp",
+   "w": 1600,
+   "h": 1396,
+   "orig": "119fbe_43a988661d004a34af98cfcb2c0c379a~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-08.webp",
+   "sm": "/images/work/groundworks-drainage-08-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_48e19fb945f245c283cd672ce99e9b6e~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-09.webp",
+   "sm": "/images/work/groundworks-drainage-09-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_538e4f8498384d398024ae14bdbd8406~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-10.webp",
+   "sm": "/images/work/groundworks-drainage-10-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_60d7366fa8334582bdd84332bd453018~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-11.webp",
+   "sm": "/images/work/groundworks-drainage-11-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_7d86b096a0af4622976b63e7a1b14d74~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-12.webp",
+   "sm": "/images/work/groundworks-drainage-12-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_9c1da5a8601b46b990e2ba9bcc310111~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-13.webp",
+   "sm": "/images/work/groundworks-drainage-13-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_9e59377fb6824a2ca15ae5befe325d21~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-14.webp",
+   "sm": "/images/work/groundworks-drainage-14-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_c3b40d209a3c4972b3272e16292170f9~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/groundworks-drainage-15.webp",
+   "sm": "/images/work/groundworks-drainage-15-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_df42945a235a48068f9aea8acecaa425~mv2.jpeg"
+  }
+ ],
+ "structural-steelwork": [
+  {
+   "src": "/images/work/structural-steelwork-01.webp",
+   "sm": "/images/work/structural-steelwork-01-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_1476afb7eb45436d9bc764e005d7fef1~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-02.webp",
+   "sm": "/images/work/structural-steelwork-02-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_157e87e87ad4489f80b62ca11a788da9~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-03.webp",
+   "sm": "/images/work/structural-steelwork-03-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_2e1b3552d9fd4322bad8106c536fddcf~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-04.webp",
+   "sm": "/images/work/structural-steelwork-04-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_2e3049b4e4c544b9b927aa65ffc382d3~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-05.webp",
+   "sm": "/images/work/structural-steelwork-05-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_3389f47d469a4f36904f448e571c06d9~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-06.webp",
+   "sm": "/images/work/structural-steelwork-06-sm.webp",
+   "w": 900,
+   "h": 1600,
+   "orig": "119fbe_708646f1a3f940c491e8dd92d04ced83~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-07.webp",
+   "sm": "/images/work/structural-steelwork-07-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_7d0ee3f8add7405f808c0ad7c9c54f52~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-08.webp",
+   "sm": "/images/work/structural-steelwork-08-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_7d32de8206be4a0999269b4ce4e47011~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-09.webp",
+   "sm": "/images/work/structural-steelwork-09-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_80ec5169d902460489e11863dfc8b8b8~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-10.webp",
+   "sm": "/images/work/structural-steelwork-10-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_87bf371d4f1b4777a67a921a4b5d3877~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-11.webp",
+   "sm": "/images/work/structural-steelwork-11-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_b869441f2f47459390786471a6be73a3~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-12.webp",
+   "sm": "/images/work/structural-steelwork-12-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_bd38c6e80c594453bed71ff8c77615f6~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-13.webp",
+   "sm": "/images/work/structural-steelwork-13-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_c6bbf6008ce34b7aa90242b0f03d4509~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-14.webp",
+   "sm": "/images/work/structural-steelwork-14-sm.webp",
+   "md": "/images/work/structural-steelwork-14-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_dfb245d7bacf47aaaf3ef03c977ca61e~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-steelwork-15.webp",
+   "sm": "/images/work/structural-steelwork-15-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_ebdd45a8c9724a8aa74628a84241c474~mv2.jpeg"
+  }
+ ],
+ "structural-carpentry": [
+  {
+   "src": "/images/work/structural-carpentry-01.webp",
+   "sm": "/images/work/structural-carpentry-01-sm.webp",
+   "md": "/images/work/structural-carpentry-01-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_04ae70c75b6040e5a74bf4c571e0858d~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-02.webp",
+   "sm": "/images/work/structural-carpentry-02-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_0d02fa4fe32a4f5c9cad47005d48f189~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-03.webp",
+   "sm": "/images/work/structural-carpentry-03-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_0fdaec4299ee4c768fa5e3afc69a7efd~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-04.webp",
+   "sm": "/images/work/structural-carpentry-04-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_39c1365b933d4387928b6983eedfcbd7~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-05.webp",
+   "sm": "/images/work/structural-carpentry-05-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_3b82d1700cd64928929ea67a2a635a91~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-06.webp",
+   "sm": "/images/work/structural-carpentry-06-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_4dd522cde5d745e884cca309a3f51830~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-07.webp",
+   "sm": "/images/work/structural-carpentry-07-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_5b51f6f7e44142dd8ad995e5cedcfa8c~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-08.webp",
+   "sm": "/images/work/structural-carpentry-08-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_5f2989c6a62d43128a0d7708583eb839~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-09.webp",
+   "sm": "/images/work/structural-carpentry-09-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_cbe20417de4a45ca8327f341d302259b~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-10.webp",
+   "sm": "/images/work/structural-carpentry-10-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_d188d0aac2ee468a9f402ca68338e83a~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/structural-carpentry-11.webp",
+   "sm": "/images/work/structural-carpentry-11-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_dfacd19561c344f69312c39bf2590ce3~mv2.jpeg"
+  }
+ ],
+ "composite-flooring": [
+  {
+   "src": "/images/work/composite-flooring-01.webp",
+   "sm": "/images/work/composite-flooring-01-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_1ac614a64cae411caa5285b56827baea~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-02.webp",
+   "sm": "/images/work/composite-flooring-02-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_30908829836a4d8d8a573ea1a4c68d3b~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-03.webp",
+   "sm": "/images/work/composite-flooring-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_44a218a2ddef462ea51ff15c9f342de8~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-04.webp",
+   "sm": "/images/work/composite-flooring-04-sm.webp",
+   "md": "/images/work/composite-flooring-04-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_4b585f42c7ba4cf2b833e1912ae6aaf8~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-05.webp",
+   "sm": "/images/work/composite-flooring-05-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_7b271ee307c44aeb9671708d5b5be9c8~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-06.webp",
+   "sm": "/images/work/composite-flooring-06-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_892ba881838347fda0a9829957838386~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-07.webp",
+   "sm": "/images/work/composite-flooring-07-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_8e955716a794487bb93d5a3fc632b26f~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-08.webp",
+   "sm": "/images/work/composite-flooring-08-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_a302d39104174ca0af07fc2b43d1879e~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-09.webp",
+   "sm": "/images/work/composite-flooring-09-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_b136266408914a3e94d523f0ba2999ad~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-10.webp",
+   "sm": "/images/work/composite-flooring-10-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_c7579ff2add241b5aa2949b9672c384d~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/composite-flooring-11.webp",
+   "sm": "/images/work/composite-flooring-11-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_dcbc3db29b054cbca2546a530b49cebc~mv2.jpeg"
+  }
+ ],
+ "landscaping-external": [
+  {
+   "src": "/images/work/landscaping-external-01.webp",
+   "sm": "/images/work/landscaping-external-01-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_0ae9d8cc520c40ed8767469b7beceb16~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-02.webp",
+   "sm": "/images/work/landscaping-external-02-sm.webp",
+   "md": "/images/work/landscaping-external-02-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_32a5f838e01d4803b440897db6e4c6e4~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-03.webp",
+   "sm": "/images/work/landscaping-external-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_348a844d731b4ddbba2bd9238fff95b0~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-04.webp",
+   "sm": "/images/work/landscaping-external-04-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_35ff460acfa941d2a789d115a31f2b37~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-05.webp",
+   "sm": "/images/work/landscaping-external-05-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_3e408c5194084e3aad48f09e9553d678~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-06.webp",
+   "sm": "/images/work/landscaping-external-06-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_453b7c62db3d429699f76b08f604328e~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-07.webp",
+   "sm": "/images/work/landscaping-external-07-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_5ee0ab6cdc97408e83d61df8541351a6~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-08.webp",
+   "sm": "/images/work/landscaping-external-08-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_72e035eaca9d425b921095de67962384~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/landscaping-external-09.webp",
+   "sm": "/images/work/landscaping-external-09-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_a74e7b14ad844017b203ad26428a2618~mv2.jpeg"
+  }
+ ],
+ "screeding": [
+  {
+   "src": "/images/work/screeding-01.webp",
+   "sm": "/images/work/screeding-01-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_293ca950f49a4fa2add8660d28e81423~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-02.webp",
+   "sm": "/images/work/screeding-02-sm.webp",
+   "w": 768,
+   "h": 1024,
+   "orig": "119fbe_2a1e225bd9754cc4ab7255327b712fe3~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-03.webp",
+   "sm": "/images/work/screeding-03-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_380acf0835e349a98589627140fea5ee~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-04.webp",
+   "sm": "/images/work/screeding-04-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_4858e5bcf6094387ae5a2a999cbdf66b~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-05.webp",
+   "sm": "/images/work/screeding-05-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_613c2b343e52429ab77caa3d5c01a9b5~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-06.webp",
+   "sm": "/images/work/screeding-06-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_8bd4779a7a3f49fa89a538891feca61c~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-07.webp",
+   "sm": "/images/work/screeding-07-sm.webp",
+   "md": "/images/work/screeding-07-md.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_9f858232b01c4facbb5e5a4eb10e749f~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-08.webp",
+   "sm": "/images/work/screeding-08-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_b0525adaf75a4c66a15ef54002b65372~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-09.webp",
+   "sm": "/images/work/screeding-09-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_b10639fe74324e84b2966855f5c8c133~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-10.webp",
+   "sm": "/images/work/screeding-10-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_b9053b6b672244ac9d6f3c5915d637c1~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-11.webp",
+   "sm": "/images/work/screeding-11-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_bbc6493708a0412683c32b1cbf7dceba~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-12.webp",
+   "sm": "/images/work/screeding-12-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_cd38173688bc4034a42eb23135ef8975~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-13.webp",
+   "sm": "/images/work/screeding-13-sm.webp",
+   "w": 1200,
+   "h": 1600,
+   "orig": "119fbe_d109415e73834907958e33535081b041~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-14.webp",
+   "sm": "/images/work/screeding-14-sm.webp",
+   "w": 1600,
+   "h": 1200,
+   "orig": "119fbe_d1b5e3351d0f413db5328e40985157ad~mv2.jpeg"
+  },
+  {
+   "src": "/images/work/screeding-15.webp",
+   "sm": "/images/work/screeding-15-sm.webp",
+   "w": 900,
+   "h": 1600,
+   "orig": "119fbe_f68b6d0afe9a4463bf260beae54c9119~mv2.jpeg"
+  }
+ ],
+ "project-eversholt": {
+  "src": "/images/projects/eversholt.webp",
+  "sm": "/images/projects/eversholt-sm.webp",
+  "w": 373,
+  "h": 363,
+  "orig": "119fbe_aaa609021f2c4ab5b45c4b4cf4614d10~mv2.avif"
+ },
+ "project-cobham": {
+  "src": "/images/projects/cobham.webp",
+  "sm": "/images/projects/cobham-sm.webp",
+  "md": "/images/projects/cobham-md.webp",
+  "w": 1600,
+  "h": 1200,
+  "orig": "119fbe_f1eea9da12ee478b95c1428bcdc2c4d4~mv2.jpeg"
+ },
+ "project-airproducts": {
+  "src": "/images/projects/airproducts.webp",
+  "sm": "/images/projects/airproducts-sm.webp",
+  "md": "/images/projects/airproducts-md.webp",
+  "w": 1360,
+  "h": 1020,
+  "orig": "119fbe_665d33c8ca7a4616bb040e656214c868~mv2.jpeg"
+ },
+ "project-poland": {
+  "src": "/images/projects/poland.webp",
+  "sm": "/images/projects/poland-sm.webp",
+  "md": "/images/projects/poland-md.webp",
+  "w": 1536,
+  "h": 2048,
+  "orig": "f22531_2d7d927e7fec42c998136aee3c069fae~mv2.jpeg"
+ },
+ "project-tait": {
+  "src": "/images/projects/tait.webp",
+  "sm": "/images/projects/tait-sm.webp",
+  "md": "/images/projects/tait-md.webp",
+  "w": 1536,
+  "h": 2048,
+  "orig": "f22531_34459b48254842fc889c653e5bb95204~mv2.jpeg"
+ },
+ "project-tooley": {
+  "src": "/images/projects/tooley.webp",
+  "sm": "/images/projects/tooley-sm.webp",
+  "md": "/images/projects/tooley-md.webp",
+  "w": 1536,
+  "h": 2048,
+  "orig": "f22531_23f81699380a47c4a0e076031f883229~mv2.jpeg"
+ },
+ "project-sunderland": {
+  "src": "/images/projects/sunderland.webp",
+  "sm": "/images/projects/sunderland-sm.webp",
+  "md": "/images/projects/sunderland-md.webp",
+  "w": 1500,
+  "h": 1000,
+  "orig": "119fbe_dddebf18b257488897d30156c29309f1~mv2.jpeg"
+ },
+ "project-bressenden": {
+  "src": "/images/projects/bressenden.webp",
+  "sm": "/images/projects/bressenden-sm.webp",
+  "w": 777,
+  "h": 1166,
+  "orig": "119fbe_8ade39565d134dbb9cb0e19a626c628b~mv2.jpg"
+ },
+ "project-uca-epsom": {
+  "src": "/images/projects/uca-epsom.webp",
+  "sm": "/images/projects/uca-epsom-sm.webp",
+  "w": 800,
+  "h": 536,
+  "orig": "119fbe_2119af8c4cbe4021a277fbc7ad76dd74~mv2.png"
+ },
+ "project-dover": {
+  "src": "/images/projects/dover.webp",
+  "sm": "/images/projects/dover-sm.webp",
+  "md": "/images/projects/dover-md.webp",
+  "w": 1600,
+  "h": 2399,
+  "orig": "119fbe_098ce7863357472f9614b49f1930e738~mv2.jpeg"
+ },
+ "project-leadenhall": {
+  "src": "/images/projects/leadenhall.webp",
+  "sm": "/images/projects/leadenhall-sm.webp",
+  "w": 373,
+  "h": 363,
+  "orig": "119fbe_4e274bb1560b488fa5cdf9875c0ea283~mv2.avif"
+ },
+ "project-birkbeck": {
+  "src": "/images/projects/birkbeck.webp",
+  "sm": "/images/projects/birkbeck-sm.webp",
+  "md": "/images/projects/birkbeck-md.webp",
+  "w": 1195,
+  "h": 900,
+  "orig": "119fbe_8d32b427be5b4579a278b7f2eedc59c2~mv2.jpeg"
+ },
+ "project-broadway": {
+  "src": "/images/projects/broadway.webp",
+  "sm": "/images/projects/broadway-sm.webp",
+  "w": 1024,
+  "h": 576,
+  "orig": "119fbe_aaa91a9dac05456ab763d752e0dac5ec~mv2.webp"
+ },
+ "project-hogarth": {
+  "src": "/images/projects/hogarth.webp",
+  "sm": "/images/projects/hogarth-sm.webp",
+  "w": 843,
+  "h": 700,
+  "orig": "119fbe_ba80bd56c2ec4e0d80ac97741d53cbf8~mv2.jpg"
+ }
+}

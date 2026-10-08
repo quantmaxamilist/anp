@@ -1,0 +1,200 @@
+/* ==========================================================================
+   ANP v5 "Brand film" design tokens.
+   Owned by the creative director. Builders import this file and never edit it;
+   if a token is missing, define a local custom property in your own component.
+   Breakpoints (media queries cannot read custom properties):
+     sm 640px · md 900px · lg 1200px · xl 1600px
+   ========================================================================== */
+
+:root {
+  /* ---- Colour: sampled from /images/brand/logo.png -------------------- */
+  --anp-navy: #233467;          /* logo wordmark, exact */
+  --anp-mint: #8dd1ba;          /* logo mark, exact */
+
+  /* Navy ramp (dark stages, film sections, footer) */
+  --navy-950: #0e1630;          /* deepest stage colour; wow-slot edges, footer */
+  --navy-900: #141f42;
+  --navy-800: #1b2953;
+  --navy-700: var(--anp-navy);  /* brand navy */
+  --navy-600: #31478a;
+  --navy-400: #6d7cab;
+  --navy-300: #9aa6c8;          /* muted text on navy (7.4:1 on navy-950) */
+  --navy-200: #c6cde2;
+  --navy-100: #e6e9f2;
+
+  /* Mint ramp (accent, fills, light-on-dark highlights) */
+  --mint-700: #2f7f67;          /* mint as TEXT on white/concrete (4.8:1) */
+  --mint-600: #4fae8f;
+  --mint-500: var(--anp-mint);  /* brand mint: fills, strokes, text on navy */
+  --mint-300: #b5e2d3;
+  --mint-100: #e3f4ee;
+
+  /* Concrete / neutrals (light sections) */
+  --white: #ffffff;
+  --concrete-50: #f4f4f1;       /* light section background */
+  --concrete-100: #ecebe6;      /* trades chapters background */
+  --concrete-200: #dcdbd4;      /* hairlines on light, card fills */
+  --concrete-400: #a9aaa3;
+  --concrete-600: #6b6d69;      /* secondary text on concrete (4.7:1 on 50) */
+  --concrete-800: #3a3c3b;
+
+  /* Steel (3D materials, wow C) */
+  --steel-300: #b9c0cb;
+  --steel-500: #7d8696;
+  --steel-700: #4a5262;
+
+  /* Semantic roles */
+  --bg-dark: var(--navy-950);
+  --bg-light: var(--concrete-50);
+  --fg-on-dark: var(--white);
+  --fg-on-dark-muted: var(--navy-300);
+  --fg-on-light: var(--navy-700);
+  --fg-on-light-muted: var(--concrete-600);
+  --fg-on-mint: var(--navy-700);       /* 6.8:1 */
+  --accent: var(--mint-500);
+  --line-on-dark: rgb(255 255 255 / 0.14);
+  --line-on-light: rgb(35 52 103 / 0.16);
+  --scrim-navy: linear-gradient(180deg, rgb(14 22 48 / 0) 0%, rgb(14 22 48 / 0.55) 55%, rgb(14 22 48 / 0.92) 100%);
+  --focus-ring: 0 0 0 3px var(--navy-950), 0 0 0 5px var(--mint-500);
+
+  /* ---- Type families --------------------------------------------------- */
+  --font-display: 'Mona Sans Variable', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+  --font-text: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Display width (font-stretch drives Mona Sans' wdth axis, 75%-125%).
+     Expanded on wide screens, condensed on phones so huge type still fits. */
+  --wdth-display: 75%;
+  --wdth-condensed: 75%;        /* numerals, odometers, tall stacks */
+  --wdth-text-display: 100%;    /* mixed-case display (quotes, statements) */
+
+  --wght-display: 900;
+  --wght-display-soft: 800;
+  --wght-heading: 700;
+  --wght-text: 400;
+  --wght-text-strong: 560;
+  --wght-mono: 500;
+
+  /* ---- Fluid type scale (rem; 360px -> 1920px) ------------------------- */
+  /* Hero headline, uppercase, 4 lines: "SPECIALIST / TRADE PACKAGES / FOR COMPLEX /
+     CONSTRUCTION." Sized so the longest line fits the container at every wdth step. */
+  --fs-hero: clamp(2.75rem, 8.6vw, 11.5rem);
+  --fs-display-1: clamp(3.5rem, 1rem + 12.5vw, 16rem);   /* 1-4 char words: ANP, 09 */
+  --fs-display-2: clamp(2.5rem, 0.6rem + 7.4vw, 9rem);   /* section titles, 1-2 words per line */
+  --fs-display-3: clamp(2rem, 0.9rem + 4.4vw, 5.5rem);   /* trade names, CTA heading lines */
+  --fs-numeral: clamp(7rem, 2rem + 22vw, 26rem);         /* chapter numerals, wdth-condensed */
+  --fs-h2: clamp(1.75rem, 1.1rem + 2.6vw, 3.5rem);
+  --fs-h3: clamp(1.25rem, 1rem + 1.1vw, 2rem);
+  --fs-statement: clamp(1.5rem, 0.95rem + 2.4vw, 3.4rem); /* scroll-revealed paragraph */
+  --fs-lead: clamp(1.125rem, 0.98rem + 0.6vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --fs-small: 0.875rem;
+  --fs-label: clamp(0.6875rem, 0.64rem + 0.2vw, 0.8125rem);  /* mono, uppercase */
+
+  --lh-display: 0.86;
+  --lh-heading: 1.02;
+  --lh-statement: 1.12;
+  --lh-body: 1.55;
+  --lh-label: 1.3;
+
+  --tr-display: -0.02em;
+  --tr-heading: -0.01em;
+  --tr-body: 0;
+  --tr-label: 0.14em;
+
+  --measure: 62ch;
+
+  /* ---- Spacing (4px base) ---------------------------------------------- */
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.5rem;    /* 24 */
+  --space-6: 2rem;      /* 32 */
+  --space-7: 3rem;      /* 48 */
+  --space-8: 4rem;      /* 64 */
+  --space-9: 6rem;      /* 96 */
+  --space-10: 8rem;     /* 128 */
+  --space-11: 12rem;    /* 192 */
+  --space-12: 16rem;    /* 256 */
+  --space-fluid-s: clamp(1rem, 0.6rem + 1.6vw, 2rem);
+  --space-fluid-m: clamp(2rem, 1rem + 3.5vw, 4.5rem);
+  --space-fluid-l: clamp(3rem, 1.5rem + 6vw, 8rem);
+  --section-y: clamp(5rem, 3rem + 8vw, 12rem);
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --container-max: 105rem;      /* 1680px */
+  --container-narrow: 62rem;
+  --gutter: clamp(1rem, 0.4rem + 3vw, 3.5rem);   /* 16px at 320, ~50px at 1440 */
+  --grid-cols: 12;
+  --grid-gap: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+  --header-h: clamp(4rem, 3.5rem + 1.5vw, 5.25rem);
+  --stage-h: 100svh;            /* sticky stages: always svh, never dvh */
+
+  --radius-s: 2px;
+  --radius-m: 6px;
+  --radius-l: 14px;
+  --radius-pill: 999px;
+
+  --border-w: 1px;
+  --rule-w: 2px;
+
+  /* ---- Motion -----------------------------------------------------------
+     CSS easing                     GSAP equivalent
+     --ease-out      expo out       "expo.out"       reveals, arrivals
+     --ease-out-soft quart out      "power3.out"     hovers, small moves
+     --ease-in-out   quart in-out   "power3.inOut"   wipes, panels, page transition
+     --ease-in       expo in        "expo.in"        exits
+     --ease-spring   back out       "back.out(1.6)"  chips, toggles
+     Magnetic release: "elastic.out(1, 0.45)" */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-soft: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-instant: 120ms;
+  --dur-fast: 240ms;
+  --dur-base: 480ms;
+  --dur-slow: 900ms;
+  --dur-reveal: 1100ms;
+  --dur-page: 700ms;            /* each half of the page transition */
+  --stagger-line: 80ms;
+  --stagger-item: 60ms;
+
+  /* ---- Z-index layers --------------------------------------------------- */
+  --z-below: -1;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-stage-ui: 50;             /* UI floating over sticky stages */
+  --z-header: 500;
+  --z-menu: 600;
+  --z-dock: 700;                /* tender slip */
+  --z-cursor: 900;
+  --z-transition: 1000;         /* navy page-transition panel */
+  --z-loader: 1100;
+  --z-skip: 1200;               /* skip-to-content link */
+}
+
+/* Display width steps */
+@media (min-width: 640px) {
+  :root { --wdth-display: 100%; }
+}
+@media (min-width: 900px) {
+  :root { --wdth-display: 125%; }
+}
+
+/* Reduced motion: zero the durations so CSS transitions resolve instantly.
+   JS must still branch on matchMedia('(prefers-reduced-motion: reduce)'). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-reveal: 0ms;
+    --dur-page: 0ms;
+    --stagger-line: 0ms;
+    --stagger-item: 0ms;
+  }
+}

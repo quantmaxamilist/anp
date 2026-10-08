@@ -1,0 +1,15 @@
+---
+// The ANP logo mark as five strokes in the 1600px logo space.
+interface Props { class?: string; title?: string; id?: string; [k: string]: unknown }
+const { class: cls, title, id, ...rest } = Astro.props;
+const MARK_PATHS = [
+  'M562 893 L731 560 L897 560 L897 893 Z',
+  'M897 560 L1065 727 L897 727',
+  'M731 560 L731 893',
+  'M731 560 L897 893',
+  'M647 727 L732 727',
+];
+---
+<svg class:list={['mark-svg', cls]} id={id} viewBox="540 540 545 375" xmlns="http://www.w3.org/2000/svg" role={title ? 'img' : undefined} aria-hidden={title ? undefined : 'true'} aria-label={title} focusable="false" {...rest}>
+  {MARK_PATHS.map((d) => <path d={d} pathLength="1" />)}
+</svg>

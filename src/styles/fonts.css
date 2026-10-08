@@ -1,0 +1,11 @@
+/* ANP v5 type stack. Owned by the creative director: builders import, never edit.
+   Display: Mona Sans (variable, wght 200-900 + wdth 75-125%, drive width with font-stretch)
+   Text:    Geist (variable, wght 100-900)
+   Labels:  Geist Mono 400 / 500
+   Preload the display face in the <head>:
+     import monaUrl from '@fontsource-variable/mona-sans/files/mona-sans-latin-wdth-normal.woff2?url';
+     <link rel="preload" as="font" type="font/woff2" href={monaUrl} crossorigin /> */
+@import '@fontsource-variable/mona-sans/wdth.css';
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/500.css';

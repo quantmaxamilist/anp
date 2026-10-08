@@ -1,0 +1,317 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import SectionHead from '../components/site/SectionHead.astro';
+import NextTeaser from '../components/site/NextTeaser.astro';
+import TenderBand from '../components/site/TenderBand.astro';
+import Pill from '../components/site/Pill.astro';
+import HeroFold from '../components/company/HeroFold.astro';
+import Img from '../components/site/Img.astro';
+import Mark from '../components/site/Mark.astro';
+import { company, home, about, accreditations, services } from '../data/site';
+
+// Hero: a landscape Structural Alterations photo (images[10]) rather than images[8], which is that
+// service's cover/hero (it would repeat on /services, the homepage chapters and the service page).
+const heroImg = services[1].images[10];
+// Story: the drilling operative (images[2]) + the propped steel frame (alterations images[0]).
+const storyImg = services[2].images[2];
+const storyInset = services[1].images[0];
+const pad = (n: number) => String(n).padStart(2, '0');
+const cut = (s: string, max = 155) => (s.length <= max ? s : s.slice(0, s.lastIndexOf(' ', max - 1)).replace(/[,;:\s]+$/, '') + '…');
+const description = cut(about.story[0]);
+---
+<Base title="About" description={description} image="/og/structural-alterations-09.jpg" preloadImage={heroImg.md ?? heroImg.src}>
+  <PageHero
+    lines={['Building with', 'Integrity,', 'Quality, and', 'Commitment']}
+    label={about.heading}
+    eyebrow="About ANP"
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]}
+    image={heroImg}
+    imageAlt=""
+    position="50% 45%"
+    size="xl"
+  >
+    <Pill href="/contact">Send a tender</Pill>
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+
+  <!-- Intro: the homepage's About copy, first paragraph as a scrubbed statement -->
+  <section class="ab-intro on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ab-intro-h">
+    <div class="container">
+      <SectionHead title={['About ANP', 'Construction']} id="ab-intro-h" size="l" theme="light" />
+      <div class="ab-intro__grid">
+        <p class="ab-statement" data-co-words>{home.about[0]}</p>
+        <div class="ab-intro__aside" data-reveal="fade">
+          <span class="ab-rule" aria-hidden="true"></span>
+          <p class="ab-intro__p">{home.about[1]}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="ab-story on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ab-story-h">
+    <div class="container ab-story__grid">
+      <div class="ab-story__media">
+        <div class="ab-photo ab-photo--main" data-reveal="photo" data-co-parallax>
+          <Img img={storyImg} alt={`${services[2].name}, site photograph`} sizes="(min-width: 900px) 40vw, 92vw" />
+        </div>
+        <div class="ab-photo ab-photo--inset" data-reveal="photo" data-delay="0.25" data-co-parallax>
+          <Img img={storyInset} alt={`${services[1].name}, site photograph`} sizes="(min-width: 900px) 18vw, 44vw" />
+        </div>
+      </div>
+      <div class="ab-story__text">
+        <div class="datum" data-reveal="datum"></div>
+        <h2 class="ab-story__h display" id="ab-story-h" data-reveal="lines" aria-label={about.storyHeading}>
+          <span class="line" aria-hidden="true"><span>Integrity &amp;</span></span>
+          <span class="line" aria-hidden="true"><span>Honesty</span></span>
+        </h2>
+        <p class="ab-story__lead" data-reveal="fade">{about.story[0]}</p>
+        <ol class="ab-story__list" role="list">
+          {about.story.slice(1).map((p, i) => (
+            <li data-reveal="fade" data-delay={String(i * 0.08)}>
+              <span class="mono ab-story__n" aria-hidden="true">{pad(i + 2)}</span>
+              <p>{p}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core values -->
+  <section class="ab-values" data-header-theme="dark" aria-labelledby="ab-values-h">
+    <div class="container">
+      <SectionHead title={['Our Core', 'Values']} label="Core Values" num={about.values.length} intro={about.valuesIntro} id="ab-values-h" size="l" />
+      <ol class="ab-values__grid" role="list">
+        {about.values.map((v, i) => (
+          <li class="ab-v">
+            <div class="ab-v__in" data-reveal="fade" data-delay={String((i % 3) * 0.08)}>
+              <span class="ab-v__n" aria-hidden="true">{pad(i + 1)}</span>
+              <span class="mono ab-v__k" aria-hidden="true">{pad(i + 1)} / {pad(about.values.length)}</span>
+              <div class="ab-v__body">
+                <h3 class="ab-v__t">{v.title}</h3>
+                <p class="ab-v__p">{v.text}</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- How we work -->
+  <section class="ab-how on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ab-how-h">
+    <div class="container">
+      <SectionHead title={['How We', 'Work']} id="ab-how-h" size="l" theme="light" />
+      <p class="ab-statement ab-statement--wide" data-co-words>{about.how[0]}</p>
+      <ol class="ab-how__grid" role="list">
+        {about.how.slice(1).map((p, i) => (
+          <li data-reveal="fade" data-delay={String((i % 2) * 0.1)}>
+            <span class="mono ab-how__n" aria-hidden="true">{pad(i + 2)}</span>
+            <p>{p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Principles (on the live site they sit under How We Work) -->
+  <section class="ab-pr on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ab-how-h" data-co-draw-track>
+    <div class="container ab-pr__grid">
+      <div class="ab-pr__aside">
+        <div class="ab-pr__sticky">
+          <p class="mono tag ab-pr__tag"><b>[ <span class="ab-pr__cur" aria-hidden="true"><span data-co-count>01</span> / </span>{pad(about.principles.length)} ]</b> How We Work</p>
+          <Mark class="ab-pr__mark" data-co-draw />
+        </div>
+      </div>
+      <ol class="ab-pr__list" role="list">
+        {about.principles.map((p, i) => (
+          <li class="ab-pr__item" data-co-step={pad(i + 1)}>
+            <div class="datum" data-reveal="datum"></div>
+            <span class="ab-pr__n" aria-hidden="true">{pad(i + 1)}</span>
+            <div class="ab-pr__body">
+              <h3 class="ab-pr__t display" data-reveal="fade">{p.title}</h3>
+              <p class="ab-pr__p" data-reveal="fade" data-delay="0.08">{p.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Accreditations -->
+  <section class="ab-acc on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ab-acc-h">
+    <div class="container">
+      <SectionHead title={['Company', 'Accreditations']} label="Accreditations" num={accreditations.length} id="ab-acc-h" theme="light" />
+      <ul class="ab-acc__list" role="list">
+        {accreditations.map((a, i) => (
+          <li class="ab-acc__card" data-reveal="fade" data-delay={String(i * 0.08)}>
+            <div class="ab-acc__img"><img src={a.src} width={a.w} height={a.h} alt={a.name} loading="lazy" decoding="async" /></div>
+            <p class="mono ab-acc__name"><span aria-hidden="true">{pad(i + 1)}</span> {a.name}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <NextTeaser href="/team" title="Our Team" label="Next" />
+  <TenderBand />
+  <HeroFold />
+</Base>
+
+<script>import '../scripts/company-fx.js';</script>
+
+<style>
+  /* ---- shared ---------------------------------------------------------- */
+  .ab-intro, .ab-story, .ab-values, .ab-how, .ab-pr, .ab-acc { padding-block: var(--section-y); position: relative; }
+  .ab-statement {
+    font-family: var(--font-display); font-stretch: var(--wdth-text-display); font-weight: 680;
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: -0.018em;
+    color: var(--navy-700); max-width: 23em; text-wrap: pretty;
+  }
+  .ab-statement--wide { max-width: 25em; margin-bottom: var(--space-fluid-l); }
+
+  /* ---- intro ------------------------------------------------------------ */
+  .ab-intro { background: var(--concrete-50); color: var(--navy-700); }
+  .ab-intro__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-7) var(--grid-gap); }
+  .ab-intro .ab-statement { grid-column: 1 / span 10; }
+  .ab-intro__aside { grid-column: 7 / -1; display: grid; gap: var(--space-5); }
+  .ab-rule { display: block; width: 56px; height: 2px; background: var(--mint-600); }
+  .ab-intro__p { font-size: var(--fs-lead); line-height: 1.5; max-width: 48ch; }
+  @media (max-width: 899px) { .ab-intro .ab-statement, .ab-intro__aside { grid-column: 1 / -1; } }
+
+  /* ---- story ------------------------------------------------------------ */
+  .ab-story { background: var(--white); color: var(--navy-700); }
+  .ab-story__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8) var(--grid-gap); align-items: start; }
+  .ab-story__media { grid-column: 1 / span 5; position: sticky; top: calc(var(--header-h) + var(--space-5)); padding-bottom: 12%; }
+  .ab-story__text { grid-column: 7 / -1; display: grid; gap: var(--space-6); }
+  .ab-photo { position: relative; overflow: clip; border-radius: var(--radius-m); background: var(--concrete-200); }
+  .ab-photo :global(img) { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; }
+  .ab-photo--main { aspect-ratio: 4 / 5; width: 86%; }
+  .ab-photo--inset {
+    position: absolute; right: 0; bottom: 0; width: 44%; aspect-ratio: 4 / 5;
+    box-shadow: 0 0 0 clamp(6px, 0.8vw, 12px) var(--white);
+  }
+  .ab-story__h { font-size: min(var(--fs-display-3), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.5 / 8.6)); padding-top: var(--space-4); }
+  .ab-story__lead { font-size: var(--fs-lead); line-height: 1.45; font-weight: var(--wght-text-strong); max-width: 40ch; }
+  .ab-story__list { display: grid; gap: 0; }
+  .ab-story__list li { display: grid; grid-template-columns: 3.5em 1fr; gap: var(--space-4); padding-block: var(--space-5); border-top: 1px solid var(--line-on-light); }
+  .ab-story__list p { max-width: 52ch; }
+  .ab-story__n { color: var(--mint-700); padding-top: 0.3em; }
+  @media (max-width: 899px) {
+    .ab-story__media, .ab-story__text { grid-column: 1 / -1; }
+    .ab-story__media { position: relative; top: 0; }
+    .ab-story__h { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter)) / (8.6 * 0.92))); }
+  }
+  @media (max-width: 639px) { .ab-story__h { font-size: calc((100vw - 2 * var(--gutter)) / 5.6); } }
+
+  /* ---- values ----------------------------------------------------------- */
+  .ab-values { background: var(--navy-900); color: var(--white); overflow: clip; }
+  .ab-values__grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+    background: var(--line-on-dark); border: 1px solid var(--line-on-dark); border-radius: var(--radius-m); overflow: clip;
+  }
+  .ab-v {
+    position: relative; display: grid;
+    --ab-pad: clamp(1.25rem, 2.2vw, 2.25rem);
+    min-height: clamp(260px, 26vw, 400px); padding: var(--ab-pad);
+    background: var(--navy-900); isolation: isolate; overflow: clip;
+    transition: background var(--dur-base) var(--ease-out-soft);
+  }
+  /* The tile itself stays opaque (it paints over the grid's hairline background); only its content fades in. */
+  .ab-v__in { position: relative; display: grid; align-content: space-between; gap: var(--space-8); min-height: 100%; }
+  .ab-v::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--mint-500);
+    transform: scaleX(0); transform-origin: left; transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .ab-v__n {
+    position: absolute; z-index: -1; right: calc(-1 * var(--ab-pad) - 0.04em); top: calc(-1 * var(--ab-pad) - 0.12em);
+    font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed);
+    font-size: clamp(7rem, 4rem + 9vw, 15rem); line-height: 1; font-variant-numeric: tabular-nums;
+    color: var(--navy-800);
+    transition: color var(--dur-base) var(--ease-out-soft);
+  }
+  .ab-v__k { color: var(--mint-500); }
+  .ab-v__body { display: grid; gap: var(--space-3); }
+  .ab-v__t {
+    font-family: var(--font-display); font-weight: 900; font-stretch: 100%; text-transform: uppercase;
+    font-size: var(--fs-h3); line-height: var(--lh-heading); letter-spacing: -0.01em; max-width: 14em;
+  }
+  .ab-v__p { color: var(--navy-200); max-width: 30ch; }
+  @media (hover: hover) and (pointer: fine) {
+    .ab-v:hover { background: var(--navy-800); }
+    .ab-v:hover::before { transform: scaleX(1); }
+    .ab-v:hover .ab-v__n { color: rgb(141 209 186 / 0.16); }
+  }
+  @media (max-width: 1023px) { .ab-values__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 639px) {
+    .ab-values__grid { grid-template-columns: 1fr; }
+    .ab-v { min-height: 0; }
+    .ab-v__in { gap: var(--space-7); }
+    .ab-v__n { font-size: 7rem; }
+  }
+
+  /* ---- how we work ------------------------------------------------------ */
+  .ab-how { background: var(--concrete-100); color: var(--navy-700); }
+  .ab-how__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7) var(--space-9); }
+  .ab-how__grid li { display: grid; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--line-on-light); align-content: start; }
+  .ab-how__grid p { font-size: var(--fs-lead); line-height: 1.5; max-width: 44ch; }
+  .ab-how__n { color: color-mix(in srgb, var(--mint-700) 86%, var(--navy-950)); } /* mint-700 is 4.0:1 on concrete-100; this ink is 4.9:1 */
+  @media (min-width: 900px) { .ab-how__grid { margin-left: calc(100% / 12 * 3); } }
+  @media (max-width: 767px) { .ab-how__grid { grid-template-columns: 1fr; } }
+
+  /* ---- principles ------------------------------------------------------- */
+  .ab-pr { background: var(--white); color: var(--navy-700); }
+  .ab-pr__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-7) var(--grid-gap); align-items: start; }
+  .ab-pr__aside { grid-column: 1 / span 4; align-self: stretch; }
+  .ab-pr__sticky { position: sticky; top: calc(var(--header-h) + var(--space-6)); display: grid; gap: var(--space-7); }
+  .ab-pr__tag { color: var(--concrete-600); white-space: nowrap; }
+  :global(html.rm) .ab-pr__cur { display: none; }
+  @media (max-width: 1023px) { .ab-pr__cur { display: none; } }
+  .ab-pr :global(.ab-pr__mark) { width: min(100%, 360px); height: auto; overflow: visible; }
+  .ab-pr :global(.ab-pr__mark path) { stroke: var(--navy-700); stroke-width: 14; }
+  .ab-pr__list { grid-column: 6 / -1; display: grid; }
+  .ab-pr__item { display: grid; grid-template-columns: minmax(3.2em, auto) 1fr; gap: var(--space-2) var(--space-6); padding-bottom: var(--space-fluid-m); }
+  .ab-pr__item .datum { grid-column: 1 / -1; margin-bottom: var(--space-5); }
+  .ab-pr__n {
+    font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed);
+    font-size: var(--fs-h2); line-height: 0.9; color: var(--mint-700); font-variant-numeric: tabular-nums;
+  }
+  .ab-pr__body { display: grid; gap: var(--space-4); }
+  .ab-pr__t { font-size: var(--fs-h2); font-stretch: 100%; line-height: 0.95; max-width: 16em; }
+  .ab-pr__p { font-size: var(--fs-lead); line-height: 1.5; max-width: 50ch; color: var(--navy-700); }
+  @media (max-width: 1023px) {
+    .ab-pr__aside { grid-column: 1 / -1; }
+    .ab-pr__sticky { position: relative; top: 0; grid-template-columns: 1fr auto; align-items: end; }
+    .ab-pr :global(.ab-pr__mark) { width: clamp(120px, 30vw, 220px); }
+    .ab-pr__list { grid-column: 1 / -1; }
+  }
+  @media (max-width: 639px) {
+    .ab-pr__item { grid-template-columns: 1fr; }
+    .ab-pr__t { font-size: clamp(1.5rem, 7vw, 2rem); }
+  }
+
+  /* ---- accreditations --------------------------------------------------- */
+  .ab-acc { background: var(--concrete-50); color: var(--navy-700); }
+  .ab-acc__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .ab-acc__card {
+    display: grid; grid-template-rows: 1fr auto; gap: var(--space-5);
+    background: var(--white); border: 1px solid var(--concrete-200); border-radius: var(--radius-m);
+    padding: var(--space-6); min-height: 260px;
+    transition: border-color var(--dur-base), transform var(--dur-base) var(--ease-out);
+  }
+  .ab-acc__img { display: grid; place-items: center; min-height: 140px; }
+  .ab-acc__img img { max-height: 120px; width: auto; max-width: 100%; height: auto; }
+  .ab-acc__name { display: flex; gap: 1em; padding-top: var(--space-4); border-top: 1px solid var(--line-on-light); }
+  .ab-acc__name span { color: var(--mint-700); }
+  @media (hover: hover) and (pointer: fine) { .ab-acc__card:hover { border-color: var(--mint-600); transform: translateY(-4px); } }
+  @media (max-width: 899px) {
+    .ab-acc__list { grid-template-columns: 1fr; gap: var(--space-4); }
+    /* Phones/tablets: compact rows (badge beside its name) instead of three tall cards. */
+    .ab-acc__card { min-height: 0; grid-template-rows: none; grid-template-columns: clamp(88px, 26vw, 140px) minmax(0, 1fr); align-items: center; padding: var(--space-5); }
+    .ab-acc__img { min-height: 0; }
+    .ab-acc__img img { max-height: 84px; }
+    .ab-acc__name { padding-top: 0; border-top: 0; padding-left: var(--space-5); border-left: 1px solid var(--line-on-light); align-self: stretch; align-items: center; }
+  }
+</style>

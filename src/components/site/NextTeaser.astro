@@ -1,0 +1,59 @@
+---
+// "Next" teaser: a full-width link band to the next page/service, huge title, photo that wipes in on hover.
+import Img from './Img.astro';
+import Arrow from './Arrow.astro';
+type ImgData = { src: string; sm: string; md?: string; w: number; h: number };
+interface Props {
+  href: string;
+  title: string;            // verbatim page/service name
+  label?: string;           // mono eyebrow, default "Next"
+  num?: string;             // optional numeral, e.g. "05 / 09"
+  image?: ImgData;
+  theme?: 'dark' | 'light';
+}
+const { href, title, label = 'Next', num, image, theme = 'dark' } = Astro.props;
+const words = title.length;
+const em = Math.max(5, words * 0.8);
+const hid = `nt-h-${href.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'home'}`;
+---
+<section class:list={['nt', `nt--${theme}`, theme === 'light' && 'on-light']} data-header-theme={theme} data-cursor-theme={theme} aria-labelledby={hid}>
+  <a class="nt__link container" href={href} data-cursor="link">
+    <div class="datum" data-reveal="datum"></div>
+    <span class="nt__top mono"><span>{label}</span>{num && <span>{num}</span>}</span>
+    <span class="nt__row">
+      <span class="nt__t display" id={hid} style={`--nt-em:${em.toFixed(2)}`}>{title}</span>
+      <span class="nt__arrow" aria-hidden="true"><Arrow /></span>
+    </span>
+    {image && <span class="nt__ph" aria-hidden="true"><Img img={image} alt="" sizes="40vw" /></span>}
+  </a>
+</section>
+
+<style>
+  .nt { background: var(--navy-950); color: var(--white); padding-block: var(--space-fluid-l); overflow: clip; }
+  .nt--light { background: var(--concrete-50); color: var(--navy-700); }
+  .nt--light .datum { background: var(--line-on-light); }
+  .nt__link { position: relative; display: grid; gap: var(--space-5); isolation: isolate; }
+  .nt__top { display: flex; justify-content: space-between; gap: var(--space-4); color: var(--navy-300); padding-top: var(--space-4); }
+  .nt--light .nt__top { color: var(--concrete-600); }
+  .nt__row { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-5); }
+  .nt__t { font-size: min(var(--fs-display-3), calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - 80px) / var(--nt-em))); min-width: 0; transition: color var(--dur-base); }
+  @media (max-width: 639px) { .nt__t { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter) - 60px) / (var(--nt-em) * 0.6))); } }
+  .nt__arrow {
+    flex: none; width: clamp(52px, 6vw, 88px); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
+    background: var(--mint-500); color: var(--navy-700); transition: transform var(--dur-base) var(--ease-out);
+  }
+  .nt__arrow :global(svg) { width: 40%; height: 40%; }
+  .nt__ph {
+    position: absolute; z-index: -1; right: calc(var(--gutter) + clamp(52px, 6vw, 88px) + var(--space-6)); bottom: 0;
+    width: min(30vw, 420px); aspect-ratio: 4 / 3; overflow: clip; border-radius: var(--radius-m);
+    clip-path: inset(100% 0 0 0); transition: clip-path var(--dur-slow) var(--ease-in-out);
+  }
+  .nt__ph :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  @media (hover: hover) and (pointer: fine) {
+    .nt__link:hover .nt__ph { clip-path: inset(0); }
+    .nt__link:hover .nt__arrow { transform: rotate(-45deg); }
+    .nt__link:hover .nt__t { color: var(--mint-500); }
+    .nt--light .nt__link:hover .nt__t { color: var(--mint-700); }
+  }
+  @media (max-width: 899px) { .nt__ph { display: none; } }
+</style>

@@ -1,0 +1,18 @@
+---
+// PageHero's lead/actions use data-reveal="fade", which core.js fires at "top 85%". On tall viewports
+// (1920x1080, 768x1024) the hero foot sits below that line, so the lead or the CTAs stayed invisible
+// until the visitor scrolled. Reveal any hero fade that is already on screen once core.js is ready.
+// (core's own trigger still fires later; a second `to(opacity:1)` is a no-op.)
+---
+<script>
+  const run = () => {
+    const A = (window as any).__anp;
+    if (!A || A.reduced || !A.reveal) return;
+    document.querySelectorAll<HTMLElement>('.ph [data-reveal="fade"]').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) A.reveal(el);
+    });
+  };
+  if ((window as any).__anp?.ready) run();
+  else document.addEventListener('anp:ready', run, { once: true });
+</script>

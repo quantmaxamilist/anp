@@ -1,0 +1,30 @@
+---
+// The v5 homepage: the film hero (ANP-window intro), the Steel Mark wow, then the trades,
+// projects, proof and the mint tender section.
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import Trades from '../components/home/Trades.astro';
+import Projects from '../components/home/Projects.astro';
+import Proof from '../components/home/Proof.astro';
+import TenderCta from '../components/home/TenderCta.astro';
+import WowSteel from '../components/wow/WowSteel.astro';
+import { home } from '../data/site';
+---
+<Base title="ANP Construction | Specialist Trade Packages, London" description={home.intro.slice(0, 155).replace(/\s+\S*$/, '') + '…'} preloadImage="/media/hero-london-poster.webp" page="home">
+  <Hero />
+
+  <div id="wow" class="wow-slot" data-wow-slot data-header-theme="dark">
+    <WowSteel />
+  </div>
+
+  <Trades />
+  <Projects />
+  <Proof />
+  <TenderCta />
+</Base>
+
+<script>import '../scripts/home.js';</script>
+
+<style>
+  .wow-slot { background: var(--navy-950); position: relative; z-index: 1; }
+</style>

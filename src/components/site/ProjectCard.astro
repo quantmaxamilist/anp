@@ -1,0 +1,66 @@
+---
+// Project card: photo (or the typographic navy card when a project has no image), mono index, name, note + client.
+// mode 'link' → <a href>; 'gallery' → a lightbox button (wrap cards in an element with data-gallery and import
+// gallery.js); 'static' → <div>. The 373px masters (eversholt, leadenhall) render matted, never upscaled.
+import Img from './Img.astro';
+import type { Project } from '../../data/site';
+interface Props {
+  project: Project;
+  index: number;            // 0-based position, shown as "01 / 15"
+  total: number;
+  mode?: 'link' | 'gallery' | 'static';
+  href?: string;            // link mode (default /additional-projects)
+  ratio?: string;           // CSS aspect-ratio of the photo frame (default 4 / 5)
+  theme?: 'dark' | 'light';
+  sizes?: string;
+  reveal?: boolean;         // photo wipe on scroll (default true); set false for tiles that a filter hides/shows
+  class?: string;
+}
+const { project: p, index, total, mode = 'link', href = '/additional-projects', ratio = '4 / 5', theme = 'dark', sizes = '(min-width: 900px) 30vw, 85vw', reveal = true, class: cls } = Astro.props;
+const idx = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+const meta = [p.note, p.client].filter(Boolean).join(' · ');
+const Tag = mode === 'link' ? 'a' : mode === 'gallery' && p.image ? 'button' : 'div';
+const attrs: Record<string, unknown> =
+  mode === 'link' ? { href, 'data-cursor': 'view' }
+  : Tag === 'button' ? { type: 'button', 'data-gallery-item': '', 'data-full': p.image!.src, 'data-w': p.image!.w, 'data-h': p.image!.h, 'data-alt': p.name, 'data-caption': [p.name, meta].filter(Boolean).join(' · '), 'data-cursor': 'view', 'aria-label': `Open photo: ${p.name}` }
+  : {};
+---
+<article class:list={['pc', `pc--${theme}`, !p.image && 'pc--type', cls]} style={`--pc-ratio:${ratio}`} data-client={p.client ?? ''}>
+  <Tag class="pc__hit" {...attrs}>
+    <span class="pc__frame" data-reveal={reveal ? 'photo' : undefined}>
+      {p.image ? (
+        <Img img={p.image} alt={p.name} sizes={sizes} />
+      ) : (
+        <span class="pc__type display" aria-hidden="true">{p.name}</span>
+      )}
+    </span>
+    <span class="pc__meta">
+      <span class="pc__idx mono">{idx}</span>
+      <span class="pc__name display">{p.name}</span>
+      {meta && <span class="pc__note mono">{meta}</span>}
+    </span>
+  </Tag>
+</article>
+
+<style>
+  .pc { min-width: 0; }
+  .pc__hit { display: grid; gap: var(--space-4); width: 100%; text-align: left; color: inherit; border-radius: var(--radius-m); }
+  .pc__frame { position: relative; display: block; aspect-ratio: var(--pc-ratio); overflow: clip; border-radius: var(--radius-m); background: var(--navy-800); }
+  .pc--light .pc__frame { background: var(--concrete-200); }
+  .pc__frame > :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-out); }
+  .pc__frame > :global(.img-mat) { width: 100%; height: 100%; }
+  @media (hover: hover) and (pointer: fine) { .pc__hit:hover .pc__frame > :global(img), .pc__hit:hover .pc__frame :global(.img-mat img) { transform: scale(1.04); } }
+  .pc__type {
+    position: absolute; inset: 0; display: grid; align-content: end; padding: var(--space-5);
+    font-size: clamp(1.75rem, 3.2vw, 3rem); font-stretch: 100%; color: var(--white); background: var(--navy-800);
+    line-height: 0.95;
+  }
+  .pc__type::before { content: ''; position: absolute; left: var(--space-5); top: var(--space-5); width: 44px; height: 2px; background: var(--mint-500); }
+  .pc__meta { display: grid; gap: var(--space-2); }
+  .pc__idx { color: var(--mint-500); }
+  .pc--light .pc__idx { color: var(--mint-700); }
+  .pc__name { font-size: var(--fs-h3); font-stretch: 100%; line-height: 1; }
+  .pc__note { color: var(--navy-300); }
+  .pc--light .pc__note { color: var(--concrete-600); }
+  .pc--light { color: var(--navy-700); }
+</style>

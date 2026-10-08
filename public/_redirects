@@ -1,0 +1,25 @@
+# Old Wix URLs → new routes (301). Netlify / Cloudflare Pages format.
+/aboutus  /about  301
+/aboutus/  /about  301
+/out-team  /team  301
+/out-team/  /team  301
+/soft-strip-out  /services/soft-strip-out  301
+/soft-strip-out/  /services/soft-strip-out  301
+/structural-alterations-demolition  /services/structural-alterations-demolition  301
+/structural-alterations-demolition/  /services/structural-alterations-demolition  301
+/diamond-drilling  /services/diamond-drilling  301
+/diamond-drilling/  /services/diamond-drilling  301
+/groundworks-and-drainage  /services/groundworks-and-drainage  301
+/groundworks-and-drainage/  /services/groundworks-and-drainage  301
+/structural-steelwork  /services/structural-steelwork  301
+/structural-steelwork/  /services/structural-steelwork  301
+/copy-of-structural-steelwork  /services/structural-carpentry  301
+/copy-of-structural-steelwork/  /services/structural-carpentry  301
+/composite-flooring  /services/composite-flooring  301
+/composite-flooring/  /services/composite-flooring  301
+/landscaping-and-external-works  /services/landscaping-and-external-works  301
+/landscaping-and-external-works/  /services/landscaping-and-external-works  301
+/screeding  /services/screeding  301
+/screeding/  /services/screeding  301
+/sitemap.xml  /sitemap-index.xml  301
+/pages-sitemap.xml  /sitemap-index.xml  301

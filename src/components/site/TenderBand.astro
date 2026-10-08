@@ -1,0 +1,59 @@
+---
+// Compact "Send a tender" band (solid mint). Links to /contact?package=<slug> so the contact form arrives with that
+// package ticked; with a slug it also offers the "Add to tender" toggle (synced with tender.js and the dock).
+// For the full tick-your-trades form use TenderForm.astro (the /contact page and the homepage's TenderCta).
+import { company, cta, services } from '../../data/site';
+import Pill from './Pill.astro';
+interface Props { slug?: string; id?: string }
+const { slug, id = 'tender-band' } = Astro.props;
+const svc = slug ? services.find((s) => s.slug === slug) : undefined;
+const href = svc ? `/contact?package=${svc.slug}` : '/contact';
+const lines = ['Ready to', 'Discuss Your', 'Project?'];
+---
+<section class="tb" data-header-theme="mint" data-cursor-theme="light" aria-labelledby={`${id}-h`}>
+  <div class="container tb__in">
+    <div class="tb__lead">
+      <p class="mono tag tb__tag" data-reveal="fade"><b>[ {svc ? String(services.indexOf(svc) + 1).padStart(2, '0') : String(services.length).padStart(2, '0')} ]</b> {svc ? svc.name : 'Send a tender'}</p>
+      <h2 class="tb__h display" id={`${id}-h`} data-reveal="lines" aria-label={cta.heading}>
+        {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+      </h2>
+    </div>
+    <div class="tb__side" data-reveal="fade" data-delay="0.15">
+      <p class="tb__body">{cta.body[0]}</p>
+      <div class="tb__actions">
+        <Pill href={href} variant="navy">Send a tender</Pill>
+        {svc && (
+          <button type="button" class="tb__add mono" data-add={svc.slug} aria-pressed="false" data-cursor="link">
+            <span class="tb__plus" aria-hidden="true"></span><span class="add-l">Add to tender</span>
+          </button>
+        )}
+      </div>
+      <a class="tb__phone display" href={company.phoneHref} data-cursor="link">{company.phone}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tb { background: var(--mint-500); color: var(--navy-700); padding-block: var(--space-fluid-l); position: relative; z-index: 2; }
+  .tb__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-7) var(--grid-gap); align-items: end; }
+  .tb__lead { grid-column: 1 / 8; display: grid; gap: var(--space-5); }
+  .tb__side { grid-column: 8 / -1; display: grid; gap: var(--space-5); justify-items: start; }
+  .tb__tag b { color: var(--navy-700); }
+  .tb__h { font-size: min(var(--fs-display-2), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / 8.6)); }
+  @media (min-width: 900px) { .tb__h { font-size: min(var(--fs-display-3), 5.2vw); font-stretch: 100%; } }
+  .tb__body { font-size: var(--fs-lead); line-height: 1.45; max-width: 46ch; }
+  .tb__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+  .tb__add {
+    display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px; border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1.5px var(--navy-700); color: var(--navy-700);
+    transition: background var(--dur-fast), color var(--dur-fast);
+  }
+  .tb__plus { position: relative; width: 12px; height: 12px; }
+  .tb__plus::before, .tb__plus::after { content: ''; position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: currentColor; transition: transform var(--dur-base) var(--ease-out); }
+  .tb__plus::after { transform: rotate(90deg); }
+  .tb__add[aria-pressed='true'] { background: var(--navy-700); color: var(--mint-500); }
+  .tb__add[aria-pressed='true'] .tb__plus::after { transform: rotate(0); }
+  .tb__phone { font-size: var(--fs-h2); font-stretch: 100%; line-height: 1; }
+  .tb__phone:hover { color: var(--navy-950); }
+  @media (max-width: 899px) { .tb__lead, .tb__side { grid-column: 1 / -1; } }
+</style>

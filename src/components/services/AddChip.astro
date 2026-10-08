@@ -1,0 +1,38 @@
+---
+// "Add to tender" toggle (tender.js binds every [data-add], sets aria-pressed and swaps the label to "In tender").
+interface Props { slug: string; name: string; theme?: 'light' | 'dark'; size?: 'm' | 'l'; class?: string }
+const { slug, name, theme = 'light', size = 'm', class: cls } = Astro.props;
+---
+<button type="button" class:list={['sv-chip', `sv-chip--${theme}`, size === 'l' && 'sv-chip--l', cls]} data-add={slug} aria-pressed="false" aria-label={`Add ${name} to tender`} data-cursor="link">
+  <span class="sv-chip__plus" aria-hidden="true"></span><span class="add-l">Add to tender</span>
+</button>
+
+<style>
+  .sv-chip {
+    position: relative; z-index: 2;
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px 0 14px;
+    border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1.5px currentColor;
+    font-family: var(--font-mono); font-weight: var(--wght-mono); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; line-height: 1;
+    color: var(--navy-700); white-space: nowrap;
+    transition: background-color var(--dur-fast) var(--ease-out-soft), color var(--dur-fast) var(--ease-out-soft), box-shadow var(--dur-fast);
+  }
+  .sv-chip--l { min-height: 52px; padding: 0 22px 0 18px; }
+  .sv-chip--dark { color: var(--white); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.55); }
+  .sv-chip__plus { position: relative; width: 12px; height: 12px; flex: none; }
+  .sv-chip__plus::before, .sv-chip__plus::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor;
+    transition: transform var(--dur-base) var(--ease-spring);
+  }
+  .sv-chip__plus::after { transform: rotate(90deg); }
+  .sv-chip[aria-pressed='true'] { background: var(--navy-700); color: var(--mint-500); box-shadow: inset 0 0 0 1.5px var(--navy-700); }
+  .sv-chip--dark[aria-pressed='true'] { background: var(--mint-500); color: var(--navy-950); box-shadow: inset 0 0 0 1.5px var(--mint-500); }
+  .sv-chip[aria-pressed='true'] .sv-chip__plus::before { transform: translate(-1px, 2px) rotate(45deg) scaleX(0.5); }
+  .sv-chip[aria-pressed='true'] .sv-chip__plus::after { transform: translate(3px, 0) rotate(-45deg); }
+  @media (hover: hover) and (pointer: fine) {
+    .sv-chip:hover { background: rgb(35 52 103 / 0.08); }
+    .sv-chip--dark:hover { background: rgb(255 255 255 / 0.08); box-shadow: inset 0 0 0 1.5px var(--mint-500); }
+    .sv-chip[aria-pressed='true']:hover { background: var(--navy-800); }
+    .sv-chip--dark[aria-pressed='true']:hover { background: var(--mint-300); }
+  }
+  .sv-chip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+</style>

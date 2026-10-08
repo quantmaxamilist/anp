@@ -1,0 +1,53 @@
+---
+// /services, "What We Do": inner hero, The Build (the reader-friendly centrepiece, with Skip), then the nine
+// packages as a plain list, then the tender band.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/site/PageHero.astro';
+import SectionHead from '../../components/site/SectionHead.astro';
+import Pill from '../../components/site/Pill.astro';
+import TenderBand from '../../components/site/TenderBand.astro';
+import WowBuild from '../../components/wow/WowBuild.astro';
+import PackageRow from '../../components/services/PackageRow.astro';
+import { services } from '../../data/site';
+
+const names = services.map((s) => s.name);
+const description = `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}.`;
+---
+<Base title="What We Do" description={description}>
+  <PageHero
+    lines={['What', 'We Do']}
+    label="What We Do"
+    num="09"
+    eyebrow="Trade packages"
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'What We Do' }]}
+    size="xl"
+    id="sv-h"
+  >
+    <Pill href="/contact">Send a tender</Pill>
+    <Pill href="#packages" variant="ghost">Skip to the 9 packages</Pill>
+  </PageHero>
+
+  <div id="build" class="sv-build" data-hold-header data-header-theme="dark">
+    <WowBuild />
+  </div>
+
+  <section id="packages" class="sv-pk on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="sv-pk-h">
+    <div class="container">
+      <SectionHead label="What We Do" num={9} title={['Trade', 'Packages']} id="sv-pk-h" theme="light" size="l">
+        <Pill href="/contact" size="sm" variant="navy">Send a tender</Pill>
+      </SectionHead>
+      <ol class="sv-list" role="list">
+        {services.map((s, i) => <PackageRow s={s} i={i} total={services.length} />)}
+      </ol>
+    </div>
+  </section>
+
+  <TenderBand />
+</Base>
+
+<style>
+  .sv-build { background: var(--navy-950); }
+  .sv-pk { background: var(--concrete-50); color: var(--navy-700); padding-block: var(--section-y) var(--space-fluid-l); scroll-margin-top: 0; }
+  .sv-pk:focus { outline: none; }
+  .sv-list { list-style: none; margin: 0; padding: 0; }
+</style>

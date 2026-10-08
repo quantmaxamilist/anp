@@ -1,0 +1,54 @@
+---
+// Photo gallery + accessible lightbox (src/scripts/gallery.js). Each tile is a button that opens the lightbox
+// at that photo; the lightbox only steps through tiles that are not [hidden] (so page filters just hide tiles).
+import Img from './Img.astro';
+type ImgData = { src: string; sm: string; md?: string; w: number; h: number };
+interface Props {
+  images: ImgData[];
+  alt: string;                    // base alt, e.g. service.name → "Soft Strip Out, photo 3 of 10"
+  layout?: 'grid' | 'mosaic';     // grid = even 4:3 tiles; mosaic = alternating wide/tall rhythm
+  label?: string;                 // accessible name for the gallery list
+  theme?: 'dark' | 'light';
+  class?: string;
+}
+const { images, alt, layout = 'mosaic', label, theme = 'light', class: cls } = Astro.props;
+const N = images.length;
+---
+<ul role="list" class:list={['gal', `gal--${layout}`, `gal--${theme}`, cls]} data-gallery aria-label={label ?? `${alt} photos`}>
+  {images.map((im, i) => (
+    <li class:list={['gal__i', im.h > im.w && 'is-tall']}>
+      <button type="button" class="gal__btn" data-gallery-item data-full={im.src} data-w={im.w} data-h={im.h} data-alt={`${alt}, photo ${i + 1} of ${N}`} data-cursor="view" aria-label={`Open ${alt}, photo ${i + 1} of ${N}`}>
+        <span class="gal__ph" data-reveal="photo" data-delay={String((i % 4) * 0.06)}>
+          <Img img={im} alt="" sizes="(min-width: 900px) 33vw, (min-width: 600px) 50vw, 100vw" />
+        </span>
+        <span class="gal__n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+      </button>
+    </li>
+  ))}
+</ul>
+<script>import '../../scripts/gallery.js';</script>
+
+<style>
+  .gal { display: grid; gap: var(--grid-gap); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .gal--mosaic { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: clamp(140px, 15vw, 280px); grid-auto-flow: dense; }
+  .gal--mosaic .gal__i { grid-column: span 2; }
+  .gal--mosaic .gal__i:nth-child(5n + 1) { grid-column: span 4; grid-row: span 2; }
+  .gal--mosaic .gal__i.is-tall { grid-row: span 2; }
+  .gal--mosaic .gal__ph { aspect-ratio: auto; height: 100%; }
+  @media (max-width: 899px) {
+    .gal--mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(120px, 40vw, 260px); }
+    .gal--mosaic .gal__i, .gal--mosaic .gal__i:nth-child(5n + 1) { grid-column: span 1; grid-row: span 1; }
+    .gal--mosaic .gal__i.is-tall { grid-row: span 2; }
+    .gal--mosaic .gal__i:nth-child(5n + 1):not(.is-tall) { grid-column: span 2; }
+  }
+  .gal__i { min-width: 0; }
+  .gal__btn { position: relative; display: block; width: 100%; height: 100%; text-align: left; border-radius: var(--radius-m); }
+  .gal__ph { position: relative; display: block; width: 100%; height: 100%; aspect-ratio: 4 / 3; overflow: clip; border-radius: var(--radius-m); background: var(--navy-800); }
+  .gal__ph :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease-out); }
+  .gal__ph :global(.img-mat) { width: 100%; height: 100%; }
+  @media (hover: hover) and (pointer: fine) { .gal__btn:hover .gal__ph :global(img) { transform: scale(1.04); } }
+  .gal__n {
+    position: absolute; left: var(--space-3); bottom: var(--space-3); z-index: 4;
+    padding: 4px 8px; border-radius: var(--radius-pill); background: rgb(14 22 48 / 0.72); color: var(--white);
+  }
+</style>

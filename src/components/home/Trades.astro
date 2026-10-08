@@ -1,0 +1,250 @@
+---
+import { home, services } from '../../data/site';
+import { zones } from '../../data/extra';
+import { wrap } from '../../data/wrap';
+const n2 = (i: number) => String(i + 1).padStart(2, '0');
+const chapters = services.map((s, i) => {
+  const cover = s.images[s.cover];
+  const inset = s.images[(s.cover + 1) % s.images.length];
+  return { ...s, i, num: n2(i), cover, inset, zone: zones[s.slug], lines: wrap(s.name.toUpperCase(), 12) };
+});
+const srcset = (im: { src: string; sm: string; md?: string; w: number }) =>
+  [`${im.sm} 720w`, im.md ? `${im.md} 1200w` : '', `${im.src} ${im.w}w`].filter(Boolean).join(', ');
+const headLines = ['Quality', 'Construction.', 'Trusted', 'Results.'];
+const words = home.intro.split(' ');
+---
+<div class="trades" id="trades">
+  <section class="tintro" data-header-theme="dark" aria-labelledby="tintro-h" data-tintro>
+    <div class="tintro__in container">
+      <p class="mono tag" data-reveal="fade"><b>[ {String(services.length).padStart(2, '0')} ]</b> Trade packages</p>
+      <h2 class="tintro__h display" id="tintro-h" data-reveal="lines" aria-label={home.servicesHeading}>
+        {headLines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+      </h2>
+      <div class="datum tintro__datum" data-reveal="datum"></div>
+      <p class="tintro__p" aria-label={home.intro} data-words>
+        {words.map((w) => <span aria-hidden="true">{w} </span>)}
+      </p>
+    </div>
+  </section>
+  <!-- Read runway: the statement holds, fully revealed, before the first chapter slides over it -->
+  <div class="tintro__hold" aria-hidden="true"></div>
+
+  <section class="ch" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ch-h" data-chapters>
+    <h2 class="sr-only" id="ch-h">Our trade packages</h2>
+    <div class="ch__stage on-light" data-ch-stage>
+      <div class="ch__photo" aria-hidden="true">
+        {chapters.map((c) => (
+          <figure class="ch__ph" data-ch-ph={c.i}>
+            <img class="grade" src={c.cover.src} srcset={srcset(c.cover)} sizes="(min-width: 900px) 58vw, 100vw" width={c.cover.w} height={c.cover.h} alt="" loading={c.i < 2 ? 'eager' : 'lazy'} decoding="async" />
+          </figure>
+        ))}
+        <i class="pour ch__pour" data-ch-pour></i>
+        <div class="ch__insets">
+          {chapters.map((c) => (
+            <figure class="ch__inset" data-ch-inset={c.i}>
+              <img class="grade" src={c.inset.sm} width={c.inset.w} height={c.inset.h} alt="" loading="lazy" decoding="async" />
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      <div class="ch__text">
+        <div class="ch__num display" aria-hidden="true">
+          <span class="ch__num-0">0</span><span class="ch__num-col"><span class="ch__num-strip" data-ch-strip>{chapters.map((c) => <span>{c.i + 1}</span>)}</span></span>
+        </div>
+        <div class="ch__blocks">
+          {chapters.map((c) => (
+            <article class="ch__block" data-ch-block={c.i} aria-labelledby={`ch-${c.slug}`} inert={c.i !== 0 ? true : undefined}>
+              <p class="mono ch__tag"><span class="ch__tagn">{c.num} / 09</span> {c.zone.tag}</p>
+              <h3 class="ch__name display" id={`ch-${c.slug}`} aria-label={c.name}>
+                {c.lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+              </h3>
+              <p class="ch__quote">{c.zone.quote}</p>
+              <div class="ch__actions">
+                <a class="ch__link mono" href={`/services/${c.slug}`} data-cursor="link"><span class="ulink">View service</span> <span aria-hidden="true">→</span></a>
+                <button type="button" class="chip" data-add={c.slug} aria-pressed="false" data-cursor="link"><span class="chip__plus" aria-hidden="true"></span><span class="add-l">Add to tender</span></button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <nav class="ch__rail" aria-label="Trade packages">
+        <ol role="list">
+          {chapters.map((c) => (
+            <li><button type="button" class="ch__tick mono" data-ch-go={c.i} aria-label={`${c.num} ${c.name}`} data-cursor="link"><span>{c.num}</span><i></i></button></li>
+          ))}
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Reduced motion: stacked static chapters -->
+  <section class="chs on-light" data-header-theme="light" aria-label="Our trade packages">
+    {chapters.map((c) => (
+      <article class="chs__item container">
+        <img class="grade chs__img" src={c.cover.sm} width={c.cover.w} height={c.cover.h} alt="" loading="lazy" decoding="async" />
+        <div class="chs__text">
+          <p class="display chs__num" aria-hidden="true">{c.num}</p>
+          <p class="mono ch__tag">{c.zone.tag}</p>
+          <h3 class="display chs__name" aria-label={c.name}>{c.lines.map((l) => <span class="chs__l" aria-hidden="true">{l}</span>)}</h3>
+          <p class="ch__quote">{c.zone.quote}</p>
+          <div class="ch__actions">
+            <a class="ch__link mono" href={`/services/${c.slug}`}><span class="ulink">View service</span> <span aria-hidden="true">→</span></a>
+            <button type="button" class="chip" data-add={c.slug} aria-pressed="false"><span class="chip__plus" aria-hidden="true"></span><span class="add-l">Add to tender</span></button>
+          </div>
+        </div>
+      </article>
+    ))}
+  </section>
+</div>
+
+<style>
+  .trades { position: relative; }
+  /* ---- Intro (sticks while the concrete curtain slides over it) ---- */
+  .tintro {
+    position: sticky; top: var(--tintro-top, 0px); z-index: 0;
+    background: var(--navy-950); color: var(--white);
+    padding-block: var(--section-y) calc(var(--section-y) + 4rem);
+    transform-origin: 50% 0%;
+  }
+  .tintro__in { display: grid; gap: var(--space-6); }
+  .tintro__h {
+    --em: 7.6;
+    font-size: min(var(--fs-display-2), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--em)));
+  }
+  @media (min-width: 640px) { .tintro__h { --em: 8.9; } }
+  @media (min-width: 900px) { .tintro__h { --em: 10.2; } }
+  .tintro__datum { max-width: 100%; }
+  .tintro__p {
+    font-family: var(--font-display); font-weight: 650; font-stretch: var(--wdth-text-display);
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: var(--tr-heading);
+    max-width: 30ch; max-width: min(100%, 26em);
+  }
+  html.js:not(.rm) .tintro__p span { opacity: 0.14; }
+  /* non-positioned, so the sticky intro paints over it; navy in case the intro is shorter than the stage */
+  .tintro__hold { height: 90svh; background: var(--navy-950); }
+  @media (max-width: 899px) { .tintro__hold { height: 80svh; } }
+
+  /* ---- Chapters ---- */
+  .ch {
+    --slice: 100svh;
+    position: relative; z-index: 1;
+    height: calc(var(--stage-h) + 8 * var(--slice));
+    background: var(--concrete-100); color: var(--navy-700);
+    border-radius: var(--ch-r, var(--radius-l)) var(--ch-r, var(--radius-l)) 0 0;
+    margin-top: -4rem;
+  }
+  .ch__stage {
+    position: sticky; top: 0; height: var(--stage-h); overflow: clip;
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap);
+    border-radius: inherit;
+  }
+  .ch__photo { grid-column: 6 / -1; grid-row: 1; position: relative; overflow: clip; background: var(--navy-950); }
+  .ch__ph { position: absolute; inset: 0; margin: 0; overflow: clip; will-change: clip-path; }
+  .ch__ph img { width: 100%; height: 100%; object-fit: cover; will-change: transform, filter; }
+  .ch__ph:not(:first-child) { clip-path: inset(100% 0 0 0); }
+  .ch__pour { opacity: 0; top: 100%; }
+  .ch__insets {
+    position: absolute; left: clamp(1rem, 3vw, 3rem); bottom: clamp(1rem, 6svh, 4rem);
+    width: clamp(120px, 15vw, 260px); aspect-ratio: 4 / 5; z-index: 4;
+  }
+  .ch__inset { position: absolute; inset: 0; margin: 0; overflow: clip; opacity: 0; box-shadow: 0 0 0 6px var(--concrete-100), 0 24px 48px rgb(14 22 48 / 0.35); }
+  .ch__inset:first-child { opacity: 1; }
+  .ch__inset img { width: 100%; height: 100%; object-fit: cover; }
+
+  .ch__text {
+    grid-column: 1 / 6; grid-row: 1; position: relative; z-index: 2;
+    padding-inline: calc(var(--gutter) + 64px) var(--space-6);
+    display: flex; flex-direction: column; justify-content: center; gap: clamp(0.5rem, 2svh, 1.5rem);
+    padding-block: calc(var(--header-h) + 1rem) 2rem;
+    min-width: 0;
+  }
+  .ch__num {
+    display: flex; font-stretch: var(--wdth-condensed);
+    font-size: min(var(--fs-numeral), 30svh); line-height: 0.8; color: var(--navy-700);
+    height: 0.8em; overflow: clip; margin-left: -0.04em;
+  }
+  .ch__num-col { display: block; height: 0.8em; overflow: clip; }
+  .ch__num-strip { display: flex; flex-direction: column; will-change: transform; }
+  .ch__num-strip span { display: block; height: 0.8em; line-height: 0.8; }
+  .ch__blocks { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .ch__block { grid-area: 1 / 1; display: grid; gap: clamp(0.5rem, 1.6svh, 1.25rem); align-content: start; }
+  .ch__block[inert] { visibility: hidden; }
+  .ch__tag { color: var(--concrete-600); }
+  .ch__tagn { color: var(--navy-700); margin-right: 0.8em; }
+  .ch__name {
+    font-size: min(var(--fs-display-3), 7svh, calc(29vw / 7.4));
+    font-stretch: 100%; color: var(--navy-700);
+  }
+  .ch__quote { font-size: var(--fs-body); max-width: min(100%, 44ch); color: var(--concrete-800); line-height: 1.5; }
+  .ch__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); margin-top: var(--space-2); }
+  .ch__link { color: var(--navy-700); display: inline-flex; align-items: center; gap: 0.4em; min-height: 44px; }
+
+  .ch__rail { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-50%); z-index: 3; }
+  .ch__rail ol { display: grid; gap: 2px; }
+  .ch__tick { display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--concrete-400); font-size: 11px; }
+  .ch__tick i { width: 14px; height: 1.5px; background: currentColor; transition: width var(--dur-base) var(--ease-out); }
+  .ch__tick.is-on { color: var(--navy-700); }
+  .ch__tick.is-on i { width: 28px; background: var(--mint-600); }
+  .ch__tick:hover { color: var(--navy-700); }
+
+  /* Chip (Add to tender) */
+  .chip {
+    display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px 0 12px;
+    border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1.5px var(--navy-700);
+    color: var(--navy-700); font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase;
+    transition: background var(--dur-fast) var(--ease-out-soft), color var(--dur-fast);
+  }
+  .chip__plus { position: relative; width: 12px; height: 12px; }
+  .chip__plus::before, .chip__plus::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; margin-top: -0.75px; background: currentColor; transition: transform var(--dur-base) var(--ease-spring); }
+  .chip__plus::after { transform: rotate(90deg); }
+  .chip[aria-pressed='true'] { background: var(--navy-700); color: var(--mint-500); }
+  .chip[aria-pressed='true'] .chip__plus::before { transform: translate(-1px, 2px) rotate(45deg) scaleX(0.5); }
+  .chip[aria-pressed='true'] .chip__plus::after { transform: translate(3px, 0) rotate(-45deg); }
+  .chip:hover { background: rgb(35 52 103 / 0.08); }
+  .chip[aria-pressed='true']:hover { background: var(--navy-800); }
+
+  .chs { display: none; background: var(--concrete-100); color: var(--navy-700); padding-block: var(--section-y); }
+  .chs__item { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--grid-gap); padding-block: var(--space-7); border-top: 1px solid var(--line-on-light); }
+  .chs__img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .chs__text { display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+  .chs__l { display: block; }
+  .chs__num { font-size: var(--fs-display-1); font-stretch: 75%; line-height: 0.8; }
+  .chs__name { font-size: var(--fs-h2); font-stretch: 100%; }
+
+  @media (max-width: 899px) {
+    .ch { --slice: 80svh; }
+    .ch__stage { grid-template-columns: 1fr; grid-template-rows: 52svh 1fr; column-gap: 0; }
+    .ch__photo { grid-column: 1; grid-row: 1; }
+    .ch__insets { display: none; }
+    .ch__text { grid-column: 1; grid-row: 2; padding: var(--space-5) var(--gutter) var(--space-4); justify-content: flex-start; gap: var(--space-3); }
+    .ch__num {
+      position: absolute; left: var(--gutter); top: 0; transform: translateY(-78%);
+      font-size: var(--fs-display-1); color: var(--mint-500);
+    }
+    .ch__name { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter)) / 7.6)); font-stretch: 75%; }
+    .ch__quote { font-size: var(--fs-small); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: clip; }
+    .ch__rail { left: 0; right: 0; top: 0; transform: none; padding: calc(var(--header-h) + 0.5rem) var(--gutter) 0; }
+    .ch__rail ol { grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 0; }
+    /* full-width cells give each tick a ~40x44 tap target on phones */
+    .ch__tick { width: 100%; min-height: 44px; justify-content: flex-start; color: rgb(255 255 255 / 0.6); flex-direction: column; gap: 4px; padding: 4px 0; }
+    .ch__tick i { width: 1.5px; height: 10px; }
+    .ch__tick.is-on { color: var(--white); }
+    .ch__tick.is-on i { width: 1.5px; height: 18px; background: var(--mint-500); }
+    .ch__tick span { display: none; }
+    .ch__tick.is-on span { display: block; }
+    .chs__item { grid-template-columns: minmax(0, 1fr); }
+    .chs .ch__quote { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: var(--fs-body); }
+  }
+  @media (max-width: 899px) and (max-height: 700px) {
+    .ch__quote { -webkit-line-clamp: 3; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tintro { position: relative; top: auto; }
+    .tintro__hold { display: none; }
+    .ch { display: none; }
+    .chs { display: block; }
+  }
+</style>

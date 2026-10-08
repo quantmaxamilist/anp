@@ -1,0 +1,139 @@
+---
+import { home, testimonials, accreditations, clients } from '../../data/site';
+import Mark from '../site/Mark.astro';
+const tn = String(testimonials.length).padStart(2, '0');
+// Marquee sequence: client names interleaved with the badges.
+const seq = clients.flatMap((c, i) => [{ type: 'name', text: c.name }, { type: 'badge', a: accreditations[i % accreditations.length] }]);
+---
+<section class="proof on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="proof-h">
+  <div class="container proof__grid">
+    <div class="proof__head">
+      <p class="mono tag is-light" data-reveal="fade"><b>[ {tn} ]</b> Testimonials</p>
+      <h2 class="proof__h display" id="proof-h" data-reveal="lines" aria-label={home.testimonialsHeading}>
+        <span class="line" aria-hidden="true"><span>Trusted by</span></span>
+        <span class="line" aria-hidden="true"><span>Our Clients</span></span>
+      </h2>
+    </div>
+
+    <div class="tq" data-tq aria-roledescription="carousel" aria-label={home.testimonialsHeading}>
+      <span class="tq__glyph display" aria-hidden="true">“</span>
+      <ul class="sr-only" role="list">
+        {testimonials.map((t) => <li><blockquote><p>{t.quote}</p></blockquote><p>{t.name}, {t.role}</p></li>)}
+      </ul>
+      <div class="tq__stack" aria-hidden="true">
+        {testimonials.map((t, i) => (
+          <figure class="tq__item" data-tq-item={i}>
+            <blockquote class="tq__q" data-tq-q>{t.quote}</blockquote>
+            <figcaption class="tq__by"><span class="tq__name">{t.name}</span><span class="mono">{t.role}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+      <div class="tq__ctrl">
+        <span class="mono tq__count"><span data-tq-cur>01</span> / {tn}</span>
+        <div class="tq__bar" aria-hidden="true"><i data-tq-bar></i></div>
+        <button type="button" class="tq__btn" data-tq-prev aria-label="Previous testimonial" data-cursor="link">←</button>
+        <button type="button" class="tq__btn" data-tq-next aria-label="Next testimonial" data-cursor="link">→</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container acc">
+    <div class="datum" data-reveal="datum"></div>
+    <h3 class="mono acc__h" data-reveal="fade">{home.accreditationsHeading}</h3>
+    <ul class="acc__list" role="list">
+      {accreditations.map((a, i) => (
+        <li class="acc__card" data-reveal="fade" data-delay={String(i * 0.08)}>
+          <div class="acc__img"><img src={a.src} width={a.w} height={a.h} alt={a.name} loading="lazy" decoding="async" /></div>
+          <p class="mono">{a.name}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="mq" data-mq aria-label="Clients">
+    <ul class="sr-only" role="list">{clients.map((c) => <li>{c.name}</li>)}</ul>
+    <div class="mq__track" data-mq-track aria-hidden="true">
+      {[0, 1].map(() => (
+        <div class="mq__set">
+          {[...seq, ...seq].map((s) => s.type === 'name' ? (
+            <span class="mq__item"><span class="mq__name display">{s.text}</span><Mark class="mq__mark" /></span>
+          ) : (
+            <span class="mq__item"><img class="mq__badge" src={s.a!.src} width={s.a!.w} height={s.a!.h} alt="" loading="lazy" /><Mark class="mq__mark" /></span>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .proof { background: var(--white); color: var(--navy-700); padding-top: var(--section-y); position: relative; z-index: 2; overflow-x: clip; }
+  .proof__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .proof__head { grid-column: 1 / 5; display: grid; gap: var(--space-5); align-content: start; }
+  .proof__h { font-size: min(var(--fs-h2), 4.2vw); font-size: var(--fs-h2); font-stretch: 100%; line-height: var(--lh-heading); }
+  .tq { grid-column: 5 / -1; position: relative; padding-top: clamp(4rem, 9vw, 9rem); }
+  .tq__glyph {
+    position: absolute; left: -0.06em; top: -0.12em; font-size: clamp(8rem, 16vw, 18rem); line-height: 1;
+    color: var(--mint-500); font-stretch: 100%; pointer-events: none; z-index: 0;
+  }
+  .tq__stack { display: grid; position: relative; z-index: 1; }
+  .tq__item { grid-area: 1 / 1; margin: 0; display: grid; gap: var(--space-6); align-content: start; visibility: hidden; }
+  .tq__item.is-on { visibility: visible; }
+  .tq__q {
+    font-family: var(--font-display); font-weight: 650; font-stretch: var(--wdth-text-display);
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: var(--tr-heading);
+    color: var(--navy-700); text-indent: 0;
+  }
+  .tq__q :global(.tq-line) { display: block; overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .tq__q :global(.tq-line > span) { display: block; transform-origin: left bottom; }
+  .tq__by { display: flex; gap: var(--space-4); align-items: baseline; flex-wrap: wrap; }
+  .tq__name { font-weight: var(--wght-text-strong); }
+  .tq__by .mono { color: var(--concrete-600); }
+  .tq__ctrl { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-7); }
+  .tq__count { color: var(--concrete-600); }
+  .tq__count span { color: var(--navy-700); }
+  .tq__bar { flex: 1; height: 1px; background: var(--line-on-light); position: relative; max-width: 240px; }
+  .tq__bar i { position: absolute; inset: 0; background: var(--mint-600); transform-origin: left; transform: scaleX(0); }
+  .tq__btn { width: 52px; height: 52px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line-on-light); font-size: 1.1rem; transition: background var(--dur-fast); }
+  .tq__btn:hover { background: var(--navy-700); color: var(--white); }
+
+  .acc { padding-top: var(--section-y); }
+  .acc__h { margin: var(--space-5) 0 var(--space-6); color: var(--concrete-600); }
+  .acc__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
+  .acc__card { display: grid; gap: var(--space-4); min-width: 0; }
+  /* the badge is absolutely centred so its intrinsic width can never widen the card (it did on phones) */
+  .acc__img { position: relative; aspect-ratio: 16 / 9; min-width: 0; border: 1px solid var(--concrete-200); background: var(--white); }
+  .acc__img img {
+    position: absolute; inset: 0; margin: auto; width: auto; height: auto;
+    max-width: calc(100% - 2 * var(--space-5)); max-height: calc(100% - 2 * var(--space-5)); object-fit: contain;
+  }
+  .acc__card .mono { color: var(--navy-700); }
+
+  .mq { margin-top: var(--section-y); padding-block: var(--space-7); border-top: 1px solid var(--concrete-200); border-bottom: 1px solid var(--concrete-200); overflow: clip; }
+  .mq__track { display: flex; width: max-content; will-change: transform; }
+  .mq__set { display: flex; align-items: center; flex: none; }
+  .mq__item { display: inline-flex; align-items: center; gap: clamp(1.5rem, 3vw, 3.5rem); padding-right: clamp(1.5rem, 3vw, 3.5rem); }
+  .mq__name {
+    font-size: var(--fs-display-2); white-space: nowrap; color: transparent;
+    -webkit-text-stroke: 1.5px var(--navy-700); transition: color var(--dur-base) var(--ease-out-soft);
+  }
+  .mq__name:hover { color: var(--navy-700); }
+  .mq :global(.mq__mark) { width: clamp(36px, 4vw, 64px); flex: none; }
+  .mq :global(.mq__mark path) { stroke: var(--mint-600); stroke-width: 26; }
+  .mq__badge { height: 64px; width: auto; flex: none; }
+
+  @media (max-width: 899px) {
+    .proof__head, .tq { grid-column: 1 / -1; }
+    .acc__img { aspect-ratio: 4 / 3; }
+    .mq__badge { height: 48px; }
+  }
+  @media (max-width: 639px) {
+    .acc__list { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+    .acc__img { aspect-ratio: 5 / 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mq__track { width: auto; }
+    .mq__set { flex-wrap: wrap; justify-content: center; row-gap: var(--space-5); }
+    .mq__set + .mq__set { display: none; }
+  }
+</style>

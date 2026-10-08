@@ -1,0 +1,70 @@
+---
+// Tick-your-trades tender form (shared). Chips are synced with tender.js (dock, "Add to tender" buttons) and
+// /contact?package=<slug> preselects that package. Submit composes a mailto: to company.email (no backend).
+// Logic lives in src/scripts/tender.js (binds form[data-tender-form]). Styled for a mint or a light background.
+import { company, services } from '../../data/site';
+import Pill from './Pill.astro';
+interface Props { id?: string; labelledby?: string; theme?: 'mint' | 'light' }
+const { id = 'tender-form', labelledby, theme = 'mint' } = Astro.props;
+---
+<form class:list={['tf', `tf--${theme}`]} id={id} data-tender-form novalidate aria-labelledby={labelledby}>
+  <fieldset class="tf__pk">
+    <legend class="mono">Tick your trades</legend>
+    <div class="tf__chips">
+      {services.map((s, i) => (
+        <label class="tf__chip" data-cursor="link">
+          <input type="checkbox" name="pkg" value={s.slug} data-name={s.name} data-tender-box />
+          <span class="tf__chipin"><span class="mono tf__n">{String(i + 1).padStart(2, '0')}</span>{s.name}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+  <div class="tf__row">
+    <label class="tf__fld"><span class="mono">Name *</span><input name="name" autocomplete="name" required /></label>
+    <label class="tf__fld"><span class="mono">Company</span><input name="company" autocomplete="organization" /></label>
+  </div>
+  <div class="tf__row">
+    <label class="tf__fld"><span class="mono">Email *</span><input name="email" type="email" autocomplete="email" required /></label>
+    <label class="tf__fld"><span class="mono">Phone (optional)</span><input name="tel" type="tel" autocomplete="tel" /></label>
+  </div>
+  <label class="tf__fld"><span class="mono">Message</span><textarea name="message" rows="4"></textarea></label>
+  <div class="tf__foot">
+    <Pill type="submit" variant="navy">Send a tender</Pill>
+    <button class="tf__copy mono" type="button" data-copy={company.email} data-cursor="link">Copy email</button>
+  </div>
+  <p class="tf__note" aria-live="polite" data-note></p>
+</form>
+
+<style>
+  .tf { display: grid; gap: var(--space-5); align-content: start; color: var(--navy-700); }
+  .tf__pk { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .tf__pk legend { margin-bottom: var(--space-4); }
+  .tf__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .tf__chip { position: relative; }
+  .tf__chip input { position: absolute; opacity: 0; inset: 0; margin: 0; width: 100%; height: 100%; cursor: pointer; }
+  .tf__chipin {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 16px;
+    border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1.5px var(--navy-700);
+    font-size: var(--fs-small); font-weight: var(--wght-text-strong);
+    transition: background var(--dur-fast) var(--ease-out-soft), color var(--dur-fast), transform var(--dur-base) var(--ease-spring);
+  }
+  .tf__n { opacity: 0.6; font-size: 11px; }
+  .tf__chip input:checked + .tf__chipin { background: var(--navy-700); color: var(--mint-500); transform: scale(1.04); }
+  .tf__chip input:focus-visible + .tf__chipin { box-shadow: var(--focus-ring); }
+  .tf__chip:hover .tf__chipin { background: rgb(35 52 103 / 0.1); }
+  .tf__chip:hover input:checked + .tf__chipin { background: var(--navy-800); }
+  .tf__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+  .tf__fld { display: grid; gap: var(--space-2); }
+  .tf__fld input, .tf__fld textarea {
+    width: 100%; background: transparent; border: 0; border-bottom: 1.5px solid rgb(35 52 103 / 0.45);
+    padding: 10px 0; color: var(--navy-950); font-size: var(--fs-body); border-radius: 0; resize: vertical;
+    transition: border-color var(--dur-fast);
+  }
+  .tf__fld input:focus, .tf__fld textarea:focus { outline: none; border-color: var(--navy-950); box-shadow: 0 1.5px 0 var(--navy-950); }
+  .tf__fld input[aria-invalid='true'] { border-color: #8a1f2b; }
+  .tf__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); margin-top: var(--space-3); }
+  .tf__copy { display: inline-flex; align-items: center; min-height: 44px; color: var(--navy-700); text-decoration: underline; text-underline-offset: 4px; }
+  .tf__note { font-size: var(--fs-small); min-height: 1.5em; }
+  .tf--light .tf__chip input:checked + .tf__chipin { color: var(--mint-500); }
+  @media (max-width: 539px) { .tf__row { grid-template-columns: 1fr; } }
+</style>

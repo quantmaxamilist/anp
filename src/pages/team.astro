@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import NextTeaser from '../components/site/NextTeaser.astro';
+import TenderBand from '../components/site/TenderBand.astro';
+import Pill from '../components/site/Pill.astro';
+import HeroFold from '../components/company/HeroFold.astro';
+import PortraitFrame from '../components/company/PortraitFrame.astro';
+import { company, team } from '../data/site';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const total = pad(team.length);
+const cut = (s: string, max = 155) => (s.length <= max ? s : s.slice(0, s.lastIndexOf(' ', max - 1)).replace(/[,;:\s]+$/, '') + '…');
+const description = cut(team.map((m) => `${m.name}, ${m.role}`).join('; ') + '.');
+// Desktop column drift (px): columns 2 and 4 travel further, so the grid shears gently as it scrolls.
+const drift = [0, 56, 18, 74];
+const nameLines = (n: string) => { const w = n.split(' '); return w.length > 1 ? [w.slice(0, -1).join(' '), w[w.length - 1]] : [n]; };
+---
+<Base title="Our Team" description={description} image="/og/diamond-drilling-03.jpg">
+  <PageHero
+    lines={['Our Team']}
+    num={total}
+    eyebrow="People"
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }, { label: 'Our Team' }]}
+    size="xl"
+  >
+    <Pill href="/contact">Send a tender</Pill>
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+
+  <section class="tm-grid-sec on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="tm-grid-h">
+    <div class="container">
+      <div class="tm-head">
+        <div class="datum" data-reveal="datum"></div>
+        <h2 class="mono tag tm-head__h" id="tm-grid-h" data-reveal="fade"><b>[ {total} ]</b> People</h2>
+      </div>
+      <ol class="tm-grid" role="list">
+        {team.map((m, i) => (
+          <li class="tm-cell" data-co-drift={String(drift[i % 4])}>
+            <article class="tm-card" data-reveal="fade" data-delay={String((i % 4) * 0.08)}>
+              <PortraitFrame alt={m.name} photo={m.photo} />
+              <div class="tm-card__meta">
+                <span class="mono tm-card__i" aria-hidden="true">{pad(i + 1)} / {total}</span>
+                <h3 class="tm-card__name display" aria-label={m.name}>
+                  {nameLines(m.name).map((l) => <span aria-hidden="true">{l}</span>)}
+                </h3>
+                <p class="mono tm-card__role">{m.role}</p>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <NextTeaser href="/clients" title="Clients" label="Next" />
+  <TenderBand />
+  <HeroFold />
+</Base>
+
+<script>import '../scripts/company-fx.js';</script>
+
+<style>
+  .tm-grid-sec { background: var(--concrete-50); color: var(--navy-700); padding-block: var(--space-fluid-l) calc(var(--section-y) + 40px); }
+  .tm-head { display: grid; gap: var(--space-5); margin-bottom: var(--space-fluid-m); }
+  .tm-head__h { color: var(--concrete-600); }
+  .tm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-8) var(--grid-gap); }
+  .tm-cell { min-width: 0; }
+  .tm-card { display: grid; gap: var(--space-4); }
+  .tm-card__meta { display: grid; gap: var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--line-on-light); position: relative; }
+  .tm-card__meta::before {
+    content: ''; position: absolute; left: 0; top: -1px; width: 100%; height: 1px; background: var(--mint-600);
+    transform: scaleX(0); transform-origin: left; transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .tm-card__i { color: color-mix(in srgb, var(--mint-700) 86%, var(--navy-950)); }
+  .tm-card__name { font-size: var(--fs-h3); font-stretch: 100%; line-height: 0.95; letter-spacing: -0.01em; }
+  .tm-card__name span { display: block; }
+  .tm-card__role { color: var(--concrete-600); }
+  @media (hover: hover) and (pointer: fine) {
+    .tm-card:hover .tm-card__meta::before { transform: scaleX(1); }
+  }
+  @media (max-width: 1023px) { .tm-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 639px) { .tm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7) var(--space-4); } }
+  @media (max-width: 359px) { .tm-grid { grid-template-columns: 1fr; } }
+</style>

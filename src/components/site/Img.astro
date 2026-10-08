@@ -1,0 +1,43 @@
+---
+// Responsive image for the client's photos. Takes an entry from src/data/images.json
+// (services[i].images[n], projects[n].image) and builds srcset from -sm (720w), -md (1000w) and the master.
+// The 373px masters (eversholt, leadenhall) are never upscaled: they render matted on navy-800, max 373 CSS px.
+type ImgData = { src: string; sm: string; md?: string; w: number; h: number };
+interface Props {
+  img: ImgData;
+  alt: string;
+  sizes?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  priority?: boolean;
+  position?: string; // object-position, e.g. '50% 30%'
+  grade?: boolean;   // unifying photo grade (default true)
+}
+const { img, alt, sizes = '100vw', class: cls, loading, priority = false, position, grade = true } = Astro.props;
+const small = img.w <= 400;
+const set = [`${img.sm} 720w`];
+if (img.md) set.push(`${img.md} 1000w`);
+if (img.w > (img.md ? 1000 : 720)) set.push(`${img.src} ${img.w}w`);
+const portrait = img.h > img.w;
+const pos = position ?? (portrait ? '50% 40%' : '50% 50%');
+---
+{small ? (
+  <span class:list={['img-mat', cls]}>
+    <img src={img.src} width={img.w} height={img.h} alt={alt} loading={priority ? 'eager' : (loading ?? 'lazy')} decoding="async" class:list={[grade && 'grade']} />
+  </span>
+) : (
+  <img
+    class:list={['img', grade && 'grade', cls]}
+    src={img.md ?? img.src}
+    srcset={set.join(', ')}
+    sizes={sizes}
+    width={img.w}
+    height={img.h}
+    alt={alt}
+    loading={priority ? 'eager' : (loading ?? 'lazy')}
+    fetchpriority={priority ? 'high' : undefined}
+    decoding="async"
+    style={`object-position:${pos}`}
+    data-portrait={portrait ? '' : undefined}
+  />
+)}

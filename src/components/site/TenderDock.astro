@@ -1,0 +1,58 @@
+---
+import { company, services } from '../../data/site';
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const sendHref = path === '/' || path === '/contact' ? '#tender' : '/contact';
+const data = { email: company.email, services: services.map((s) => ({ slug: s.slug, name: s.name })) };
+---
+<script type="application/json" id="tender-data" set:html={JSON.stringify(data)} />
+<aside class="dock" id="dock" aria-label="Tender list" inert>
+  <div class="dock__panel" id="dockPanel">
+    <p class="mono dock__h">Your tender</p>
+    <ol class="dock__list" id="dockNames"></ol>
+    <div class="dock__actions">
+      <a class="mono dock__send" href={sendHref} data-cursor="link">Send a tender →</a>
+      <button class="mono dock__clear" id="dockClear" type="button">Clear</button>
+    </div>
+  </div>
+  <button class="dock__bar" id="dockToggle" type="button" aria-expanded="false" aria-controls="dockPanel" data-cursor="link">
+    <span class="dock__n" id="dockN">0</span>
+    <span class="mono"><span id="dockU">packages</span> · Send a tender</span>
+  </button>
+</aside>
+<script>import '../../scripts/tender.js';</script>
+
+<style>
+  .dock {
+    position: fixed; right: var(--space-4); bottom: var(--space-4); z-index: var(--z-dock);
+    width: min(320px, calc(100vw - 2 * var(--space-4)));
+    display: grid; justify-items: end; gap: var(--space-2);
+    transform: translateY(calc(100% + 24px)); opacity: 0;
+    transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base);
+    pointer-events: none;
+  }
+  .dock.is-on { transform: none; opacity: 1; pointer-events: auto; }
+  .dock.is-new .dock__bar { animation: dockpop 600ms var(--ease-spring); }
+  @keyframes dockpop { 0% { transform: scale(0.9); } 60% { transform: scale(1.05); } 100% { transform: none; } }
+  .dock__bar {
+    display: inline-flex; align-items: center; gap: var(--space-3);
+    height: 52px; padding: 0 var(--space-5) 0 8px; border-radius: var(--radius-pill);
+    background: var(--navy-950); color: var(--white);
+    box-shadow: 0 0 0 1px rgb(141 209 186 / 0.4), 0 12px 32px rgb(0 0 0 / 0.35);
+  }
+  .dock__n {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--mint-500); color: var(--navy-950);
+    display: grid; place-items: center; font-family: var(--font-display); font-weight: 900; font-stretch: 75%; font-size: 1.1rem;
+  }
+  .dock__panel {
+    width: 100%; background: var(--navy-950); color: var(--white); border-radius: var(--radius-l);
+    padding: var(--space-5); box-shadow: 0 0 0 1px var(--line-on-dark), 0 24px 48px rgb(0 0 0 / 0.4);
+    display: none;
+  }
+  .dock.is-open .dock__panel { display: block; }
+  .dock__h { color: var(--mint-500); margin-bottom: var(--space-3); }
+  .dock__list { padding-left: 1.2em; display: grid; gap: var(--space-1); font-size: var(--fs-small); }
+  .dock__actions { display: flex; justify-content: space-between; margin-top: var(--space-4); }
+  .dock__send { color: var(--mint-500); }
+  .dock__clear { color: var(--navy-300); letter-spacing: var(--tr-label); text-transform: uppercase; font-size: var(--fs-label); }
+  @media (max-width: 639px) { .dock { left: auto; } }
+</style>

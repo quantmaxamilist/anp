@@ -1,0 +1,468 @@
+---
+// WOW C, "Steel Mark": the ANP mark erected from nine steel I-beams, one per trade package.
+// Copy: service names, numerals and zones tags only (verbatim from site.ts / extra.ts).
+import { services } from '../../data/site';
+import { zones } from '../../data/extra';
+import { wrap } from '../../data/wrap';
+
+// Landing order -> services[] index (spec section 5 table).
+const ORDER = [3, 4, 5, 1, 0, 2, 6, 7, 8];
+const pad = (n: number) => String(n).padStart(2, '0');
+const members = ORDER.map((si, k) => ({
+  k,
+  beam: pad(k + 1),
+  num: pad(si + 1),
+  name: services[si].name,
+  slug: services[si].slug,
+  tag: zones[services[si].slug]?.tag ?? '',
+  lines: wrap(services[si].name, 13),
+}));
+// The real list, in service order 01..09; each item knows which member (landing slot) it labels.
+const list = services.map((s, si) => ({ num: pad(si + 1), name: s.name, slug: s.slug, m: ORDER.indexOf(si) }));
+const PATHS = [
+  'M562 893 L731 560 L897 560 L897 893 Z',
+  'M897 560 L1065 727 L897 727',
+  'M731 560 L731 893',
+  'M731 560 L897 893',
+  'M647 727 L732 727',
+];
+---
+<section class="wow-steel" data-wow="steel" aria-labelledby="wow-steel-h">
+  <div class="wow-steel__stage">
+    <div class="wow-steel__canvas" aria-hidden="true"></div>
+
+    <picture class="wow-steel__poster">
+      <source media="(max-width: 899px)" srcset="/wow/steel/poster-portrait.webp" width="900" height="1400" />
+      <img src="/wow/steel/poster.webp" width="1600" height="1000" alt="The ANP logo mark built from nine mint-painted steel I-beams, each labelled with its trade package" loading="lazy" decoding="async" />
+    </picture>
+
+    <div class="wow-steel__glow" aria-hidden="true"></div>
+    <svg class="wow-steel__mark" viewBox="540 540 545 375" aria-hidden="true" focusable="false">
+      {PATHS.map((d) => <path d={d} />)}
+    </svg>
+    <div class="wow-steel__shade" aria-hidden="true"></div>
+
+    <div class="wow-steel__title">
+      <h2 id="wow-steel-h" class="wow-steel__tag"><span class="wow-steel__tag-n">[ 09 ]</span> Trade packages</h2>
+      <p class="wow-steel__scroll" aria-hidden="true"><span>Scroll</span><i></i></p>
+    </div>
+
+    <div class="wow-steel__scrim" aria-hidden="true"></div>
+    <div class="wow-steel__panel" aria-hidden="true">
+      <div class="wow-steel__names">
+        {members.map((m) => (
+          <div class="wow-steel__item" data-k={m.k}>
+            <p class="wow-steel__meta">
+              <span class="wow-steel__line"><span class="wow-steel__line-in"><span class="wow-steel__meta-n">Beam {m.beam} / 09</span><span class="wow-steel__meta-t">{m.tag}</span></span></span>
+            </p>
+            <p class="wow-steel__name">
+              {m.lines.map((l) => (
+                <span class="wow-steel__line"><span class="wow-steel__line-in">{l}</span></span>
+              ))}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div class="wow-steel__ticks">
+        {members.map((m) => <i class="wow-steel__tick" data-k={m.k}></i>)}
+      </div>
+    </div>
+
+    <ol class="wow-steel__list">
+      {list.map((it) => (
+        <li class="wow-steel__lbl" data-m={it.m}>
+          <a class="wow-steel__lbl-a" href={`/services/${it.slug}`}>
+            <span class="wow-steel__lbl-n">{it.num}</span>
+            <span class="wow-steel__lbl-t">{it.name}</span>
+          </a>
+          <i class="wow-steel__lead" aria-hidden="true"></i>
+        </li>
+      ))}
+    </ol>
+
+    <button class="wow-steel__skip" type="button">Skip</button>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/wow-steel.js';
+</script>
+
+<style>
+  .wow-steel {
+    --wow-steel-pad: var(--gutter);
+    position: relative;
+    height: 720svh;
+    background: var(--navy-950);
+    color: var(--white);
+  }
+  .wow-steel__stage {
+    position: sticky;
+    top: 0;
+    height: var(--stage-h);
+    overflow: hidden;
+    background: var(--navy-950);
+    isolation: isolate;
+  }
+  .wow-steel__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .wow-steel__poster { display: none; }
+
+  /* ---- 2D mark (finale) -------------------------------------------- */
+  .wow-steel__mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 545px;
+    height: 375px;
+    transform-origin: 0 0;
+    opacity: 0;
+    overflow: visible;
+    z-index: 1;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--mint-500);
+    stroke-width: 19;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .wow-steel__glow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 900px;
+    height: 640px;
+    margin: -320px 0 0 -450px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(141 209 186 / 0.16), rgb(141 209 186 / 0.05) 55%, rgb(141 209 186 / 0) 100%);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .wow-steel__shade {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 34%;
+    background: linear-gradient(180deg, rgb(14 22 48 / 0) 0%, var(--navy-950) 40%);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ---- Title card --------------------------------------------------- */
+  .wow-steel__title {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .wow-steel__tag,
+  .wow-steel__meta,
+  .wow-steel__scroll,
+  .wow-steel__skip,
+  .wow-steel__lbl-n {
+    font-family: var(--font-mono);
+    font-weight: var(--wght-mono);
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--tr-label);
+    text-transform: uppercase;
+  }
+  .wow-steel__tag {
+    position: absolute;
+    left: var(--wow-steel-pad);
+    top: calc(var(--header-h) + var(--space-6));
+    margin: 0;
+    white-space: nowrap;
+    color: var(--white);
+  }
+  .wow-steel__tag-n { color: var(--mint-500); }
+  .wow-steel__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: var(--space-6);
+    margin: 0;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--navy-300);
+  }
+  .wow-steel__scroll i {
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: var(--mint-500);
+    transform-origin: 50% 0;
+    animation: wow-steel-cue 1.8s var(--ease-in-out) infinite;
+  }
+  @keyframes wow-steel-cue {
+    0% { transform: scaleY(0); transform-origin: 50% 0; }
+    50% { transform: scaleY(1); transform-origin: 50% 0; }
+    51% { transform-origin: 50% 100%; }
+    100% { transform: scaleY(0); transform-origin: 50% 100%; }
+  }
+
+  /* ---- Left panel (desktop) / top panel (mobile) ---------------------- */
+  .wow-steel__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(90deg, rgb(14 22 48 / 0.82) 0%, rgb(14 22 48 / 0.55) 30%, rgb(14 22 48 / 0) 52%);
+  }
+  .wow-steel__panel {
+    position: absolute;
+    left: var(--wow-steel-pad);
+    top: 50%;
+    width: min(40vw, 40rem);
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .wow-steel__meta {
+    margin: 0 0 var(--space-5);
+    color: var(--navy-300);
+    white-space: nowrap;
+  }
+  .wow-steel__meta .wow-steel__line-in { display: flex; gap: 0.9em; }
+  .wow-steel__meta-n { color: var(--mint-500); }
+  .wow-steel__names { display: grid; }
+  .wow-steel__item { grid-area: 1 / 1; align-self: start; }
+  .wow-steel__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--wght-display);
+    font-stretch: var(--wdth-display);
+    font-size: min(var(--fs-display-3), calc(40vw / 9.8));
+    line-height: var(--lh-display);
+    letter-spacing: var(--tr-display);
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .wow-steel__line {
+    display: block;
+    overflow: clip;
+    padding: 0.12em 0 0.08em;
+    margin: -0.12em 0 -0.08em;
+  }
+  .wow-steel__line-in {
+    display: block;
+    transform: translateY(150%);
+    transform-origin: left bottom;
+    white-space: nowrap;
+  }
+  .wow-steel__ticks {
+    display: flex;
+    gap: 6px;
+    margin-top: var(--space-6);
+  }
+  .wow-steel__tick {
+    width: 22px;
+    height: 3px;
+    background: var(--line-on-dark);
+    transition: background-color var(--dur-fast) var(--ease-out-soft);
+  }
+  .wow-steel__tick.is-on { background: var(--mint-500); }
+
+  /* ---- Along-beam labels (the real <ol>) ------------------------------ */
+  .wow-steel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .wow-steel__lbl {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  .wow-steel__lbl::after {
+    content: '';
+    position: absolute;
+    left: -2.5px;
+    top: -2.5px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--mint-500);
+  }
+  .wow-steel__lbl-a {
+    position: absolute;
+    left: 0;
+    top: 0;
+    will-change: transform;
+    display: flex;
+    align-items: baseline;
+    gap: 0.55em;
+    padding: 2px 4px;
+    white-space: nowrap;
+    color: var(--white);
+    text-decoration: none;
+    font-family: var(--font-text);
+    font-weight: var(--wght-text-strong);
+    font-size: var(--fs-small);
+    line-height: 1.2;
+    border-radius: var(--radius-s);
+    text-shadow: 0 1px 10px rgb(14 22 48 / 0.9);
+  }
+  .wow-steel__lbl-n { color: var(--mint-500); font-size: 0.72rem; letter-spacing: 0.08em; }
+  .wow-steel__lead {
+    position: absolute;
+    left: 0;
+    top: -0.5px;
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--mint-500), rgb(141 209 186 / 0.55));
+    transform-origin: 0 50%;
+  }
+  .wow-steel__lbl.is-on .wow-steel__lbl-a { pointer-events: auto; }
+  .wow-steel__lbl:focus-within { opacity: 1 !important; }
+  .wow-steel__lbl-a:hover .wow-steel__lbl-t { text-decoration: underline; text-decoration-color: var(--mint-500); text-underline-offset: 3px; }
+  .wow-steel__lbl-a:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+  /* ---- Skip ---------------------------------------------------------- */
+  .wow-steel__skip {
+    position: absolute;
+    right: var(--wow-steel-pad);
+    bottom: var(--space-5);
+    z-index: var(--z-stage-ui);
+    padding: 0.7em 1.2em;
+    color: var(--white);
+    background: rgb(14 22 48 / 0.55);
+    border: 1px solid var(--line-on-dark);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-out-soft), opacity var(--dur-base) var(--ease-out-soft);
+  }
+  .wow-steel__skip:hover { border-color: var(--mint-500); }
+  .wow-steel__skip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .wow-steel.is-final .wow-steel__skip { opacity: 0; pointer-events: none; }
+
+  /* ---- Poster capture mode (test page ?poster=1) ---------------------- */
+  .wow-steel.is-poster .wow-steel__skip,
+  .wow-steel.is-poster .wow-steel__title,
+  .wow-steel.is-poster .wow-steel__panel,
+  .wow-steel.is-poster .wow-steel__scrim { display: none; }
+
+  /* ---- Mobile --------------------------------------------------------- */
+  @media (max-width: 899px), (pointer: coarse) {
+    .wow-steel { height: 540svh; }
+    .wow-steel__scrim { background: linear-gradient(180deg, rgb(14 22 48 / 0.85) 0%, rgb(14 22 48 / 0.6) 28%, rgb(14 22 48 / 0) 46%); }
+    .wow-steel__panel {
+      top: calc(var(--header-h) + var(--space-5));
+      width: calc(100% - 2 * var(--wow-steel-pad));
+      transform: none;
+    }
+    .wow-steel__meta { margin-bottom: var(--space-3); }
+    .wow-steel__name { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter)) / 6.2)); }
+    .wow-steel__ticks { margin-top: var(--space-4); gap: 4px; }
+    .wow-steel__tick { width: 16px; }
+    .wow-steel__lbl-a { font-size: 0.8125rem; }
+    .wow-steel__skip { bottom: var(--space-4); }
+    .wow-steel.is-legend .wow-steel__list {
+      inset: auto var(--wow-steel-pad) calc(var(--space-9) - var(--space-2)) var(--wow-steel-pad);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2) var(--space-4);
+    }
+    .wow-steel.is-legend .wow-steel__lbl {
+      position: static;
+      width: auto;
+      height: auto;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+    .wow-steel.is-legend .wow-steel__lbl::after,
+    .wow-steel.is-legend .wow-steel__lead { display: none; }
+    .wow-steel.is-legend .wow-steel__lbl-a {
+      position: static;
+      transform: none;
+      white-space: normal;
+      padding: 0;
+      font-size: 0.75rem;
+      pointer-events: auto;
+      transform: none !important;
+    }
+  }
+
+  /* ---- Static: reduced motion (CSS) and no-WebGL (.is-static from JS) -- */
+  @media (prefers-reduced-motion: reduce) {
+    .wow-steel { height: auto; }
+    .wow-steel__stage {
+      position: relative;
+      height: auto;
+      min-height: 100svh;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-6);
+      padding: var(--section-y) var(--wow-steel-pad);
+    }
+    .wow-steel__canvas, .wow-steel__mark, .wow-steel__glow, .wow-steel__shade,
+    .wow-steel__panel, .wow-steel__scrim, .wow-steel__skip, .wow-steel__scroll { display: none; }
+    .wow-steel__title { position: static; }
+    .wow-steel__tag { position: static; transform: none; }
+    .wow-steel__poster { display: block; width: 100%; max-width: 100rem; margin: 0 auto; }
+    .wow-steel__poster img { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%); }
+    .wow-steel__list {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+      gap: var(--space-3) var(--space-5);
+      width: 100%;
+      max-width: 100rem;
+      margin: 0 auto;
+      pointer-events: auto;
+    }
+    .wow-steel__lbl { position: static; width: auto; height: auto; opacity: 1; transform: none; border-top: 1px solid var(--line-on-dark); padding-top: var(--space-3); }
+    .wow-steel__lbl::after, .wow-steel__lead { display: none; }
+    .wow-steel__lbl-a { position: static; transform: none; padding: 0; white-space: normal; font-size: var(--fs-body); }
+  }
+  .wow-steel.is-static { height: auto; }
+  .wow-steel.is-static .wow-steel__stage {
+    position: relative;
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: var(--section-y) var(--wow-steel-pad);
+  }
+  .wow-steel.is-static .wow-steel__canvas, .wow-steel.is-static .wow-steel__mark, .wow-steel.is-static .wow-steel__glow,
+  .wow-steel.is-static .wow-steel__shade, .wow-steel.is-static .wow-steel__panel, .wow-steel.is-static .wow-steel__scrim, .wow-steel.is-static .wow-steel__skip,
+  .wow-steel.is-static .wow-steel__scroll { display: none; }
+  .wow-steel.is-static .wow-steel__title { position: static; opacity: 1 !important; }
+  .wow-steel.is-static .wow-steel__tag { position: static; transform: none; }
+  .wow-steel.is-static .wow-steel__poster { display: block; width: 100%; max-width: 100rem; margin: 0 auto; }
+  .wow-steel.is-static .wow-steel__poster img { display: block; width: 100%; height: auto; -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%); }
+  .wow-steel.is-static .wow-steel__list {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-3) var(--space-5);
+    width: 100%;
+    max-width: 100rem;
+    margin: 0 auto;
+    pointer-events: auto;
+  }
+  .wow-steel.is-static .wow-steel__lbl { position: static; width: auto; height: auto; opacity: 1 !important; transform: none !important; border-top: 1px solid var(--line-on-dark); padding-top: var(--space-3); }
+  .wow-steel.is-static .wow-steel__lbl::after, .wow-steel.is-static .wow-steel__lead { display: none; }
+  .wow-steel.is-static .wow-steel__lbl-a { position: static; transform: none; padding: 0; white-space: normal; font-size: var(--fs-body); pointer-events: auto; }
+</style>

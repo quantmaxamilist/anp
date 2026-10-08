@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Pill from '../components/site/Pill.astro';
+import NextTeaser from '../components/site/NextTeaser.astro';
+import TenderBand from '../components/site/TenderBand.astro';
+import ClientChapter from '../components/work/ClientChapter.astro';
+import ClientQuotes from '../components/work/ClientQuotes.astro';
+import { company, home, clients, projects } from '../data/site';
+import { pad, excerpt, slug } from '../components/work/util';
+
+// Derived counts only: the projects attributed to these three clients (the unattributed ones are not counted here).
+const listed = clients.reduce((n, c) => n + c.projects.length, 0);
+// A verbatim sentence from the homepage "About" copy.
+const lead = home.about[1].split('. ').find((s) => s.includes('long-term relationships with clients'))!;
+const tait = projects.find((p) => p.name === 'Tait Building')!;
+---
+<Base title="Clients" description={excerpt(lead)}>
+  <PageHero
+    lines={['Clients']}
+    num={pad(clients.length)}
+    eyebrow={`Clients · ${pad(listed)} projects`}
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about' }, { label: 'Clients' }]}
+    lead={lead}
+    size="xl"
+    em={4.9}
+  >
+    <Pill href="/contact">Send a tender</Pill>
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+
+  <nav class="cl-index on-light" data-header-theme="light" data-cursor-theme="light" aria-label="Clients">
+    <div class="container">
+    <ol class="cl-index__list" role="list">
+      {clients.map((c, i) => (
+        <li>
+          <a class="cl-index__a" href={`#${slug(c.name)}`} data-cursor="link">
+            <span class="mono cl-index__n">[ {pad(i + 1)} ]</span>
+            <span class="cl-index__name">{c.name}</span>
+            <span class="mono cl-index__c">{pad(c.projects.length)}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+    </div>
+  </nav>
+
+  {clients.map((c, i) => (
+    <ClientChapter client={c} index={i} total={clients.length} tone={i % 2 ? 'white' : 'concrete'} />
+  ))}
+
+  <ClientQuotes />
+
+  <NextTeaser href="/additional-projects" title="Additional Projects" label="Next" num={`${pad(projects.length)} projects`} image={tait.image} />
+
+  <TenderBand />
+</Base>
+
+<script>import '../scripts/gallery.js';</script>
+<script>import '../scripts/work.js';</script>
+
+<style>
+  .cl-index { background: var(--concrete-50); color: var(--navy-700); border-bottom: 1px solid var(--line-on-light); }
+  .cl-index__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cl-index__list li + li { border-left: 1px solid var(--line-on-light); }
+  .cl-index__a {
+    position: relative; display: flex; align-items: baseline; gap: var(--space-3);
+    padding: var(--space-5) var(--space-4); height: 100%; isolation: isolate; overflow: clip;
+  }
+  .cl-index__list li:first-child .cl-index__a { padding-left: 0; }
+  .cl-index__list li:last-child .cl-index__a { padding-right: 0; }
+  .cl-index__a::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; background: var(--navy-700);
+    clip-path: inset(100% 0 0 0); transition: clip-path var(--dur-base) var(--ease-in-out);
+  }
+  .cl-index__n { color: var(--mint-700); }
+  .cl-index__name { flex: 1; font-family: var(--font-display); font-weight: 800; font-stretch: 100%; text-transform: uppercase; font-size: clamp(1.125rem, 0.85rem + 0.9vw, 1.75rem); line-height: 1; letter-spacing: -0.01em; }
+  .cl-index__c { color: var(--concrete-600); }
+  @media (hover: hover) and (pointer: fine) {
+    .cl-index__a:hover { color: var(--white); }
+    .cl-index__a:hover::before { clip-path: inset(0); }
+    .cl-index__list li:first-child .cl-index__a:hover { padding-left: var(--space-4); }
+    .cl-index__list li:last-child .cl-index__a:hover { padding-right: var(--space-4); }
+    .cl-index__a:hover .cl-index__n { color: var(--mint-500); }
+    .cl-index__a:hover .cl-index__c { color: var(--navy-200); }
+    .cl-index__a, .cl-index__a .cl-index__n, .cl-index__a .cl-index__c { transition: color var(--dur-base), padding var(--dur-base) var(--ease-out); }
+  }
+  @media (max-width: 767px) {
+    .cl-index__list { grid-template-columns: 1fr; }
+    .cl-index__list li + li { border-left: 0; border-top: 1px solid var(--line-on-light); }
+    .cl-index__a { padding-inline: 0; padding-block: var(--space-4); }
+  }
+</style>

@@ -1,0 +1,86 @@
+---
+import { company, nav, services, accreditations } from '../../data/site';
+const year = new Date().getFullYear();
+const navLinks = [
+  { label: 'About', href: '/about' },
+  { label: 'Our Team', href: '/team' },
+  { label: 'Clients', href: '/clients' },
+  { label: 'What We Do', href: '/services' },
+  { label: 'Additional Projects', href: '/additional-projects' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'Contact', href: '/contact' },
+];
+void nav;
+---
+<footer class="ftr" data-header-theme="dark" data-cursor-theme="dark">
+  <div class="container">
+    <div class="datum" data-reveal="datum"></div>
+    <div class="ftr__cols">
+      <div class="ftr__col">
+        <p class="mono ftr__h">Contact</p>
+        <address>
+          {company.address.line1}<br />{company.address.line2}<br />{company.address.locality}<br />{company.address.postcode}
+        </address>
+        <a class="ftr__big" href={company.phoneHref} data-cursor="link"><span class="ulink">{company.phone}</span></a>
+        <a href={`mailto:${company.email}`} data-cursor="link"><span class="ulink">{company.email}</span></a>
+      </div>
+      <div class="ftr__col">
+        <p class="mono ftr__h">Navigation</p>
+        <ul role="list">{navLinks.map((n) => <li><a href={n.href} data-cursor="link"><span class="ulink">{n.label}</span></a></li>)}</ul>
+      </div>
+      <div class="ftr__col">
+        <p class="mono ftr__h">What We Do</p>
+        <ul role="list">{services.map((s) => <li><a href={`/services/${s.slug}`} data-cursor="link"><span class="ulink">{s.name}</span></a></li>)}</ul>
+      </div>
+      <div class="ftr__col">
+        <p class="mono ftr__h">Instagram</p>
+        <a href={company.instagram} target="_blank" rel="noopener" data-cursor="link"><span class="ulink">@anpconstruction</span></a>
+        <p class="mono ftr__h ftr__h--gap">Accreditations</p>
+        <ul role="list">{accreditations.map((a) => <li>{a.name}</li>)}</ul>
+      </div>
+    </div>
+    <p class="ftr__fit display" data-reveal="lines" aria-label={company.name}>
+      <span class="line" aria-hidden="true"><span>ANP Construction</span></span>
+    </p>
+    <div class="ftr__legal mono">
+      <span>© {year} {company.legalName}</span>
+      <span>{company.address.locality} {company.address.postcode}</span>
+      <button type="button" class="ftr__top" data-top data-cursor="link">Back to top <span aria-hidden="true">↑</span></button>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--navy-950); color: var(--white); padding-top: var(--section-y); position: relative; }
+  .ftr__cols {
+    display: grid; gap: var(--space-7) var(--grid-gap);
+    grid-template-columns: repeat(4, 1fr);
+    padding-block: var(--space-8) var(--space-9);
+  }
+  .ftr__col { display: grid; align-content: start; gap: var(--space-2); color: var(--navy-200); font-size: var(--fs-small); }
+  .ftr__col ul { display: grid; gap: var(--space-2); }
+  .ftr__col a:hover { color: var(--white); }
+  .ftr__col address { font-style: normal; margin-bottom: var(--space-4); }
+  .ftr__h { color: var(--mint-500); margin-bottom: var(--space-3); }
+  .ftr__h--gap { margin-top: var(--space-6); }
+  .ftr__big { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-h3); color: var(--white); font-stretch: 100%; }
+  /* ANP CONSTRUCTION fitted to the container: 11.9em @125%, 10.9em @100%, 7.0em @75% (+2% safety) */
+  .ftr__fit {
+    --fit-em: 7.15;
+    font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--fit-em));
+    white-space: nowrap; color: var(--white);
+  }
+  @media (min-width: 640px) { .ftr__fit { --fit-em: 11.1; } }
+  @media (min-width: 900px) { .ftr__fit { --fit-em: 12.15; } }
+  .ftr__legal {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3) var(--space-6);
+    padding-block: var(--space-6) var(--space-7); color: var(--navy-300);
+    border-top: 1px solid var(--line-on-dark); margin-top: var(--space-5);
+  }
+  .ftr__top { color: var(--white); letter-spacing: inherit; font: inherit; text-transform: inherit; min-height: 44px; margin-block: -12px; display: inline-flex; align-items: center; gap: 0.5em; }
+  /* Keep "Back to top" clear of the tender slip when it is showing */
+  :global(body:has(.dock.is-on)) .ftr__legal { padding-bottom: calc(var(--space-7) + 72px); }
+  .ftr__top:hover { color: var(--mint-500); }
+  @media (max-width: 1023px) { .ftr__cols { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 539px) { .ftr__cols { grid-template-columns: 1fr; } }
+</style>

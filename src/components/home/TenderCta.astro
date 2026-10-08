@@ -1,0 +1,128 @@
+---
+import { company, cta, services } from '../../data/site';
+import Pill from '../site/Pill.astro';
+const lines = ['Ready to', 'Discuss Your', 'Project?'];
+---
+<section class="tc" id="tender" data-header-theme="mint" data-cursor-theme="light" aria-labelledby="tc-h">
+  <div class="container tc__grid">
+    <div class="tc__lead">
+      <p class="mono tag tc__tag" data-reveal="fade"><b>[ {String(services.length).padStart(2, '0')} ]</b> Send a tender</p>
+      <h2 class="tc__h display" id="tc-h" data-reveal="lines" aria-label={cta.heading}>
+        {lines.map((l) => <span class="line" aria-hidden="true"><span>{l}</span></span>)}
+      </h2>
+      <div class="tc__body" data-reveal="fade">{cta.body.map((p) => <p>{p}</p>)}</div>
+      <div class="tc__contact" data-reveal="fade">
+        <a class="tc__phone display" href={company.phoneHref} data-cursor="link">{company.phone}</a>
+        <a class="tc__mail" href={`mailto:${company.email}`} data-cursor="link"><span class="ulink">{company.email}</span></a>
+        <address class="mono">{company.address.line1}<br />{company.address.line2}<br />{company.address.locality}<br />{company.address.postcode}</address>
+      </div>
+    </div>
+
+    <form class="tf" data-tf novalidate aria-labelledby="tc-h" data-reveal="fade">
+      <fieldset class="tf__pk">
+        <legend class="mono">Tick your trades</legend>
+        <div class="tf__chips">
+          {services.map((s, i) => (
+            <label class="tf__chip" data-cursor="link">
+              <input type="checkbox" name="pkg" value={s.slug} data-name={s.name} data-tender-box />
+              <span class="tf__chipin"><span class="mono tf__n">{String(i + 1).padStart(2, '0')}</span>{s.name}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="tf__row">
+        <label class="tf__fld"><span class="mono">Name *</span><input name="name" autocomplete="name" required /></label>
+        <label class="tf__fld"><span class="mono">Company</span><input name="company" autocomplete="organization" /></label>
+      </div>
+      <div class="tf__row">
+        <label class="tf__fld"><span class="mono">Email *</span><input name="email" type="email" autocomplete="email" required /></label>
+        <label class="tf__fld"><span class="mono">Phone (optional)</span><input name="tel" type="tel" autocomplete="tel" /></label>
+      </div>
+      <label class="tf__fld"><span class="mono">Message</span><textarea name="message" rows="4"></textarea></label>
+      <div class="tf__foot">
+        <Pill type="submit" variant="navy">Send a tender</Pill>
+        <button class="tf__copy mono" type="button" data-copy={company.email} data-cursor="link">Copy email</button>
+      </div>
+      <p class="tf__note" aria-live="polite" data-note></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .tc { background: var(--mint-500); color: var(--navy-700); padding-block: var(--section-y); position: relative; z-index: 2; }
+  .tc__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8) var(--grid-gap); }
+  .tc__lead { grid-column: 1 / 6; display: grid; gap: var(--space-6); align-content: start; }
+  .tc__tag b { color: var(--navy-700); }
+  .tc__h {
+    --em: 8.6;
+    font-size: min(var(--fs-display-2), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--em)));
+  }
+  @media (min-width: 900px) { .tc__h { font-size: min(var(--fs-display-3), 5.2vw); font-stretch: 100%; } }
+  .tc__body { display: grid; gap: var(--space-3); font-size: var(--fs-lead); max-width: 34ch; }
+  .tc__contact { display: grid; gap: var(--space-3); padding-top: var(--space-5); border-top: 1px solid rgb(35 52 103 / 0.25); }
+  .tc__phone { font-size: var(--fs-h2); font-stretch: 100%; line-height: 1; }
+  .tc__phone:hover { color: var(--navy-950); }
+  .tc__contact address { font-style: normal; color: var(--navy-700); }
+  .tf { grid-column: 7 / -1; display: grid; gap: var(--space-5); align-content: start; }
+  .tf__pk { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .tf__pk legend { margin-bottom: var(--space-4); }
+  .tf__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .tf__chip { position: relative; }
+  .tf__chip input { position: absolute; opacity: 0; inset: 0; margin: 0; width: 100%; height: 100%; cursor: pointer; }
+  .tf__chipin {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 16px;
+    border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1.5px var(--navy-700);
+    font-size: var(--fs-small); font-weight: var(--wght-text-strong);
+    transition: background var(--dur-fast) var(--ease-out-soft), color var(--dur-fast), transform var(--dur-base) var(--ease-spring);
+  }
+  .tf__n { opacity: 0.6; font-size: 11px; }
+  .tf__chip input:checked + .tf__chipin { background: var(--navy-700); color: var(--mint-500); transform: scale(1.04); }
+  .tf__chip input:focus-visible + .tf__chipin { box-shadow: var(--focus-ring); }
+  .tf__chip:hover .tf__chipin { background: rgb(35 52 103 / 0.1); }
+  .tf__chip:hover input:checked + .tf__chipin { background: var(--navy-800); }
+  .tf__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+  .tf__fld { display: grid; gap: var(--space-2); }
+  .tf__fld input, .tf__fld textarea {
+    width: 100%; background: transparent; border: 0; border-bottom: 1.5px solid rgb(35 52 103 / 0.45);
+    padding: 10px 0; color: var(--navy-950); font-size: var(--fs-body); border-radius: 0; resize: vertical;
+    transition: border-color var(--dur-fast);
+  }
+  .tf__fld input:focus, .tf__fld textarea:focus { outline: none; border-color: var(--navy-950); box-shadow: 0 1.5px 0 var(--navy-950); }
+  .tf__fld input[aria-invalid='true'] { border-color: #8a1f2b; }
+  .tf__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); margin-top: var(--space-3); }
+  .tf__copy { min-height: 44px; padding-inline: 2px; color: var(--navy-700); text-decoration: underline; text-underline-offset: 4px; letter-spacing: var(--tr-label); text-transform: uppercase; font-size: var(--fs-label); }
+  .tf__note { font-size: var(--fs-small); min-height: 1.5em; }
+  @media (max-width: 899px) {
+    .tc__lead, .tf { grid-column: 1 / -1; }
+  }
+  @media (max-width: 539px) { .tf__row { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { mailto, set } from '../../scripts/tender.js';
+  document.querySelectorAll<HTMLFormElement>('form[data-tf]').forEach((form) => {
+    const boxes = [...form.querySelectorAll<HTMLInputElement>('input[name="pkg"]')];
+    const note = form.querySelector('[data-note]')!;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const req = [...form.querySelectorAll<HTMLInputElement>('input[required]')];
+      let bad: HTMLInputElement | null = null;
+      req.forEach((x) => { const ok = x.checkValidity() && x.value.trim() !== ''; x.setAttribute('aria-invalid', String(!ok)); if (!ok && !bad) bad = x; });
+      if (bad) { (bad as HTMLInputElement).focus(); note.textContent = 'Please add your name and a valid email.'; return; }
+      const f = new FormData(form);
+      const slugs = boxes.filter((x) => x.checked).map((x) => x.value);
+      set(slugs);
+      note.textContent = 'Your email app should open with the details filled in. If it does not, copy the email address and send your tender directly.';
+      location.href = mailto(slugs, {
+        name: String(f.get('name') || ''), company: String(f.get('company') || ''), email: String(f.get('email') || ''),
+        tel: String(f.get('tel') || ''), message: String(f.get('message') || ''),
+      });
+    });
+    const cp = form.querySelector<HTMLButtonElement>('[data-copy]');
+    cp?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(cp.dataset.copy || ''); cp.textContent = 'Copied'; }
+      catch { cp.textContent = cp.dataset.copy || ''; }
+      setTimeout(() => { cp.textContent = 'Copy email'; }, 2400);
+    });
+  });
+</script>

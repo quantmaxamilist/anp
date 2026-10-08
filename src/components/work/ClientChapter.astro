@@ -1,0 +1,197 @@
+---
+// One client chapter on /clients: the client's name set huge in outline display that fills solid navy as you
+// scroll (mint pour line on the leading edge), a sticky aside with the derived project count and a register of the
+// projects, and the projects themselves as lightbox cards (one data-gallery per client).
+import ProjectCard from '../site/ProjectCard.astro';
+import type { Project } from '../../data/site';
+import { slug } from './util';
+
+interface Props {
+  client: { name: string; projects: Project[] };
+  index: number;          // 0-based chapter index
+  total: number;          // number of clients
+  tone?: 'concrete' | 'white';
+}
+const { client, index, total, tone = 'concrete' } = Astro.props;
+const id = slug(client.name);
+const pad = (n: number) => String(n).padStart(2, '0');
+const n = client.projects.length;
+const words = client.name.split(' ');
+const hId = `cl-${id}-h`;
+---
+<section
+  class:list={['cl-ch', `cl-ch--${tone}`, 'on-light']}
+  id={id}
+  data-header-theme="light"
+  data-cursor-theme="light"
+  aria-labelledby={hId}
+  data-cl-chapter
+>
+  <div class="container">
+    <div class="datum" data-reveal="datum"></div>
+    <div class="cl-ch__top mono">
+      <p class="tag" data-reveal="fade"><b>[ {pad(index + 1)} / {pad(total)} ]</b> Client</p>
+      <p data-reveal="fade" data-delay="0.1">{pad(n)} {n === 1 ? 'project' : 'projects'}</p>
+    </div>
+
+    <h2 class="cl-name display" id={hId} aria-label={client.name} data-cl-name>
+      <span class="cl-name__o" aria-hidden="true" data-reveal="lines">
+        {words.map((w) => <span class="line"><span>{w}</span></span>)}
+      </span>
+      <span class="cl-name__f" aria-hidden="true" data-reveal="lines">
+        {words.map((w) => <span class="line"><span>{w}</span></span>)}
+      </span>
+      <i class="cl-name__pour" aria-hidden="true"></i>
+    </h2>
+
+    <div class="cl-ch__body">
+      <aside class="cl-aside" aria-label={`${client.name}: ${n} projects`}>
+        <div class="cl-aside__in">
+          <p class="cl-count" data-reveal="fade">
+            <span class="cl-count__n display" aria-hidden="true"><span class="cl-count__z">{pad(n)[0]}</span>{pad(n)[1]}</span>
+            <span class="mono cl-count__l"><span class="sr-only">{n} </span>{n === 1 ? 'Project' : 'Projects'}</span>
+          </p>
+          <ol class="cl-list" role="list" data-reveal="fade" data-delay="0.1">
+            {client.projects.map((p, i) => (
+              <li>
+                {p.image ? (
+                  <button type="button" class="cl-list__row" data-cl-open={i} data-cursor="view" aria-label={`Open photo: ${p.name}`}>
+                    <span class="mono cl-list__i">{pad(i + 1)}</span>
+                    <span class="cl-list__name">{p.name}</span>
+                    {p.note && <span class="mono cl-list__note">{p.note}</span>}
+                  </button>
+                ) : (
+                  <span class="cl-list__row" data-cl-row={i}>
+                    <span class="mono cl-list__i">{pad(i + 1)}</span>
+                    <span class="cl-list__name">{p.name}</span>
+                    {p.note && <span class="mono cl-list__note">{p.note}</span>}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+          <a class="cl-aside__link mono ulink" href={`/additional-projects?client=${id}`} data-reveal="fade" data-delay="0.2">
+            View on Additional Projects <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="cl-grid-wrap">
+        <ul class="cl-grid" role="list" data-gallery data-cl-grid aria-label={`${client.name} projects`}>
+          {client.projects.map((p, i) => (
+            <li class="cl-cell" data-cl-cell={i}>
+              <ProjectCard project={p} index={i} total={n} mode="gallery" theme="light" ratio="4 / 5"
+                sizes="(min-width: 900px) 30vw, 78vw" />
+            </li>
+          ))}
+        </ul>
+        {n > 1 && <div class="cl-track-bar" aria-hidden="true"><i data-cl-bar></i></div>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cl-ch {
+    --cl-bg: var(--concrete-50);
+    position: relative;
+    background: var(--cl-bg);
+    color: var(--navy-700);
+    padding-block: var(--space-fluid-l) var(--section-y);
+  }
+  .cl-ch--white { --cl-bg: var(--white); }
+  .cl-ch__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); padding-top: var(--space-5); color: var(--concrete-600); }
+
+  /* ---- The name: outline layer + solid fill layer wiped by --cl-p (0 → 1) ---- */
+  .cl-name {
+    --cl-p: 1;
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: var(--space-fluid-m);
+    font-size: min(var(--fs-display-1), calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / 6.25));
+  }
+  @media (max-width: 899px) { .cl-name { font-size: min(var(--fs-display-1), calc((100vw - 2 * var(--gutter)) / 5.75)); } }
+  @media (max-width: 639px) { .cl-name { font-size: calc((100vw - 2 * var(--gutter)) / 3.62); } }
+  :global(html.js:not(.rm)) .cl-name { --cl-p: 0; }
+  .cl-name__o, .cl-name__f { display: block; }
+  .cl-name__o { color: transparent; -webkit-text-stroke: 1.5px var(--navy-700); }
+  @media (min-width: 900px) { .cl-name__o { -webkit-text-stroke-width: 2px; } }
+  .cl-name__f {
+    position: absolute; inset: 0; color: var(--navy-700);
+    clip-path: inset(-0.1em calc((1 - var(--cl-p)) * 100%) -0.1em 0);
+  }
+  .cl-name__pour {
+    position: absolute; top: -0.04em; bottom: 0.04em; width: 3px; margin-left: -1.5px;
+    left: calc(var(--cl-p) * 100%); background: var(--mint-600); opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-fast);
+  }
+  .cl-name.is-pouring .cl-name__pour { opacity: 1; }
+
+  /* ---- Body: sticky register + staggered two-column cards ---- */
+  .cl-ch__body { margin-top: var(--space-fluid-l); display: grid; gap: var(--space-7); }
+  .cl-aside__in { display: grid; gap: var(--space-6); align-content: start; }
+  .cl-count { display: flex; align-items: flex-end; gap: var(--space-4); }
+  .cl-count__n {
+    font-size: clamp(5.5rem, 3rem + 8vw, 12rem); font-stretch: var(--wdth-condensed); line-height: 0.8;
+    font-variant-numeric: tabular-nums; color: var(--navy-700);
+  }
+  .cl-count__z { color: var(--concrete-400); }
+  .cl-count__l { padding-bottom: 0.5em; color: var(--concrete-600); }
+  .cl-list { display: grid; border-top: 1px solid var(--line-on-light); }
+  .cl-list li { border-bottom: 1px solid var(--line-on-light); }
+  .cl-list__row {
+    display: grid; grid-template-columns: 2.6em 1fr; column-gap: var(--space-3); row-gap: 2px; align-items: baseline;
+    width: 100%; padding: var(--space-3) 0; text-align: left; color: var(--navy-700);
+    transition: background var(--dur-fast), padding var(--dur-base) var(--ease-out);
+  }
+  .cl-list__i { color: var(--mint-700); }
+  .cl-list__name { font-weight: var(--wght-text-strong); line-height: 1.3; }
+  .cl-list__note { grid-column: 2; color: var(--concrete-600); }
+  button.cl-list__row:hover, button.cl-list__row:focus-visible, .cl-list__row.is-hot { padding-left: var(--space-3); background: color-mix(in srgb, var(--mint-500) 22%, transparent); }
+  .cl-aside__link { justify-self: start; display: inline-flex; align-items: center; min-height: 44px; color: var(--navy-700); }
+
+  .cl-grid-wrap { min-width: 0; }
+  .cl-grid { list-style: none; padding: 0; margin: 0; display: grid; }
+  .cl-cell { min-width: 0; transition: opacity var(--dur-base) var(--ease-out-soft); }
+  .cl-grid.is-dim .cl-cell:not(.is-hot) { opacity: 0.35; }
+  .cl-cell :global(.pc__frame) { transition: box-shadow var(--dur-base) var(--ease-out); }
+  .cl-cell.is-hot :global(.pc__frame) { box-shadow: 0 0 0 2px var(--mint-600); }
+
+  @media (min-width: 900px) {
+    .cl-ch__body { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--grid-gap); align-items: start; }
+    .cl-aside { grid-column: 1 / 5; position: sticky; top: calc(var(--header-h) + var(--space-6)); }
+    .cl-grid-wrap { grid-column: 5 / -1; }
+    .cl-grid {
+      --cl-off: clamp(4rem, 9vw, 10rem);
+      --cl-par: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-fluid-m) var(--grid-gap);
+      padding-bottom: calc(var(--cl-off) + 3rem);
+    }
+    .cl-cell:nth-child(even) { transform: translateY(calc(var(--cl-off) + var(--cl-par) * 3rem)); }
+    .cl-track-bar { display: none; }
+  }
+
+  /* Phones and small tablets: a native swipe track that bleeds to the screen edges */
+  @media (max-width: 899px) {
+    .cl-list { display: none; }
+    .cl-aside__in { grid-template-columns: 1fr auto; align-items: end; }
+    .cl-aside__link { justify-self: end; padding-bottom: 0; }
+    .cl-grid {
+      grid-auto-flow: column; grid-auto-columns: min(78%, 22rem); gap: var(--space-4);
+      overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+      margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter);
+      scrollbar-width: none; padding-bottom: var(--space-2);
+    }
+    .cl-grid::-webkit-scrollbar { display: none; }
+    .cl-cell { scroll-snap-align: start; }
+    .cl-track-bar { position: relative; height: 2px; margin-top: var(--space-5); background: var(--line-on-light); overflow: clip; }
+    .cl-track-bar i { position: absolute; inset: 0; background: var(--mint-600); transform-origin: left; transform: scaleX(var(--cl-bar, 0.3)); }
+  }
+  @media (max-width: 899px) and (min-width: 640px) { .cl-grid { grid-auto-columns: min(46%, 22rem); } }
+  @media (max-width: 479px) {
+    .cl-aside__in { grid-template-columns: 1fr; gap: var(--space-5); }
+    .cl-aside__link { justify-self: start; padding-bottom: 0; }
+  }
+</style>

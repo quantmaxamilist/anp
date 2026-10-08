@@ -1,0 +1,196 @@
+---
+// /contact "contact sheet": the phone set monumental (odometer roll), the email large with a Copy button,
+// address / Instagram / jobs in a three-cell register, the sign-off and the postcode as an outlined monument.
+// Content is verbatim from src/data/site.ts (company, contact). Motion lives in src/scripts/contact.js.
+import { company, contact } from '../../data/site';
+import Arrow from '../site/Arrow.astro';
+
+const ROWS = [...'0123456789', ...'0123456789', ...'0123456789']; // 3 cycles: rest on the middle one
+const phone = [...company.phone];
+const [mailUser, mailDomain] = company.email.split('@');
+const ig = company.instagram.replace(/\/$/, '').split('/').pop();
+const a = company.address;
+---
+<section class="ct-sheet on-light" data-header-theme="light" data-cursor-theme="light" aria-labelledby="ct-sheet-h">
+  <div class="container">
+    <header class="ct-top">
+      <h2 class="mono ct-top__h" id="ct-sheet-h" data-reveal="fade">{company.legalName}</h2>
+      <p class="mono ct-top__loc" data-reveal="fade" data-delay="0.1">{a.locality} {a.postcode}</p>
+    </header>
+
+    <div class="ct-row ct-row--phone">
+      <div class="datum ct-row__datum" data-reveal="datum"></div>
+      <p class="mono tag ct-k"><b>[ 01 ]</b> Phone</p>
+      <a class="ct-phone display" href={company.phoneHref} aria-label={company.phone} data-ct-phone data-cursor="link">
+        {phone.map((c) => c === ' '
+          ? <span class="ct-sp" aria-hidden="true"></span>
+          : <span class="ct-dg" aria-hidden="true"><span class="ct-col" data-d={c} style={`--d:${c}`}>{ROWS.map((r) => <span>{r}</span>)}</span></span>)}
+        <span class="ct-phone__arrow" aria-hidden="true"><Arrow /></span>
+      </a>
+    </div>
+
+    <div class="ct-row ct-row--mail">
+      <div class="datum ct-row__datum" data-reveal="datum"></div>
+      <div class="ct-k ct-k--split">
+        <p class="mono tag"><b>[ 02 ]</b> Email</p>
+        <button class="ct-copy mono" type="button" data-ct-copy={company.email} data-cursor="link">
+          <span class="ct-copy__ico" aria-hidden="true"><svg viewBox="0 0 16 16" focusable="false"><rect x="5" y="5" width="8.5" height="8.5" rx="1.5" /><path d="M3 10.5V3.8C3 3.36 3.36 3 3.8 3h6.7" /></svg></span>
+          <span class="ct-copy__l" data-ct-copy-label>Copy email</span>
+        </button>
+      </div>
+      <a class="ct-mail" href={`mailto:${company.email}`} aria-label={company.email} data-cursor="link" data-reveal="fade">
+        <span class="ct-mail__u">{mailUser}@</span><span class="ct-mail__d">{mailDomain}</span>
+      </a>
+      <p class="sr-only" aria-live="polite" data-ct-copy-live></p>
+    </div>
+
+    <div class="ct-row ct-row--cells">
+      <div class="datum ct-row__datum" data-reveal="datum"></div>
+      <div class="ct-cell" data-reveal="fade">
+        <p class="mono tag ct-k"><b>[ 03 ]</b> Address</p>
+        <address class="ct-addr">
+          <span>{a.line1}</span>
+          <span>{a.line2}</span>
+          <span>{a.locality}</span>
+          <span>{a.postcode}</span>
+        </address>
+      </div>
+      <div class="ct-cell" data-reveal="fade" data-delay="0.08">
+        <p class="mono tag ct-k"><b>[ 04 ]</b> Instagram</p>
+        <a class="ct-ig" href={company.instagram} target="_blank" rel="noopener" data-cursor="link">
+          <span class="ulink">@{ig}</span>
+          <span class="ct-ig__arrow" aria-hidden="true"><Arrow /></span>
+        </a>
+      </div>
+      <div class="ct-cell" data-reveal="fade" data-delay="0.16">
+        <p class="mono tag ct-k"><b>[ 05 ]</b> Careers</p>
+        <p class="ct-jobs">{contact.jobs}</p>
+        <a class="ct-jobs__mail" href={`mailto:${company.email}`} data-cursor="link"><span class="ulink">{company.email}</span></a>
+      </div>
+    </div>
+
+    <div class="ct-row ct-row--sign">
+      <div class="datum ct-row__datum" data-reveal="datum"></div>
+      <p class="ct-sign" data-reveal="fade">{contact.signoff}</p>
+    </div>
+  </div>
+
+  <div class="ct-post" data-ct-post aria-hidden="true">
+    <div class="container ct-post__in">
+      <span class="ct-post__t display">{a.postcode}</span>
+      <span class="ct-post__t ct-post__fill display" data-ct-post-fill>{a.postcode}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ct-sheet {
+    --ct-line: var(--line-on-light);
+    position: relative;
+    background: var(--concrete-50); color: var(--navy-700);
+    padding-top: var(--section-y);
+    overflow: clip;
+  }
+  .ct-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3) var(--space-6); margin-bottom: var(--space-fluid-m); color: var(--concrete-600); }
+  .ct-top__h { color: var(--navy-700); }
+
+  .ct-row { position: relative; display: grid; gap: var(--space-5); padding-block: var(--space-6) var(--space-fluid-m); }
+  .ct-row__datum { position: absolute; top: 0; left: 0; right: 0; }
+  .ct-k { color: var(--concrete-600); }
+  .ct-k--split { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+  /* Phone: monumental, condensed odometer digits. --ct-ph-em = measured em-width of the number. */
+  .ct-phone {
+    --ct-ph-em: 9.68; /* measured: 9.075em digits at 125% + 0.58em arrow */
+    position: relative; display: flex; align-items: center; gap: 0; width: max-content; max-width: 100%;
+    font-size: min(17rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-ph-em)));
+    line-height: 1; color: var(--navy-700);
+    letter-spacing: -0.01em;
+    transition: color var(--dur-fast) var(--ease-out-soft);
+  }
+  @media (max-width: 1199px) { .ct-phone { --ct-ph-em: 9.12; } }
+  @media (max-width: 899px) { .ct-phone { --ct-ph-em: 7.66; } }
+  @media (max-width: 639px) { .ct-phone { --ct-ph-em: 6.06; } }
+  .ct-dg { display: inline-block; height: 1em; overflow: clip; }
+  .ct-col { display: flex; flex-direction: column; transform: translateY(calc((10 + var(--d)) * -100% / 30)); will-change: transform; }
+  .ct-col > span { display: block; height: 1em; line-height: 1; text-align: center; }
+  .ct-sp { display: inline-block; width: 0.22em; }
+  .ct-phone__arrow {
+    flex: none; margin-left: 0.14em; translate: 0 -0.04em;
+    width: 0.44em; aspect-ratio: 1; border-radius: 50%;
+    display: grid; place-items: center; background: var(--mint-500); color: var(--navy-700);
+    transition: transform var(--dur-base) var(--ease-out), background var(--dur-fast);
+  }
+  .ct-phone__arrow :global(svg) { width: 40%; height: 40%; transform: rotate(-45deg); }
+  @media (hover: hover) and (pointer: fine) {
+    .ct-phone:hover { color: var(--navy-950); }
+    .ct-phone:hover .ct-phone__arrow { transform: scale(1.12) rotate(45deg); background: var(--navy-700); color: var(--mint-500); }
+  }
+  @media (max-width: 1199px) { .ct-phone__arrow { display: none; } }
+
+  /* Email */
+  .ct-mail {
+    --ct-ml-em: 15.3;
+    display: block; width: fit-content; max-width: 100%;
+    font-family: var(--font-display); font-weight: 800; font-stretch: 100%;
+    font-size: min(6.5rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-ml-em)));
+    line-height: 1.02; letter-spacing: -0.025em; color: var(--navy-700);
+    background: linear-gradient(var(--mint-500), var(--mint-500)) left 92% / 0% 0.14em no-repeat;
+    transition: background-size var(--dur-base) var(--ease-out), color var(--dur-fast);
+  }
+  .ct-mail:hover, .ct-mail:focus-visible { background-size: 100% 0.14em; color: var(--navy-950); }
+  @media (max-width: 899px) { .ct-mail__u, .ct-mail__d { display: block; } .ct-mail { --ct-ml-em: 12.2; } }
+  @media (max-width: 639px) { .ct-mail { --ct-ml-em: 10.4; font-stretch: 85%; } }
+
+  .ct-copy {
+    display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 8px;
+    border-radius: var(--radius-pill); box-shadow: inset 0 0 0 1.5px var(--navy-700); color: var(--navy-700);
+    transition: background var(--dur-fast) var(--ease-out-soft), color var(--dur-fast);
+  }
+  .ct-copy__ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--navy-700); color: var(--mint-500); }
+  .ct-copy__ico svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .ct-copy:hover { background: var(--navy-700); color: var(--white); }
+  .ct-copy.is-done .ct-copy__ico { background: var(--mint-500); color: var(--navy-700); }
+
+  /* Register: address / Instagram / careers */
+  .ct-row--cells { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6) var(--grid-gap); }
+  .ct-cell { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+  .ct-cell + .ct-cell { border-left: 1px solid var(--ct-line); padding-left: var(--grid-gap); }
+  .ct-addr {
+    font-style: normal; display: grid;
+    font-family: var(--font-display); font-weight: 800; font-stretch: 100%; text-transform: uppercase;
+    font-size: var(--fs-h3); line-height: 1.08; letter-spacing: -0.01em;
+  }
+  .ct-ig { display: inline-flex; align-items: center; gap: var(--space-3); width: fit-content; min-height: 44px; font-family: var(--font-display); font-weight: 800; font-stretch: 100%; font-size: var(--fs-h3); line-height: 1.1; }
+  .ct-ig__arrow { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--navy-700); color: var(--mint-500); flex: none; transition: transform var(--dur-base) var(--ease-out); }
+  .ct-ig__arrow :global(svg) { width: 14px; height: 14px; transform: rotate(-45deg); }
+  .ct-ig:hover .ct-ig__arrow { transform: rotate(45deg); }
+  .ct-jobs { max-width: 38ch; font-size: var(--fs-body); line-height: var(--lh-body); }
+  .ct-jobs__mail { display: inline-flex; align-items: center; min-height: 44px; width: fit-content; max-width: 100%; font-weight: var(--wght-text-strong); overflow-wrap: anywhere; }
+
+  /* Sign-off */
+  .ct-row--sign { padding-bottom: var(--space-fluid-s); }
+  .ct-sign {
+    font-family: var(--font-display); font-weight: 650; font-stretch: var(--wdth-text-display);
+    font-size: var(--fs-statement); line-height: var(--lh-statement); letter-spacing: -0.015em; max-width: 22ch;
+  }
+
+  /* Postcode monument: outline, filled by scroll */
+  .ct-post { position: relative; padding-bottom: clamp(1rem, 2vw, 2.5rem); }
+  .ct-post__in { position: relative; }
+  .ct-post__t {
+    --ct-pc-em: 4.58;
+    display: block; white-space: nowrap;
+    font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-pc-em));
+    line-height: 0.8; padding-top: 0.06em;
+    color: transparent; -webkit-text-stroke: 1.5px var(--navy-700);
+  }
+  .ct-post__fill { position: absolute; inset: 0 var(--gutter); color: var(--navy-700); -webkit-text-stroke: 0; }
+  @media (max-width: 899px) { .ct-post__t { --ct-pc-em: 4.24; } }
+  @media (max-width: 639px) { .ct-post__t { --ct-pc-em: 2.9; -webkit-text-stroke-width: 1px; } }
+
+  @media (max-width: 899px) {
+    .ct-row--cells { grid-template-columns: 1fr; }
+    .ct-cell + .ct-cell { border-left: 0; padding-left: 0; border-top: 1px solid var(--ct-line); padding-top: var(--space-6); }
+  }
+</style>

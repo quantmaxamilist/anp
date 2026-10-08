@@ -1,0 +1,365 @@
+---
+// WOW A, "The Build": the scroll-built 3D section model (ported from v3), at blue hour on a
+// navy blueprint. Behaviour: src/scripts/wow-build.js (light) -> wow-build-scene.js (three).
+import { services } from '../../data/site';
+import { zones } from '../../data/extra';
+import { wrap } from '../../data/wrap';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const trades = services.map((s, i) => ({
+  n: pad(i + 1),
+  slug: s.slug,
+  name: s.name,
+  lines: wrap(s.name.toUpperCase(), 12),
+  tag: zones[s.slug].tag,
+  quote: zones[s.slug].quote,
+  href: `/services/${s.slug}`,
+}));
+---
+<section class="wow-build" data-wow="build" aria-labelledby="wow-build-h">
+  <div class="wow-build__stage">
+    <!-- first focusable element in the section: readers can always jump past the build -->
+    <a class="wow-build__skip" href="#packages" data-wow-build-skip data-cursor="link"><span>Skip<span class="wow-build__skipx"> to packages</span></span><i aria-hidden="true">↓</i></a>
+    <!-- the giant numeral sits behind the (transparent) canvas, so the model passes in front of it -->
+    <div class="wow-build__num" aria-hidden="true">
+      <span class="wow-build__col"><span data-wow-build-digit>{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => <span>{d}</span>)}</span></span>
+      <span class="wow-build__col"><span data-wow-build-digit>{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => <span>{d}</span>)}</span></span>
+    </div>
+    <div class="wow-build__gl" data-wow-build-gl aria-hidden="true"></div>
+    <picture class="wow-build__poster">
+      <source media="(max-width: 899px) and (orientation: portrait)" srcset="/wow/build/poster-portrait.webp" width="900" height="1440" />
+      <img src="/wow/build/poster.webp" width="1600" height="1000" alt="" loading="lazy" decoding="async" />
+    </picture>
+
+    <div class="wow-build__scrim" aria-hidden="true"></div>
+    <div class="wow-build__tag" data-wow-build-tag aria-hidden="true"><i></i><s></s><b data-wow-build-taglabel></b></div>
+    <div class="wow-build__pins" aria-hidden="true">
+      {trades.map((t, i) => (
+        <a class="wow-build__pin" data-wow-build-pin data-wow-build-n={i} href={t.href} tabindex="-1" style={`--wow-build-i:${i}`}><span>{t.n}</span><em>{t.name}</em></a>
+      ))}
+    </div>
+    <div class="wow-build__veil" data-wow-build-veil aria-hidden="true"></div>
+
+    <div class="wow-build__ui">
+      <div class="wow-build__head">
+        <h2 class="wow-build__h" id="wow-build-h"><span class="wow-build__mint">[ 09 ]</span> Trade packages</h2>
+        <span class="wow-build__count" data-wow-build-count aria-hidden="true">00 / 09</span>
+      </div>
+
+      <div class="wow-build__panel" data-wow-build-panel>
+        <p class="wow-build__no"><span class="wow-build__mint" data-wow-build-no>[ 09 ]</span> <span data-wow-build-tagtext>Trade packages</span></p>
+        <p class="wow-build__title" data-wow-build-title aria-label="09 trade packages"><span class="wow-build__tset"><span class="wow-build__line"><span>09 TRADE</span></span><span class="wow-build__line"><span>PACKAGES</span></span></span></p>
+        <p class="wow-build__quote" data-wow-build-quote></p>
+        <a class="wow-build__pill" data-wow-build-link href={trades[0].href}><span>View service</span><i aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></i></a>
+        <span class="wow-build__cue" aria-hidden="true">Scroll</span>
+      </div>
+
+      <ol class="wow-build__rail" aria-label="Trade packages">
+        {trades.map((t, i) => (
+          <li><button type="button" data-wow-build-go={i + 1} aria-label={`Go to ${t.name}`}><span>{t.n}</span><i></i></button></li>
+        ))}
+      </ol>
+
+      <ol class="wow-build__legend">
+        {trades.map((t, i) => (
+          <li data-wow-build-li data-wow-build-n={i} style={`--wow-build-i:${i}`}><a href={t.href}><span>{t.n}</span> {t.name}</a></li>
+        ))}
+      </ol>
+
+    </div>
+  </div>
+  <script type="application/json" data-wow-build-data set:html={JSON.stringify(trades)} />
+</section>
+
+<script>
+  import '../../scripts/wow-build.js';
+</script>
+
+<style>
+  .wow-build {
+    --wow-build-final: 0;
+    --wow-build-top: calc(var(--header-h) + var(--space-4));
+    position: relative;
+    height: 500svh;
+    background: var(--navy-950);
+    color: var(--white);
+  }
+  .wow-build__stage {
+    position: sticky; top: 0;
+    height: var(--stage-h);
+    overflow: hidden;
+    background: var(--navy-950);
+  }
+  .wow-build__gl { position: absolute; inset: 0; }
+  .wow-build__gl canvas { display: block; width: 100%; height: 100%; }
+  .wow-build__poster { position: absolute; inset: 0; display: none; }
+  .wow-build__poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* keeps the panel legible where the model runs behind it */
+  .wow-build__scrim {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 1;
+    background: linear-gradient(90deg, rgb(14 22 48 / 0.96) 0%, rgb(14 22 48 / 0.9) 30%, rgb(14 22 48 / 0.55) 42%, rgb(14 22 48 / 0) 54%);
+    transition: opacity var(--dur-slow) var(--ease-out-soft);
+  }
+  .wow-build.is-trade .wow-build__scrim, .wow-build.is-final .wow-build__scrim { opacity: 1; }
+  .wow-build__veil {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 18%;
+    background: linear-gradient(180deg, rgb(14 22 48 / 0) 0%, var(--navy-950) 70%);
+    opacity: 0; pointer-events: none; z-index: 3;
+  }
+
+  /* ---- UI over the canvas ------------------------------------------------------------ */
+  .wow-build__ui { position: absolute; inset: 0; z-index: var(--z-stage-ui); pointer-events: none; }
+  .wow-build__ui :is(a, button) { pointer-events: auto; }
+  .wow-build__mint { color: var(--mint-500); }
+  .wow-build__head {
+    position: absolute; left: var(--gutter); right: var(--gutter); top: var(--wow-build-top);
+    display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4);
+  }
+  .wow-build__h, .wow-build__count, .wow-build__no, .wow-build__cue, .wow-build__rail span, .wow-build__legend span {
+    font-family: var(--font-mono); font-weight: var(--wght-mono); font-size: var(--fs-label);
+    letter-spacing: var(--tr-label); text-transform: uppercase; line-height: var(--lh-label);
+  }
+  .wow-build__h { margin: 0; color: var(--navy-200); transition: opacity var(--dur-base) var(--ease-out-soft); }
+  .wow-build.is-open .wow-build__h { opacity: 0; }
+  .wow-build__count { display: none; color: var(--navy-200); }
+
+  /* giant outlined numeral, rolling like an odometer */
+  .wow-build__num {
+    position: absolute; z-index: 0; pointer-events: none; right: calc(var(--gutter) + 2.25rem); top: calc(var(--wow-build-top) - 0.5rem);
+    display: flex; font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed);
+    font-size: min(var(--fs-numeral), 36svh); line-height: 1; font-variant-numeric: tabular-nums;
+    color: transparent; -webkit-text-stroke: 1.5px var(--mint-500);
+    opacity: 0; transform: translateY(8%); transition: opacity 0.6s var(--ease-out), transform 0.9s var(--ease-out);
+  }
+  .wow-build.is-trade .wow-build__num, .wow-build.is-final .wow-build__num { opacity: 0.85; transform: none; }
+  .wow-build.is-final .wow-build__num { opacity: 0.2; }
+  .wow-build__col { display: block; height: 0.9em; overflow: hidden; }
+  .wow-build__col > span { display: block; }
+  .wow-build__col > span > span { display: block; height: 0.9em; line-height: 0.9; }
+
+  /* the trade panel: bottom-left */
+  .wow-build__panel {
+    position: absolute; left: var(--gutter); bottom: clamp(2rem, 7svh, 4.5rem);
+    width: min(40rem, 46vw);
+    display: grid; justify-items: start; gap: var(--space-4);
+    transition: opacity var(--dur-base) var(--ease-out-soft), transform var(--dur-slow) var(--ease-out);
+  }
+  .wow-build.is-final .wow-build__panel { opacity: 0; transform: translateY(1.5rem); pointer-events: none; transition-duration: 0.2s, 0.3s; }
+  .wow-build.is-final .wow-build__panel a { pointer-events: none; }
+  .wow-build__no { margin: 0; color: var(--navy-200); display: flex; gap: 0.6em; }
+  .wow-build__title {
+    margin: 0; display: grid;
+    font-family: var(--font-display); font-weight: var(--wght-display); font-stretch: var(--wdth-display);
+    text-transform: uppercase; line-height: var(--lh-display); letter-spacing: var(--tr-display);
+    /* widest wrapped line ("ALTERATIONS /") is ~9.9em at 125%: never wider than the panel */
+    font-size: min(var(--fs-display-3), calc(min(40rem, 46vw) / 9.9));
+  }
+  .wow-build__tset { grid-area: 1 / 1; display: block; align-self: end; }
+  .wow-build__line { display: block; overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .wow-build__line > span { display: block; transform-origin: left bottom; white-space: nowrap; }
+  .wow-build__quote {
+    margin: 0; max-width: 38ch; font-family: var(--font-text); font-size: var(--fs-body); line-height: var(--lh-body);
+    color: rgb(255 255 255 / 0.8);
+  }
+  .wow-build.is-open .wow-build__quote, .wow-build.is-open .wow-build__pill { display: none; }
+  .wow-build__pill {
+    display: inline-flex; align-items: center; gap: var(--space-3); height: 52px; padding: 0 8px 0 var(--space-5);
+    border: 1.5px solid rgb(255 255 255 / 0.55); border-radius: var(--radius-pill); color: var(--white); text-decoration: none;
+    font-family: var(--font-text); font-weight: var(--wght-text-strong); font-size: var(--fs-small); letter-spacing: var(--tr-label); text-transform: uppercase;
+    transition: border-color var(--dur-fast) var(--ease-out-soft), background-color var(--dur-fast) var(--ease-out-soft), color var(--dur-fast) var(--ease-out-soft);
+  }
+  .wow-build__pill i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--mint-500); color: var(--navy-700); }
+  .wow-build__pill:hover { border-color: var(--mint-500); background: var(--mint-500); color: var(--navy-700); }
+  .wow-build__pill:hover i { background: var(--navy-700); color: var(--mint-500); }
+  .wow-build__pill:focus-visible, .wow-build__ui button:focus-visible, .wow-build__legend a:focus-visible, .wow-build__pin:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .wow-build__cue { display: none; align-items: center; gap: 0.75rem; color: var(--navy-200); }
+  .wow-build.is-open .wow-build__cue { display: inline-flex; }
+  .wow-build__cue::after { content: ''; width: 40px; height: 1px; background: var(--mint-500); transform-origin: left; animation: wow-build-cue 1.8s var(--ease-in-out) infinite; }
+  @keyframes wow-build-cue { 0% { transform: scaleX(0); transform-origin: left; } 50% { transform: scaleX(1); transform-origin: left; } 51% { transform-origin: right; } 100% { transform: scaleX(0); transform-origin: right; } }
+
+  /* rail: nine mono ticks on the right edge */
+  .wow-build__rail {
+    position: absolute; right: var(--gutter); bottom: calc(clamp(2rem, 7svh, 4.5rem) + 3.75rem);
+    list-style: none; margin: 0; padding: 0.375rem 0.625rem 0.375rem 0; display: grid; gap: 2px;
+    /* a quiet navy backplate: the ticks stay legible when the white model passes behind them */
+    border-radius: var(--radius-m); background: rgb(14 22 48 / 0.74); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    margin-right: -0.625rem;
+    transition: opacity var(--dur-base) var(--ease-out-soft);
+  }
+  .wow-build.is-open .wow-build__rail { opacity: 0.45; }
+  .wow-build.is-final .wow-build__rail { opacity: 0; pointer-events: none; }
+  .wow-build.is-final .wow-build__rail button { pointer-events: none; }
+  .wow-build__rail button {
+    --wow-build-p: 0;
+    display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; min-height: 28px; padding: 0 0 0 0.75rem;
+    background: none; border: 0; color: var(--navy-300); cursor: pointer;
+  }
+  .wow-build__rail button i { position: relative; display: block; width: 16px; height: 1px; background: rgb(255 255 255 / 0.28); transition: width var(--dur-base) var(--ease-out); }
+  .wow-build__rail button i::after { content: ''; position: absolute; inset: 0; background: var(--mint-500); transform-origin: left; transform: scaleX(var(--wow-build-p)); }
+  .wow-build__rail button:hover { color: var(--white); }
+  .wow-build__rail button.is-on { color: var(--mint-500); }
+  .wow-build__rail button.is-on i { width: 36px; }
+  .wow-build__rail button.is-done { color: var(--navy-200); }
+
+  .wow-build__skip {
+    --wow-build-prog: 0;
+    position: absolute; z-index: calc(var(--z-stage-ui) + 1); right: var(--gutter); bottom: clamp(2rem, 7svh, 4.5rem);
+    display: inline-flex; align-items: center; gap: 0.75em; min-height: 48px; padding: 0 0.5rem 0 1.25rem; overflow: clip;
+    font-family: var(--font-mono); font-weight: var(--wght-mono); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; line-height: 1;
+    background: rgb(14 22 48 / 0.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 1.5px var(--mint-500); border-radius: var(--radius-pill); color: var(--mint-500); text-decoration: none;
+    transition: color var(--dur-fast) var(--ease-out-soft), background-color var(--dur-fast) var(--ease-out-soft), opacity var(--dur-base) var(--ease-out-soft), transform var(--dur-base) var(--ease-out);
+  }
+  .wow-build__skip i {
+    display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-style: normal; font-size: 0.95rem;
+    background: var(--mint-500); color: var(--navy-950); transition: transform var(--dur-base) var(--ease-out);
+  }
+  /* progress through the build, drawn along the pill's bottom edge */
+  .wow-build__skip::after {
+    content: ''; position: absolute; left: 18px; right: 18px; bottom: 5px; height: 1.5px; background: var(--mint-500); opacity: 0.55;
+    transform-origin: left; transform: scaleX(var(--wow-build-prog));
+  }
+  .wow-build__skip:hover { background: var(--mint-500); color: var(--navy-950); }
+  .wow-build__skip:hover i { background: var(--navy-950); color: var(--mint-500); transform: translateY(2px); }
+  .wow-build__skip:hover::after { background: var(--navy-950); }
+  .wow-build__skip:focus-visible { outline: none; box-shadow: inset 0 0 0 1.5px var(--mint-500), var(--focus-ring); }
+  .wow-build.is-final .wow-build__skip { opacity: 0; pointer-events: none; transform: translateY(0.75rem); }
+
+  /* projected callout: mint dot, leader, zones tag */
+  .wow-build__tag { position: absolute; left: 0; top: 0; z-index: 2; width: 0; height: 0; pointer-events: none; opacity: 0; transition: opacity 0.4s; }
+  .wow-build__tag.is-on { opacity: 1; }
+  .wow-build.is-final .wow-build__tag, .wow-build.is-open .wow-build__tag { opacity: 0; }
+  .wow-build__tag i { position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--mint-500); box-shadow: 0 0 0 4px rgb(141 209 186 / 0.18); animation: wow-build-pulse 1.8s ease-out infinite; }
+  @keyframes wow-build-pulse { 0% { box-shadow: 0 0 0 0 rgb(141 209 186 / 0.55); } 100% { box-shadow: 0 0 0 14px rgb(141 209 186 / 0); } }
+  .wow-build__tag s { position: absolute; left: 0; top: -40px; width: 1px; height: 56px; background: var(--mint-500); transform-origin: 0 100%; transform: translateY(-16px) rotate(45deg); }
+  .wow-build__tag b {
+    position: absolute; left: 40px; top: -52px; white-space: nowrap;
+    font-family: var(--font-mono); font-weight: var(--wght-mono); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase;
+    color: var(--mint-500); background: rgb(14 22 48 / 0.82); border: 1px solid rgb(141 209 186 / 0.45); padding: 0.4rem 0.6rem;
+  }
+  .wow-build__tag.is-flip s { transform: translateY(-16px) rotate(-45deg); }
+  .wow-build__tag.is-down s, .wow-build__tag.is-down b { display: none; }
+  .wow-build__tag.is-flip b { left: auto; right: 40px; }
+
+  /* finale pins (aria-hidden; the legend is the accessible list) */
+  .wow-build__pins { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .wow-build__pin { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; color: var(--navy-950); text-decoration: none; pointer-events: none; }
+  .wow-build.is-final .wow-build__pin { pointer-events: auto; }
+  .wow-build__pin span {
+    display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%;
+    background: var(--mint-500); font-family: var(--font-mono); font-weight: var(--wght-mono); font-size: 0.6875rem; line-height: 1;
+    box-shadow: 0 0 0 4px rgb(14 22 48 / 0.55);
+    opacity: 0; transform: scale(0.3);
+    transition: transform 0.45s var(--ease-out), opacity 0.3s, background-color 0.2s, color 0.2s;
+  }
+  .wow-build.is-final .wow-build__pin span { opacity: 1; transform: none; transition-delay: calc(var(--wow-build-i) * 60ms), calc(var(--wow-build-i) * 60ms), 0s, 0s; }
+  .wow-build__pin.is-hot { z-index: 3; }
+  .wow-build__pin.is-hot span { background: var(--white); }
+  .wow-build__pin em {
+    position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-style: normal;
+    font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: 0.08em; text-transform: uppercase; line-height: 1;
+    background: var(--navy-950); color: var(--white); border: 1px solid rgb(141 209 186 / 0.5); padding: 0.4rem 0.55rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .wow-build__pin.is-r em { left: auto; right: 0; transform: none; }
+  .wow-build__pin.is-hot em { opacity: 1; }
+
+  /* finale legend: the nine trades as links (also the screen-reader list) */
+  .wow-build__legend {
+    position: absolute; left: var(--gutter); top: calc(var(--wow-build-top) + 2.75rem);
+    list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem;
+    opacity: 0; pointer-events: none; transition: opacity var(--dur-base) var(--ease-out-soft);
+  }
+  .wow-build__legend:focus-within { opacity: 1; }
+  .wow-build.is-final .wow-build__legend { opacity: 1; }
+  .wow-build.is-final .wow-build__legend a, .wow-build__legend:focus-within a { pointer-events: auto; }
+  .wow-build__legend li { transform: translateX(-0.75rem); opacity: 0; transition: transform 0.6s var(--ease-out), opacity 0.4s; }
+  .wow-build.is-final .wow-build__legend li, .wow-build__legend:focus-within li { transform: none; opacity: 1; transition-delay: calc(240ms + var(--wow-build-i) * 50ms); }
+  .wow-build__legend a {
+    display: flex; align-items: baseline; gap: 0.9rem; padding: 0.3rem 0; pointer-events: none;
+    color: var(--white); text-decoration: none; text-transform: uppercase;
+    font-family: var(--font-display); font-weight: var(--wght-display-soft); font-stretch: 100%;
+    font-size: clamp(1rem, 0.75rem + 0.7vw, 1.5rem); line-height: 1.05; letter-spacing: var(--tr-heading);
+    transition: color var(--dur-fast) var(--ease-out-soft);
+  }
+  .wow-build__legend span { color: var(--mint-500); }
+  .wow-build__legend li.is-hot a, .wow-build__legend a:hover { color: var(--mint-500); }
+
+  @media (prefers-reduced-motion: reduce) { .wow-build__tag i, .wow-build__cue::after { animation: none; } }
+
+  /* ---- Mobile: portrait framing, UI stacked at the top, no rail --------------------- */
+  @media (max-width: 899px), (pointer: coarse) {
+    .wow-build { height: 400svh; }
+  }
+  @media (max-width: 899px) {
+    .wow-build { --wow-build-top: calc(var(--header-h) + var(--space-3)); }
+    .wow-build__count { display: block; }
+    .wow-build__scrim { background: linear-gradient(180deg, rgb(14 22 48 / 0.97) 0%, rgb(14 22 48 / 0.9) 38%, rgb(14 22 48 / 0) 52%); }
+    .wow-build.is-open .wow-build__scrim, .wow-build.is-final .wow-build__scrim { opacity: 1; }
+    .wow-build.is-open .wow-build__h { opacity: 1; }
+    .wow-build__rail { display: none; }
+    .wow-build__panel { left: var(--gutter); right: var(--gutter); top: calc(var(--wow-build-top) + 2rem); bottom: auto; width: auto; gap: var(--space-3); }
+    .wow-build__no { display: none; }
+    .wow-build__title { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter)) / 7.6)); }
+    .wow-build__quote { font-size: 0.875rem; line-height: 1.5; max-width: 46ch; }
+    .wow-build__pill { height: 44px; }
+    .wow-build__pill i { width: 30px; height: 30px; }
+    .wow-build__num { top: 46%; bottom: auto; right: var(--gutter); left: auto; font-size: 6.5rem; }
+    .wow-build.is-trade .wow-build__num { opacity: 0.5; }
+    .wow-build__skip { bottom: calc(clamp(1.5rem, 4svh, 2.5rem) + 4.25rem); min-height: 44px; padding: 0 0.4rem 0 1rem; }
+    .wow-build__skip i { width: 30px; height: 30px; }
+    .wow-build__skipx { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .wow-build__legend { top: calc(var(--wow-build-top) + 2rem); right: var(--gutter); grid-template-columns: 1fr; gap: 0; }
+    .wow-build__legend a { font-size: 0.9375rem; padding: 0.2rem 0; min-height: 28px; }
+    .wow-build__tag b { font-size: 0.625rem; }
+    .wow-build__pin { left: -11px; top: -11px; width: 22px; height: 22px; }
+    .wow-build__pin span { font-size: 0.5625rem; }
+    .wow-build__pin em { display: none; }
+  }
+
+  /* ---- Static composition: reduced motion, or no WebGL ------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .wow-build { height: auto; }
+    .wow-build__stage { position: relative; height: auto; min-height: 100svh; }
+    .wow-build__gl, .wow-build__tag, .wow-build__pins, .wow-build__veil, .wow-build__num, .wow-build__panel, .wow-build__rail, .wow-build__skip, .wow-build__count { display: none; }
+    .wow-build__poster { display: block; }
+    .wow-build__poster::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 22 48 / 0.92) 0%, rgb(14 22 48 / 0.55) 38%, rgb(14 22 48 / 0) 62%), linear-gradient(0deg, var(--navy-950) 0%, rgb(14 22 48 / 0) 25%); }
+    .wow-build__ui { position: relative; min-height: 100svh; padding: var(--wow-build-top) var(--gutter) var(--space-9); }
+    .wow-build__head { position: static; }
+    .wow-build.is-open .wow-build__h { opacity: 1; }
+    .wow-build__legend { position: static; margin-top: var(--space-6); opacity: 1; gap: 0.35rem; }
+    .wow-build__legend li { opacity: 1; transform: none; }
+    .wow-build__legend a { pointer-events: auto; font-size: clamp(1rem, 0.8rem + 0.6vw, 1.375rem); }
+  }
+  .wow-build.is-static { height: auto; }
+  .wow-build.is-static .wow-build__stage { position: relative; height: auto; min-height: 100svh; }
+  .wow-build.is-static :is(.wow-build__gl, .wow-build__tag, .wow-build__pins, .wow-build__veil, .wow-build__num, .wow-build__panel, .wow-build__rail, .wow-build__skip, .wow-build__count) { display: none; }
+  .wow-build.is-static .wow-build__poster { display: block; }
+  .wow-build.is-static .wow-build__poster::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(14 22 48 / 0.92) 0%, rgb(14 22 48 / 0.55) 38%, rgb(14 22 48 / 0) 62%), linear-gradient(0deg, var(--navy-950) 0%, rgb(14 22 48 / 0) 25%); }
+  .wow-build.is-static .wow-build__ui { position: relative; min-height: 100svh; padding: var(--wow-build-top) var(--gutter) var(--space-9); }
+  .wow-build.is-static .wow-build__head { position: static; }
+  .wow-build.is-static .wow-build__h { opacity: 1; }
+  .wow-build.is-static .wow-build__legend { position: static; margin-top: var(--space-6); opacity: 1; gap: 0.35rem; }
+  .wow-build.is-static .wow-build__legend li { opacity: 1; transform: none; }
+  .wow-build.is-static .wow-build__legend a { pointer-events: auto; font-size: clamp(1rem, 0.8rem + 0.6vw, 1.375rem); }
+  @media (max-width: 899px) and (orientation: portrait) {
+    .wow-build.is-static .wow-build__poster::after { background: linear-gradient(180deg, rgb(14 22 48 / 0.94) 0%, rgb(14 22 48 / 0.6) 42%, rgb(14 22 48 / 0) 62%), linear-gradient(0deg, var(--navy-950) 0%, rgb(14 22 48 / 0) 20%); }
+  }
+  /* phones: the list first, then the poster in flow below it */
+  @media (max-width: 899px) and (orientation: portrait) and (prefers-reduced-motion: reduce) {
+    .wow-build__stage { display: flex; flex-direction: column; }
+    .wow-build__ui { order: -1; min-height: 0; padding-bottom: 0; }
+    .wow-build__poster { position: relative; inset: auto; height: auto; margin-bottom: var(--space-9); }
+    .wow-build__poster img { height: auto; object-fit: contain; object-position: 50% 0%; }
+  }
+  @media (max-width: 899px) and (orientation: portrait) {
+    .wow-build.is-static .wow-build__stage { display: flex; flex-direction: column; }
+    .wow-build.is-static .wow-build__ui { order: -1; min-height: 0; padding-bottom: 0; }
+    .wow-build.is-static .wow-build__poster { position: relative; inset: auto; height: auto; margin-bottom: var(--space-9); }
+    .wow-build.is-static .wow-build__poster img { height: auto; object-fit: contain; object-position: 50% 0%; }
+  }
+  @media (max-width: 899px) and (orientation: portrait) and (prefers-reduced-motion: reduce) {
+    .wow-build__poster::after { background: linear-gradient(180deg, rgb(14 22 48 / 0.94) 0%, rgb(14 22 48 / 0.6) 42%, rgb(14 22 48 / 0) 62%), linear-gradient(0deg, var(--navy-950) 0%, rgb(14 22 48 / 0) 20%); }
+  }
+</style>

@@ -1,0 +1,108 @@
+---
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import monaUrl from '@fontsource-variable/mona-sans/files/mona-sans-latin-wdth-normal.woff2?url';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
+import TenderDock from '../components/site/TenderDock.astro';
+import Mark from '../components/site/Mark.astro';
+import { company } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  page?: string;
+  preloadImage?: string;
+}
+const { title, description: rawDescription, image = '/og/soft-strip-out-01.jpg', noindex = false, preloadImage } = Astro.props;
+// Search snippets: ≤155 chars, cut on a word (pages pass verbatim copy; long ones are trimmed here, never rewritten).
+const cutDescription = (d: string) => {
+  if (d.length <= 155) return d;
+  const head = d.slice(0, 154);
+  const comma = head.lastIndexOf(', '); // lists (e.g. the nine package names) end on a whole item
+  const cut = comma > 100 ? head.slice(0, comma) : head.replace(/\s+\S*$/, '');
+  return cut.replace(/[\s,;:.–—-]+$/, '') + '…';
+};
+const description = cutDescription(rawDescription);
+const path = Astro.url.pathname.replace(/\.html$/, '');
+const page = Astro.props.page ?? (path === '/' || path === '' ? 'home' : path.split('/').filter(Boolean)[0] || 'home');
+const fullTitle = title.includes('ANP Construction') ? title : `${title} | ANP Construction`;
+const canonical = new URL(path.replace(/\/$/, '') || '/', Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'GeneralContractor',
+  name: company.name,
+  legalName: company.legalName,
+  url: company.url,
+  telephone: company.phone,
+  email: company.email,
+  image: new URL('/images/brand/logo.png', Astro.site).href,
+  logo: new URL('/images/brand/logo.png', Astro.site).href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: `${company.address.line1}, ${company.address.line2}`,
+    addressLocality: company.address.locality,
+    postalCode: company.address.postcode,
+    addressCountry: 'GB',
+  },
+  sameAs: [company.instagram],
+};
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script is:inline>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('rm');
+      try { if (sessionStorage.getItem('anp:pt')) d.classList.add('pt-arrive'); } catch (e) {}
+    })();
+  </script>
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+  <meta name="theme-color" content="#0e1630" />
+  <link rel="icon" type="image/png" href="/images/brand/favicon.png" />
+  <link rel="apple-touch-icon" href="/images/brand/apple-touch-icon.png" />
+  <link rel="preload" as="font" type="font/woff2" href={monaUrl} crossorigin />
+  {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ANP Construction" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+  <slot name="head" />
+</head>
+<body data-page={page}>
+  <a class="skip" href="#main">Skip to content</a>
+  <Header />
+  <main id="main" tabindex="-1">
+    <slot />
+  </main>
+  <Footer />
+  <TenderDock />
+  <slot name="after" />
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor__ring"><span class="cursor__label"></span></div>
+    <div class="cursor__dot"></div>
+  </div>
+  <div class="pt" id="pt" aria-hidden="true">
+    <Mark class="pt__mark" />
+  </div>
+  <script>import '../scripts/core.js';</script>
+</body>
+</html>

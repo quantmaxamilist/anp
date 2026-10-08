@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/site/PageHero.astro';
+import Pill from '../components/site/Pill.astro';
+import ContactSheet from '../components/contact/ContactSheet.astro';
+import ContactTender from '../components/contact/ContactTender.astro';
+import { company, contact } from '../data/site';
+---
+<Base title={contact.heading} description={contact.tender} page="contact" image="/og/screeding-07.jpg">
+  <PageHero
+    lines={['Contact Us']}
+    label={contact.heading}
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
+    eyebrow={`${company.address.locality} ${company.address.postcode}`}
+    lead={contact.tender}
+    video={true}
+    size="xl"
+    id="ct-h"
+  >
+    <Pill href="#tender">Send a tender</Pill>
+    <Pill href={company.phoneHref} variant="ghost">{company.phone}</Pill>
+  </PageHero>
+  <ContactSheet />
+  <ContactTender />
+</Base>
+
+<script>import '../scripts/contact.js';</script>
+
+<style>
+  /* The floating tender slip shows only over the contact sheet (see contact.js). */
+  :global(body[data-ct-dock-off] #dock) { opacity: 0; transform: translateY(calc(100% + 24px)); pointer-events: none; visibility: hidden; transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base), visibility 0s var(--dur-base); }
+</style>
