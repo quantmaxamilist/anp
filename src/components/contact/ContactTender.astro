@@ -58,7 +58,7 @@ const total = String(services.length).padStart(2, '0');
   .ct-tender :global(.ct-meter__txt) { display: flex; align-items: baseline; gap: 0.8em; }
   .ct-tender :global(.ct-meter__n) {
     font-family: var(--font-display); font-weight: 900; font-stretch: 75%;
-    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3.5rem); line-height: 0.8; color: var(--navy-700);
+    font-size: clamp(2rem, 1.6rem + 1.2vw, 3rem); line-height: 0.8; color: var(--navy-700);
   }
   .ct-tender :global(.ct-meter__n.is-pop) { animation: ct-pop 520ms var(--ease-spring); }
   @keyframes ct-pop { 0% { transform: scale(0.8); } 60% { transform: scale(1.08); } 100% { transform: none; } }
