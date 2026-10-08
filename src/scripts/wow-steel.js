@@ -22,18 +22,9 @@ function hasWebGL() {
   }
 }
 
-function skipTo(section) {
-  const lenis = window.__anp && window.__anp.lenis;
-  const offset = section.offsetHeight - window.innerHeight + 1;
-  if (lenis) lenis.scrollTo(section, { offset, duration: 1.2 });
-  else window.scrollTo({ top: section.getBoundingClientRect().top + window.scrollY + offset, behavior: 'smooth' });
-}
-
 if (root && !root.dataset.wowSteelInit) {
   root.dataset.wowSteelInit = '1';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const skip = root.querySelector('.wow-steel__skip');
-  if (skip) skip.addEventListener('click', () => skipTo(root));
 
   let started = false;
   const io = new IntersectionObserver(

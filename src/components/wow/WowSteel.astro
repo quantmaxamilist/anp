@@ -44,7 +44,6 @@ const PATHS = [
 
     <div class="wow-steel__title">
       <h2 id="wow-steel-h" class="wow-steel__tag"><span class="wow-steel__tag-n">[ 09 ]</span> Trade packages</h2>
-      <p class="wow-steel__scroll" aria-hidden="true"><span>Scroll</span><i></i></p>
     </div>
 
     <div class="wow-steel__scrim" aria-hidden="true"></div>
@@ -80,7 +79,7 @@ const PATHS = [
       ))}
     </ol>
 
-    <button class="wow-steel__skip" type="button">Skip</button>
+    <button class="wow-steel__skip" type="button">Replay</button>
   </div>
 </section>
 
@@ -92,7 +91,7 @@ const PATHS = [
   .wow-steel {
     --wow-steel-pad: var(--gutter);
     position: relative;
-    height: 720svh;
+    height: var(--stage-h);
     background: var(--navy-950);
     color: var(--white);
   }
@@ -350,7 +349,9 @@ const PATHS = [
   }
   .wow-steel__skip:hover { border-color: var(--mint-500); }
   .wow-steel__skip:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-  .wow-steel.is-final .wow-steel__skip { opacity: 0; pointer-events: none; }
+  /* Replay: only once the mark has finished building */
+  .wow-steel__skip { opacity: 0; pointer-events: none; }
+  .wow-steel.is-done .wow-steel__skip { opacity: 1; pointer-events: auto; }
 
   /* ---- Poster capture mode (test page ?poster=1) ---------------------- */
   .wow-steel.is-poster .wow-steel__skip,
@@ -360,7 +361,7 @@ const PATHS = [
 
   /* ---- Mobile --------------------------------------------------------- */
   @media (max-width: 899px), (pointer: coarse) {
-    .wow-steel { height: 540svh; }
+    .wow-steel { height: var(--stage-h); }
     .wow-steel__scrim { background: linear-gradient(180deg, rgb(14 22 48 / 0.85) 0%, rgb(14 22 48 / 0.6) 28%, rgb(14 22 48 / 0) 46%); }
     .wow-steel__panel {
       top: calc(var(--header-h) + var(--space-5));
@@ -373,30 +374,34 @@ const PATHS = [
     .wow-steel__tick { width: 16px; }
     .wow-steel__lbl-a { font-size: 0.8125rem; }
     .wow-steel__skip { bottom: var(--space-4); }
-    .wow-steel.is-legend .wow-steel__list {
+    /* phones: the list always sits in its legend layout and only fades in, so nothing moves */
+    .wow-steel .wow-steel__list {
       inset: auto var(--wow-steel-pad) calc(var(--space-9) - var(--space-2)) var(--wow-steel-pad);
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-2) var(--space-4);
     }
-    .wow-steel.is-legend .wow-steel__lbl {
+    .wow-steel .wow-steel__lbl {
       position: static;
       width: auto;
       height: auto;
       transform: none !important;
-      opacity: 1 !important;
+      transition: opacity 0.5s var(--ease-out-soft);
     }
-    .wow-steel.is-legend .wow-steel__lbl::after,
-    .wow-steel.is-legend .wow-steel__lead { display: none; }
-    .wow-steel.is-legend .wow-steel__lbl-a {
+    .wow-steel.is-auto:not(.is-legend) .wow-steel__lbl { opacity: 0 !important; }
+    .wow-steel.is-legend .wow-steel__lbl { opacity: 1 !important; }
+    .wow-steel .wow-steel__lbl::after,
+    .wow-steel .wow-steel__lead { display: none; }
+    .wow-steel .wow-steel__lbl-a {
       position: static;
       transform: none;
       white-space: normal;
       padding: 0;
       font-size: 0.75rem;
-      pointer-events: auto;
+      pointer-events: none;
       transform: none !important;
     }
+    .wow-steel.is-legend .wow-steel__lbl-a { pointer-events: auto; }
   }
 
   /* ---- Static: reduced motion (CSS) and no-WebGL (.is-static from JS) -- */

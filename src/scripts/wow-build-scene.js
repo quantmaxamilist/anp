@@ -2,7 +2,9 @@
 // hour on a navy blueprint. Ported from the v3 build3d.js model (shell, nine trade packages,
 // moving section plane, per-step cameras) and restyled: mint poché on every cut, the active
 // trade lit mint, a swoop from a plan drawing into a 3/4 aerial while the slabs lift.
-// mount(stage, opts) -> { setProgress(p), setEntry(e), setHover(n), setActive(b), resize(), dispose() }
+// mount(stage, opts) -> { setProgress(p), setEntry(e), setAuto(t), setHover(n), setActive(b), resize(), dispose() }
+// setAuto(t) switches to the self-playing build: camera held on the finished scope-map view while
+// the shell rises and the nine trades assemble in quick succession (t = 0..1 over the animation).
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { SL, START, TOTAL, TRAVEL, slice, stepOf, clamp01 } from './wow-build-time.js';
@@ -628,7 +630,7 @@ export function mount(stage, { mobile = false, onFrame } = {}) {
   const fm = KEYS.map(() => 1); let fmPlan = 1;
 
   // ---- state
-  let target = 0, p = 0, eTarget = 0, e = 0, first = true, hover = -1;
+  let target = 0, p = 0, eTarget = 0, e = 0, first = true, hover = -1, auto = -1;
   const hov = comps.map(() => 0);
   let w = 1, h = 1, active = false, raf = 0, last = 0, dirty = true, destroyed = false;
   const curS = { r: 1, phi: 0, th: 0, t: new THREE.Vector3(), z: 1 };
@@ -665,7 +667,43 @@ export function mount(stage, { mobile = false, onFrame } = {}) {
   }
   const cutOf = (k) => (k >= 1 && k <= 9 && comps[k - 1].cut) || 17;
 
+  // self-playing build: the camera sits on the finale framing (easing into its orbit) while the shell
+  // extrudes from the plan and the nine trade packages assemble with a short stagger; pins last
+  function applyAuto() {
+    const T = auto;
+    const ob = ease(clamp01(T / 0.92));
+    interp(SK[10], SK[10], 0, curS);
+    const r = curS.r * curS.z * farOf() * fm[10] * (1 + 0.1 * (1 - ob));
+    const th = curS.th + lerp(FINAL_ORBIT * 0.25, FINAL_ORBIT, ob);
+    v.set(Math.sin(curS.phi) * Math.sin(th), Math.cos(curS.phi), Math.sin(curS.phi) * Math.cos(th)).multiplyScalar(r);
+    cam.position.copy(curS.t).add(v); cam.lookAt(curS.t);
+    scene.fog.near = r * 1.15; scene.fog.far = r * 3.2;
+    CUT.constant = 99;
+    const extr = ease(clamp01((T - 0.03) / 0.27));
+    sh.update(extr);
+    plan.update(1, lerp(1, 0.32, clamp01((T - 0.03) / 0.22)));
+    const vis = extr > 0.97;
+    const soilK = clamp01(extr / 0.3);
+    soil.visible = soilK > 0.01;
+    soilMat.opacity = 0.3 * soilK; soilCut.opacity = 0.6 * soilK; soilEdges.material.opacity = 0.3 * soilK; soilTop.opacity = 0.5 * soilK;
+    contact.material.opacity = (mobile ? 1 : 0.8) * easeOut(clamp01(extr / 0.4));
+    step = 10;
+    finalK = clamp01((T - 0.86) / 0.12);
+    SHELL.color.copy(SLAB); SHELLW.color.copy(WALL);
+    let sig = extr * 7.31 + (vis ? 1 : 0);
+    comps.forEach((c, n) => {
+      const raw = (T - (0.3 + n * 0.055)) / 0.16;
+      c.update(clamp01(raw), raw);
+      sig += Math.min(2.5, Math.max(-0.01, raw)) * (n + 1.37) * 1.91;
+      c.group.visible = vis;
+      const glow = raw > 0 && raw < 1.4 ? Math.sin(Math.PI * clamp01(raw / 1.4)) * 0.85 : 0;
+      highlight(c.group, Math.max(glow, hov[n]), raw >= 1 ? 1 : 0, 0);
+    });
+    if (!(Math.abs(sig - shadowSig) < 1e-5)) { shadowSig = sig; renderer.shadowMap.needsUpdate = true; }
+  }
+
   function apply() {
+    if (auto >= 0) { applyAuto(); return; }
     X = p * TOTAL;
     const { i, u } = slice(X);
     let extr = 1, cut = 17, drawF = 0.32, orbit = 0, dip = 0, fit = 1;
@@ -794,6 +832,7 @@ export function mount(stage, { mobile = false, onFrame } = {}) {
     canvas,
     setProgress(v2) { target = clamp01(v2); if (first) { p = target; first = false; } markDirty(); },
     setEntry(v2) { eTarget = clamp01(v2); markDirty(); },
+    setAuto(t) { auto = clamp01(t); markDirty(); },
     setHover(n) { hover = n; markDirty(); },
     setActive(b) {
       const was = active; active = !!b;

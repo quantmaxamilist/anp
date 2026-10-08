@@ -1,6 +1,8 @@
 // WOW C "Steel Mark" scene. Lazily imported by wow-steel.js after the section approaches.
 // Nine I-beams (one per trade) swing in on crane cables, bolt together, get a mint paint
-// sweep, then a dolly-zoom flattens the frame into the exact ANP mark.
+// sweep, then a dolly-zoom flattens the frame into the exact ANP mark. The default is now a short
+// clean build (CLEAN): an exploded kit of beams settles into the mark together. The crane sequence
+// below is kept for the ?poster=1 capture mode.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
@@ -484,6 +486,13 @@ export function init(root, { gsap, ScrollTrigger }) {
   let pT = 0;
   let p = 0;
   let pPrev = 0;
+  // Clean build (time-driven, the default): the nine beams start as an exploded kit of parts and all
+  // settle into the mark together with a short stagger, then paint, bolts and labels. bt = 0..1.
+  const CLEAN = !POSTER;
+  if (CLEAN) root.classList.add('is-auto');
+  const CB = { dur: 3.8, beam: 1.15, stag: 0.12, paint: 0.5, sweep: 2.0, labels: 2.35 };
+  let bt = 0;
+  const ct = () => bt * CB.dur;
   let W_ = 1, H_ = 1;
   let d45 = 20;
   let gussetT0 = -1e9;
@@ -530,8 +539,7 @@ export function init(root, { gsap, ScrollTrigger }) {
     return o;
   }
 
-  function frontShot(o) {
-    const push = smooth(0.86, 1, p);
+  function frontShot(o, push = smooth(0.86, 1, p)) {
     o.tx = MARK_C.x + 0.15;
     o.ty = MARK_C.y - 0.35;
     o.tz = 0;
@@ -545,6 +553,10 @@ export function init(root, { gsap, ScrollTrigger }) {
   }
 
   function computeGoal() {
+    if (CLEAN) {
+      frontShot(goal, 1);
+      return;
+    }
     if (POSTER) {
       Object.assign(goal, { tx: 0.5, ty: 3.0, tz: 0, az: -24, el: 7, dist: mobile ? 34 : 22, fov: mobile ? 34 : 34, ox: 0, oy: mobile ? -0.04 : 0.02 });
       return;
@@ -620,7 +632,52 @@ export function init(root, { gsap, ScrollTrigger }) {
   const sw = { theta: 0, phi: 0, yaw: 0 };
   let swinging = false;
 
+  const _off = new THREE.Vector3();
+  function updateFrameClean(now) {
+    const t = ct();
+    let landed = 0;
+    swinging = false;
+    for (let i = 0; i < 9; i++) {
+      const m = mem[i];
+      const u = clamp((t - i * CB.stag) / CB.beam);
+      const e = 1 - Math.pow(1 - u, 4);
+      // exploded start: pushed out from the mark's centre and toward the camera, slightly turned
+      _off.copy(m.mid).sub(MARK_C).setZ(0);
+      if (_off.lengthSq() < 1e-4) _off.set(0, 1, 0);
+      _off.normalize().multiplyScalar(mobile ? 1.6 : 2.2);
+      _off.z = mobile ? 2.2 : 3;
+      O.copy(_off).multiplyScalar(1 - e);
+      sw.theta = 0;
+      sw.phi = 0;
+      sw.yaw = (i % 2 ? 1 : -1) * 16 * DEG * (1 - e);
+      const uu = Math.max(u, 1e-4);
+      poseRig(rigs[i], m, i, uu, 1e3, sw);
+      if (mirrorRigs[i]) poseRig(mirrorRigs[i], m, i, uu, 1e3, sw);
+      // paint sweeps along each beam as it seats
+      const pr = clamp((t - (i * CB.stag + CB.beam * 0.55)) / CB.paint);
+      const un = m.mat.userData.u;
+      un.uPaint.value = pr <= 0 ? -0.2 : pr >= 1 ? 1.2 : pr * 1.1 - 0.05;
+      un.uBand.value = pr > 0 && pr < 1 ? Math.sqrt(Math.sin(Math.PI * pr)) : 0;
+      // bolts pop once the beam is seated
+      const seated = u >= 1;
+      if (seated && !bolt[i].shown) { bolt[i].shown = true; bolt[i].t0 = now; }
+      else if (!seated && bolt[i].shown) bolt[i].shown = false;
+      if (setBolts(i, now)) swinging = true;
+      if (seated) landed++;
+    }
+    const gs = landed >= 9;
+    if (gs && !gussetShown) gussetT0 = now;
+    gussetShown = gs;
+    const gt = gs ? clamp((now - gussetT0) / 450) : 0;
+    const gsc = gs ? Math.max(0.0001, gt >= 1 ? 1 : backOut(gt)) : 0.0001;
+    gussets.forEach((g) => g.scale.setScalar(gsc));
+    if (gs && gt < 1) swinging = true;
+    contact.material.opacity = Math.min(1, landed / 4) * 0.9;
+    return landed;
+  }
+
   function updateFrame(now, crossed) {
+    if (CLEAN) return updateFrameClean(now);
     const tau = now / 1000;
     swinging = false;
     let landed = 0;
@@ -754,7 +811,69 @@ export function init(root, { gsap, ScrollTrigger }) {
   let legend = false;
   let finalCls = false;
 
+  function updateDomClean() {
+    const t = ct();
+    title.style.opacity = '1';
+    title.style.transform = '';
+    panel.style.opacity = '0';
+    scrim.style.opacity = '0';
+    swapName(-1);
+    ticks.forEach((tk) => tk.classList.remove('is-on'));
+    svg.style.opacity = '0';
+    glow.style.opacity = '0';
+    shade.style.opacity = '0';
+    host.style.opacity = '1';
+    const isFinal = t >= CB.sweep;
+    if (isFinal !== finalCls) { finalCls = isFinal; root.classList.toggle('is-final', isFinal); }
+    const lg = mobile && t >= CB.labels;
+    if (lg !== legend) { legend = lg; root.classList.toggle('is-legend', lg); }
+    if (!lblSize[0] || !lblSize[0].w) measure();
+    placed.length = 0;
+    for (let i = 0; i < 9; i++) {
+      const li = labels[i];
+      if (!li) continue;
+      const m = mem[i];
+      // phones get the list as a legend instead of labels on the beams
+      const a = mobile ? 0 : smooth(CB.labels + i * 0.05, CB.labels + i * 0.05 + 0.45, t);
+      li.style.opacity = a > 0.001 ? a.toFixed(3) : '0';
+      li.classList.toggle('is-on', a > 0.5);
+      if (legend) { li.style.transform = ''; lblA[i].style.transform = ''; continue; }
+      if (a <= 0.001) continue;
+      placeLabel(i, m, li);
+    }
+  }
+
+  function placeLabel(i, m, li) {
+    sp(m.anchor, P3);
+    const ax = P3.x, ay = P3.y;
+    const [dx, dy] = m.d.ld;
+    const n = Math.hypot(dx, dy);
+    const ex = (dx / n) * m.d.L, ey = (dy / n) * m.d.L;
+    const sz = lblSize[i] || { w: 160, h: 18 };
+    let lx, ly;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      lx = dx > 0 ? ex + 6 : ex - 6 - sz.w;
+      ly = ey - sz.h / 2;
+    } else {
+      lx = ex - sz.w / 2;
+      ly = dy > 0 ? ey + 3 : ey - 3 - sz.h;
+    }
+    lx = clamp(ax + lx, GUT, Math.max(GUT, W_ - GUT - sz.w)) - ax;
+    ly = clamp(ay + ly, GUT, Math.max(GUT, H_ - (mobile ? 84 : GUT) - sz.h)) - ay;
+    const box = { x: ax + lx, y: ay + ly, w: sz.w, h: sz.h };
+    for (let pass = 0; pass < 4; pass++) {
+      const o = placed.find((q) => hit(box, q));
+      if (!o) break;
+      box.y = box.y + box.h / 2 < o.y + o.h / 2 ? o.y - box.h - 2 : o.y + o.h + 2;
+    }
+    ly = box.y - ay;
+    placed.push(box);
+    li.style.transform = `translate(${ax.toFixed(1)}px, ${ay.toFixed(1)}px)`;
+    lblA[i].style.transform = `translate(${lx.toFixed(1)}px, ${ly.toFixed(1)}px)`;
+  }
+
   function updateDom(now) {
+    if (CLEAN) return updateDomClean();
     // title overlay sits on the opening shot and clears as beam 1 drops
     const tOut = smooth(0.004, 0.026, p);
     title.style.opacity = String(POSTER ? 0 : 1 - tOut);
@@ -854,10 +973,11 @@ export function init(root, { gsap, ScrollTrigger }) {
       }
       dustGeo.attributes.position.needsUpdate = true;
     }
+    const tc = ct();
     // halo
-    halo.material.opacity = POSTER ? 0.32 : 0.35 * smooth(0.7, 0.88, p) + 0.08 * (landed / 9);
+    halo.material.opacity = POSTER ? 0.32 : CLEAN ? 0.35 * smooth(1.4, 2.6, tc) + 0.08 * (landed / 9) : 0.35 * smooth(0.7, 0.88, p) + 0.08 * (landed / 9);
     // shafts face the camera around their own axis
-    const sa = POSTER ? 0.8 : 0.35 + 0.65 * smooth(T0, 0.3, p);
+    const sa = POSTER ? 0.8 : CLEAN ? 0.35 + 0.65 * smooth(0, 1.2, tc) : 0.35 + 0.65 * smooth(T0, 0.3, p);
     shafts.forEach((m) => {
       const s = m.userData;
       m.position.copy(key.position).addScaledVector(shaftDir, 2.5);
@@ -868,7 +988,7 @@ export function init(root, { gsap, ScrollTrigger }) {
       _mb.makeBasis(_x, _toCam.copy(shaftDir).negate(), _z);
       m.quaternion.setFromRotationMatrix(_mb);
       m.scale.set(s.w, 24, 1);
-      m.material.opacity = s.o * sa * (1 - smooth(0.84, 0.92, p));
+      m.material.opacity = s.o * sa * (1 - (CLEAN ? smooth(2.4, 3.6, tc) : smooth(0.84, 0.92, p)));
     });
     // sparks
     if (sparks.visible) {
@@ -896,11 +1016,11 @@ export function init(root, { gsap, ScrollTrigger }) {
     flash.intensity = fk >= 0 && fk < 1 ? 26 * (1 - fk) * (1 - fk) : 0;
     flash.position.copy(flashPos);
     // finale rim sweep + mint bolt-up
-    const tS = POSTER ? 0.5 : clamp((p - FIN - 0.01) / 0.13);
+    const tS = POSTER ? 0.5 : CLEAN ? clamp((tc - CB.sweep) / 1.0) : clamp((p - FIN - 0.01) / 0.13);
     const bell = tS > 0 && tS < 1 ? Math.sin(Math.PI * tS) : 0;
     GLOBAL_U.uSweepX.value = -7.5 + 15 * inOut(tS);
     GLOBAL_U.uSweepA.value = POSTER ? 0 : bell;
-    GLOBAL_U.uEdge.value = 0.45 + 0.55 * (POSTER ? 1 : smooth(FIN, FIN + 0.08, p));
+    GLOBAL_U.uEdge.value = 0.45 + 0.55 * (POSTER ? 1 : CLEAN ? smooth(1.6, 2.6, tc) : smooth(FIN, FIN + 0.08, p));
     sweepL.intensity = 1400 * bell;
     sweepL.position.set(-11 + 22 * inOut(tS), 4.5, 7.5);
     sweepL.target.position.set(-4 + 8 * inOut(tS), MARK_C.y, 0);
@@ -937,6 +1057,7 @@ export function init(root, { gsap, ScrollTrigger }) {
     last = now;
     pPrev = p;
     if (POSTER) p = pT = 0.8;
+    else if (CLEAN) p = pT;
     else {
       p += (pT - p) * (1 - Math.exp(-dt * 8));
       if (Math.abs(pT - p) < 1e-5) p = pT;
@@ -954,7 +1075,7 @@ export function init(root, { gsap, ScrollTrigger }) {
     applyCamera(now);
     const landed = updateFrame(now, !first);
     const flashing = updateAtmos(now, dt, landed);
-    dust.visible = POSTER ? false : p < 0.93;
+    dust.visible = POSTER ? false : CLEAN ? !mobile && bt < 1 : p < 0.93;
     renderer.render(scene, camera);
     updateDom(now);
     // render on demand: dust only drifts while something else is moving, so an idle pinned
@@ -973,29 +1094,44 @@ export function init(root, { gsap, ScrollTrigger }) {
     }
   }
 
-  // ---------------------------------------------------------------- scroll + observers
-  const st = ScrollTrigger.create({
-    trigger: root,
-    start: 'top top',
-    end: 'bottom bottom',
-    onUpdate: (self) => {
-      pT = self.progress;
-      kick();
-    },
+  // ---------------------------------------------------------------- autoplay + observers
+  // The mark builds itself once the section is mostly on screen: a short clean build (time-driven,
+  // no pin, no scroll scrub). It pauses while off-screen and resumes where it left off; Replay runs
+  // it again.
+  const END = 1;
+  const DUR = CB.dur;
+  const play = { v: 0 };
+  const replayBtn = root.querySelector('.wow-steel__skip');
+  const tween = gsap.to(play, {
+    v: END, duration: DUR, ease: 'none', paused: true,
+    onUpdate: () => { bt = play.v; kick(); },
+    onComplete: () => root.classList.add('is-done'),
   });
-  pT = p = pPrev = st.progress;
+  pT = p = pPrev = 0;
+  const replay = () => {
+    root.classList.remove('is-done');
+    play.v = 0;
+    bt = 0;
+    gussetShown = false;
+    first = true;
+    tween.restart();
+  };
+  if (replayBtn) replayBtn.addEventListener('click', replay);
 
   const vis = new IntersectionObserver((entries) => {
+    const e = entries[entries.length - 1];
     const was = inView;
-    inView = entries.some((e) => e.isIntersecting);
+    inView = e.isIntersecting;
     if (inView && !was) {
-      // re-entry: nothing on screen changed while away, so land on the current scroll
-      // position instead of sweeping through the frames that were skipped
+      // re-entry: land on the current progress instead of sweeping through skipped frames
       p = pPrev = pT;
       first = true;
     }
+    // play while at least half the stage is on screen; pause when it scrolls away
+    if (e.intersectionRatio >= 0.5) { if (tween.progress() < 1) tween.play(); }
+    else if (!inView) tween.pause();
     if (inView) kick();
-  });
+  }, { threshold: [0, 0.25, 0.5, 0.75] });
   vis.observe(root);
   const onVis = () => {
     if (!document.hidden) kick();
@@ -1022,7 +1158,7 @@ export function init(root, { gsap, ScrollTrigger }) {
     disposed = true;
     cancelAnimationFrame(raf);
     if ('cancelIdleCallback' in window) cancelIdleCallback(idle); else clearTimeout(idle);
-    st.kill();
+    tween.kill();
     vis.disconnect();
     window.removeEventListener('resize', onResize);
     document.removeEventListener('visibilitychange', onVis);
@@ -1053,7 +1189,6 @@ export function init(root, { gsap, ScrollTrigger }) {
 
   resize();
   ScrollTrigger.refresh();
-  pT = p = pPrev = st.progress;
   // warm-up during idle time, before the section reaches the viewport: compile every program
   // (hidden sparks included) and upload textures, so the first visible frame does not hitch
   const warm = () => {

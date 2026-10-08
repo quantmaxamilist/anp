@@ -1,8 +1,8 @@
-// WOW A, "The Build": light page wiring. Nothing heavy is built until the section is within
+// WOW A, "The Build": light page wiring. Self-playing (time-driven) on /services. Nothing heavy is built until the section is within
 // 200% of the viewport (the module itself is fetched + parsed during idle time after load); then the three.js scene (wow-build-scene.js) is imported lazily.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { restP, TOTAL, START } from './wow-build-time.js';
+import { TOTAL, START } from './wow-build-time.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -179,6 +179,7 @@ async function init(root) {
     // write custom properties only when they change: a write on the section root restyles
     // its whole subtree, which is what made idle frames stutter
     setVar(root, '--wow-build-final', finalK.toFixed(3));
+    root.classList.toggle('is-pins', finalK > 0.15);
     if (skip) setVar(skip, '--wow-build-prog', p.toFixed(3));
     const s = p * TOTAL;
     rail.forEach((b) => setVar(b, '--wow-build-p', Math.min(1, Math.max(0, s - START[+b.dataset.wowBuildGo + 1])).toFixed(3)));
@@ -190,33 +191,35 @@ async function init(root) {
   root.dataset.wowBuildState = 'live';
   scene.canvas.addEventListener('webglcontextlost', (ev) => { ev.preventDefault(); teardown(); root.classList.add('is-static'); }, { once: true });
 
-  const veilAt = (p) => { if (veil) veil.style.opacity = Math.min(1, Math.max(0, (p - 0.95) / 0.05)).toFixed(3); };
-  const st = ScrollTrigger.create({
-    trigger: root, start: 'top top', end: 'bottom bottom',
-    onUpdate: (self) => { scene.setProgress(self.progress); veilAt(self.progress); },
+  // Self-playing build (no pin, no scroll scrub): once half the stage is on screen the building
+  // assembles itself in a few seconds and the numbered pins land; it pauses while off-screen and
+  // resumes where it left off. Replay runs it again. The 1-9 list beside it is always clickable.
+  root.classList.add('is-auto');
+  const DUR = mobile ? 5.2 : 5.8;
+  const play = { v: 0 };
+  const replayBtn = q('[data-wow-build-replay]');
+  const tween = gsap.to(play, {
+    v: 1, duration: DUR, ease: 'none', paused: true,
+    onUpdate: () => scene.setAuto(play.v),
+    onComplete: () => root.classList.add('is-done'),
   });
-  const entry = ScrollTrigger.create({
-    trigger: root, start: 'top bottom', end: 'top top',
-    onUpdate: (self) => scene.setEntry(self.progress),
-  });
-  ScrollTrigger.refresh();
-  scene.setEntry(entry.progress); scene.setProgress(st.progress); veilAt(st.progress);
+  scene.setAuto(0);
+  const onReplay = () => { root.classList.remove('is-done'); play.v = 0; scene.setAuto(0); tween.restart(); };
+  if (replayBtn) replayBtn.addEventListener('click', onReplay);
 
-  // render only while on screen and the tab is visible
+  // render only while on screen and the tab is visible; play once at least half is visible
   let onScreen = false;
   const sync = () => scene.setActive(onScreen && !document.hidden);
-  const vis = new IntersectionObserver((es) => { onScreen = es[es.length - 1].isIntersecting; sync(); }, { rootMargin: '0px' });
+  const vis = new IntersectionObserver((es) => {
+    const en = es[es.length - 1];
+    onScreen = en.isIntersecting;
+    if (en.intersectionRatio >= 0.5) { if (tween.progress() < 1) tween.play(); }
+    else if (!onScreen) tween.pause();
+    sync();
+  }, { threshold: [0, 0.25, 0.5, 0.75] });
   vis.observe(stage);
   document.addEventListener('visibilitychange', sync);
-
-  // programmatic scroll: Lenis when the site has one, native smooth scroll otherwise
-  const scrollToY = (y) => {
-    const lenis = window.__anp && window.__anp.lenis;
-    if (lenis) lenis.scrollTo(y, { duration: 1.2 });
-    else window.scrollTo({ top: y, behavior: 'smooth' });
-  };
-  const yAt = (p) => st.start + (st.end - st.start) * p;
-  const onRail = (ev) => scrollToY(yAt(restP(+ev.currentTarget.dataset.wowBuildGo)));
+  const onRail = () => {};
   rail.forEach((b) => b.addEventListener('click', onRail));
 
   // finale: pins and legend light up their trade
@@ -250,7 +253,8 @@ async function init(root) {
   let gone = false;
   function teardown() {
     if (gone) return; gone = true;
-    st.kill(); entry.kill(); vis.disconnect();
+    tween.kill(); vis.disconnect();
+    if (replayBtn) replayBtn.removeEventListener('click', onReplay);
     document.removeEventListener('visibilitychange', sync);
     window.removeEventListener('resize', onResize);
     window.removeEventListener('pagehide', teardown);
