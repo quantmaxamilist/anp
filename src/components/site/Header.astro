@@ -87,8 +87,8 @@ void services;
   }
   .hdr__bg {
     position: absolute; inset: 0;
-    background: rgb(14 22 48 / 0.82);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    /* Solid translucent fill, no backdrop blur: blur over video/WebGL re-rasterises every frame. */
+    background: rgb(14 22 48 / 0.94);
     opacity: 0; transition: opacity var(--dur-base) var(--ease-out-soft), background var(--dur-base);
     border-bottom: 1px solid var(--line-on-dark);
   }
@@ -101,9 +101,9 @@ void services;
   }
   .hdr.is-solid::before, .hdr:not([data-theme='dark'])::before { opacity: 0; }
   .hdr[data-theme='light'] { color: var(--navy-700); }
-  .hdr[data-theme='light'] .hdr__bg { background: rgb(244 244 241 / 0.86); border-color: var(--line-on-light); }
+  .hdr[data-theme='light'] .hdr__bg { background: rgb(244 244 241 / 0.96); border-color: var(--line-on-light); }
   .hdr[data-theme='mint'] { color: var(--navy-700); }
-  .hdr[data-theme='mint'] .hdr__bg { background: rgb(141 209 186 / 0.9); border-color: rgb(35 52 103 / 0.2); }
+  .hdr[data-theme='mint'] .hdr__bg { background: rgb(141 209 186 / 0.96); border-color: rgb(35 52 103 / 0.2); }
   .hdr__in { position: relative; height: 100%; display: flex; align-items: center; gap: var(--space-6); }
   .hdr__brand { display: flex; align-items: center; gap: var(--space-3); flex: none; }
   .hdr__brand :global(.hdr__mark) { width: 46px; height: auto; }

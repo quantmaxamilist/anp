@@ -79,11 +79,11 @@ const tait = projects.find((p) => p.name === 'Tait Building')!;
   @media (hover: hover) and (pointer: fine) {
     .cl-index__a:hover { color: var(--white); }
     .cl-index__a:hover::before { clip-path: inset(0); }
-    .cl-index__list li:first-child .cl-index__a:hover { padding-left: var(--space-4); }
-    .cl-index__list li:last-child .cl-index__a:hover { padding-right: var(--space-4); }
+    .cl-index__list li:first-child .cl-index__a:hover > * { translate: var(--space-4) 0; }
+    .cl-index__list li:last-child .cl-index__a:hover > * { translate: calc(-1 * var(--space-4)) 0; }
     .cl-index__a:hover .cl-index__n { color: var(--mint-500); }
     .cl-index__a:hover .cl-index__c { color: var(--navy-200); }
-    .cl-index__a, .cl-index__a .cl-index__n, .cl-index__a .cl-index__c { transition: color var(--dur-base), padding var(--dur-base) var(--ease-out); }
+    .cl-index__a, .cl-index__a > * { transition: color var(--dur-base), translate var(--dur-base) var(--ease-out); }
   }
   @media (max-width: 767px) {
     .cl-index__list { grid-template-columns: 1fr; }

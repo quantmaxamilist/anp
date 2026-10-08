@@ -4,6 +4,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
+// Mobile URL-bar show/hide must not re-measure every trigger (that is what made pages jump on phones),
+// and 'load' is dropped from the auto-refresh list: a late refresh moves pinned stages under the reader.
+ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,DOMContentLoaded,resize' });
 
 const html = document.documentElement;
 const mq = (q) => matchMedia(q).matches;
@@ -111,17 +114,20 @@ const ptPaths = pt ? [...pt.querySelectorAll('path')] : [];
 let arriving = html.classList.contains('pt-arrive');
 try { sessionStorage.removeItem('anp:pt'); } catch { /* ignore */ }
 
+// Arrival: the panel lifts straight away (~0.38s) and never waits on fonts, video or WebGL.
+// The promise resolves mid-lift so the first reveals start while the panel is still leaving.
 const arrive = () => {
   if (!pt) return Promise.resolve();
   return new Promise((res) => {
+    const done = () => { html.classList.remove('pt-arrive'); gsap.set([pt, ...ptPaths], { clearProps: 'all' }); res(); };
     if (reduced) {
-      gsap.to(pt, { opacity: 0, duration: 0.15, onComplete: () => { html.classList.remove('pt-arrive'); gsap.set(pt, { clearProps: 'all' }); res(); } });
+      gsap.to(pt, { opacity: 0, duration: 0.12, onComplete: done });
       return;
     }
-    gsap.set(ptPaths, { strokeDasharray: 1, strokeDashoffset: 0 });
-    gsap.timeline({ onComplete: () => { html.classList.remove('pt-arrive'); gsap.set([pt, ...ptPaths], { clearProps: 'all' }); res(); } })
-      .to(ptPaths, { opacity: 0, duration: 0.25 })
-      .fromTo(pt, { clipPath: 'inset(0% 0 0% 0)' }, { clipPath: 'inset(0% 0 100% 0)', duration: 0.7, ease: 'power3.inOut' }, 0.15);
+    gsap.timeline({ onComplete: done })
+      .call(res, null, 0.16)
+      .to(ptPaths, { opacity: 0, duration: 0.18 }, 0)
+      .fromTo(pt, { clipPath: 'inset(0% 0 0% 0)' }, { clipPath: 'inset(0% 0 100% 0)', duration: 0.38, ease: 'power3.inOut' }, 0);
   });
 };
 export const arrived = arriving ? arrive() : Promise.resolve();
@@ -150,13 +156,15 @@ document.addEventListener('click', (e) => {
   };
   pt.style.visibility = 'visible';
   if (reduced) {
-    gsap.fromTo(pt, { clipPath: 'inset(0)', opacity: 0 }, { opacity: 1, duration: 0.15, onComplete: go });
+    gsap.fromTo(pt, { clipPath: 'inset(0)', opacity: 0 }, { opacity: 1, duration: 0.12, onComplete: go });
     return;
   }
-  gsap.set(ptPaths, { strokeDasharray: 1, strokeDashoffset: 1, opacity: 1 });
+  // Exit: cover the screen in 0.3s and navigate the moment it is covered (the next page is usually
+  // already prefetched on hover). The mark simply fades in; no draw before leaving.
+  gsap.set(ptPaths, { clearProps: 'strokeDasharray,strokeDashoffset', opacity: 0 });
   gsap.timeline({ onComplete: go })
-    .fromTo(pt, { clipPath: 'inset(100% 0 0% 0)' }, { clipPath: 'inset(0% 0 0% 0)', duration: 0.7, ease: 'power3.inOut' })
-    .to(ptPaths, { strokeDashoffset: 0, duration: 0.6, stagger: 0.06, ease: 'power2.out' }, 0.25);
+    .fromTo(pt, { clipPath: 'inset(100% 0 0% 0)' }, { clipPath: 'inset(0% 0 0% 0)', duration: 0.3, ease: 'power3.inOut' })
+    .to(ptPaths, { opacity: 1, duration: 0.15 }, 0.12);
 });
 addEventListener('pageshow', (e) => {
   if (e.persisted && pt) {
@@ -278,25 +286,26 @@ if (menu && openBtn) {
 const revealOne = (el) => {
   const kind = el.dataset.reveal;
   if (kind === 'lines') {
-    return gsap.fromTo(el.querySelectorAll('.line > span'), { y: 0, yPercent: 110, rotate: 2 }, { yPercent: 0, rotate: 0, duration: 1.1, ease: 'expo.out', stagger: 0.08, delay: +(el.dataset.delay || 0) });
+    return gsap.fromTo(el.querySelectorAll('.line > span'), { y: 0, yPercent: 110, rotate: 2 }, { yPercent: 0, rotate: 0, duration: 0.8, ease: 'expo.out', stagger: 0.06, delay: +(el.dataset.delay || 0) });
   }
   if (kind === 'fade') {
-    return gsap.to(el, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out', delay: +(el.dataset.delay || 0) });
+    return gsap.to(el, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out', delay: +(el.dataset.delay || 0) });
   }
   if (kind === 'datum') { el.classList.add('is-in'); return null; }
   if (kind === 'draw') {
     const paths = el.querySelectorAll('path');
-    return gsap.fromTo(paths, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: 'expo.out', stagger: 0.12, delay: +(el.dataset.delay || 0) });
+    return gsap.fromTo(paths, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.8, ease: 'expo.out', stagger: 0.08, delay: +(el.dataset.delay || 0) });
   }
   if (kind === 'photo') {
     const img = el.querySelector('img, video');
     let pour = el.querySelector(':scope > .pour');
     if (!pour) { pour = document.createElement('i'); pour.className = 'pour'; el.appendChild(pour); }
     const tl = gsap.timeline({ delay: +(el.dataset.delay || 0) });
-    tl.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'power3.inOut' })
-      .fromTo(pour, { top: '100%', opacity: 1 }, { top: '0%', duration: 1.2, ease: 'power3.inOut' }, 0)
-      .to(pour, { opacity: 0, duration: 0.3 }, 1.0);
-    if (img) tl.fromTo(img, { scale: 1.25 }, { scale: 1, duration: 1.6, ease: 'expo.out' }, 0.1);
+    // The wipe is a clip-path (paint only, no layout); the pour line rides on transform, not `top`.
+    tl.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.8, ease: 'power3.inOut' })
+      .fromTo(pour, { y: () => el.clientHeight, opacity: 1 }, { y: 0, duration: 0.8, ease: 'power3.inOut' }, 0)
+      .to(pour, { opacity: 0, duration: 0.2 }, 0.65);
+    if (img) tl.fromTo(img, { scale: 1.12 }, { scale: 1, duration: 0.8, ease: 'expo.out' }, 0.05);
     return tl;
   }
   return null;
@@ -314,7 +323,7 @@ export const initReveals = (root = document) => {
       const r = el.getBoundingClientRect();
       if (r.top < innerHeight && r.bottom > 0) { revealOne(el); return; }
     }
-    ScrollTrigger.create({ trigger: el, start: 'top 85%', once: true, onEnter: () => revealOne(el) });
+    ScrollTrigger.create({ trigger: el, start: 'top 92%', once: true, onEnter: () => revealOne(el) });
   });
 };
 window.__anp.reveal = revealOne;
@@ -325,4 +334,13 @@ arrived.then(() => {
   document.dispatchEvent(new CustomEvent('anp:ready'));
   window.__anp.ready = true;
 });
-addEventListener('load', () => ScrollTrigger.refresh());
+// Refresh only when the page height actually changed since the last measure (late font swap or
+// media without dimensions), so an idle refresh never shifts pinned stages under the reader.
+let measuredH = 0;
+ScrollTrigger.addEventListener('refresh', () => { measuredH = document.documentElement.scrollHeight; });
+const refreshIfChanged = () => {
+  if (document.documentElement.scrollHeight !== measuredH) ScrollTrigger.refresh();
+};
+document.fonts?.ready.then(refreshIfChanged);
+if (document.readyState === 'complete') refreshIfChanged();
+else addEventListener('load', refreshIfChanged, { once: true });

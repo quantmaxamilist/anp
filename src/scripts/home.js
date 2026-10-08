@@ -108,17 +108,23 @@ if (tintro) {
 // =============================================================================
 const ch = $('[data-chapters]');
 if (ch && !reduced) {
+  // Everything here is a pure function of ONE scroll progress, so it tracks the scroll exactly in both
+  // directions: no time-based tweens, no flip-flopping at chapter boundaries. Each chapter holds on a
+  // dwell plateau; between plateaus the photo panel wipes up (transforms only), the numeral strip
+  // rolls, and the outgoing text slides/fades out before the incoming text slides/fades in.
   const N = 9;
   const phs = $$('[data-ch-ph]', ch);
   const imgs = phs.map((p) => $('img', p));
+  const shades = phs.map((p) => $('[data-ch-shade]', p));
+  const edges = phs.map((p) => $('[data-ch-edge]', p));
   const insets = $$('[data-ch-inset]', ch);
   const blocks = $$('[data-ch-block]', ch);
+  const parts = blocks.map((b) => [$('.ch__tag', b), ...$$('.line > span', b), $('.ch__quote', b), $('.ch__actions', b)].filter(Boolean));
   const ticks = $$('[data-ch-go]', ch);
   const strip = $('[data-ch-strip]', ch);
-  const pour = $('[data-ch-pour]', ch);
-  const DWELL = 0.55;
+  const DWELL = 0.5; // share of each chapter's scroll slice spent holding still
   const half = DWELL / 2;
-  let active = 0;
+  let active = -1;
 
   // curtain radius flattens as the stage reaches the top; intro recedes
   gsap.fromTo(ch, { '--ch-r': '14px' }, {
@@ -132,58 +138,98 @@ if (ch && !reduced) {
     });
   }
 
-  const setBlock = (next, prev) => {
-    const inLines = $$('.line > span', blocks[next]);
-    const inRest = $$('.ch__tag, .ch__quote, .ch__actions', blocks[next]);
-    blocks.forEach((b, i) => { if (i !== next && i !== prev) { b.inert = true; } });
-    blocks[next].inert = false;
-    if (prev != null && prev !== next) {
-      const outLines = $$('.line > span', blocks[prev]);
-      const outRest = $$('.ch__tag, .ch__quote, .ch__actions', blocks[prev]);
-      gsap.to(outLines, { yPercent: -110, duration: 0.45, ease: 'power3.in', stagger: 0.03, overwrite: true });
-      gsap.to(outRest, { opacity: 0, y: -12, duration: 0.35, ease: 'power3.in', overwrite: true, onComplete: () => { if (active !== prev) blocks[prev].inert = true; } });
-    }
-    gsap.fromTo(inLines, { yPercent: 110, rotate: 2 }, { yPercent: 0, rotate: 0, duration: 0.9, ease: 'expo.out', stagger: 0.06, delay: prev != null ? 0.3 : 0, overwrite: true });
-    gsap.fromTo(inRest, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.05, delay: prev != null ? 0.4 : 0.1, overwrite: true });
-    gsap.to(strip, { yPercent: -(100 / N) * next, duration: 0.9, ease: 'expo.out', overwrite: true });
-    ticks.forEach((t, i) => t.classList.toggle('is-on', i === next));
+  // write a style only when its value actually changes
+  const memo = new WeakMap();
+  const put = (el, prop, v) => {
+    if (!el) return;
+    let m = memo.get(el);
+    if (!m) memo.set(el, (m = {}));
+    if (m[prop] !== v) { m[prop] = v; el.style[prop] = v; }
   };
-  blocks.forEach((b, i) => {
-    if (i) { gsap.set($$('.line > span', b), { yPercent: 110 }); gsap.set($$('.ch__tag, .ch__quote, .ch__actions', b), { opacity: 0 }); }
-  });
-  ticks[0]?.classList.add('is-on');
-
-  // map raw progress to t ∈ [0, N-1] with dwell plateaus
-  const wipeAt = (t, i) => {
-    // progress of transition into chapter i (0..1)
-    const f = t - (i - 1);
-    if (f <= half) return 0;
-    if (f >= 1 - half) return 1;
-    return (f - half) / (1 - DWELL);
-  };
+  const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const f2 = (v) => (Math.round(v * 100) / 100).toString();
+  const f3 = (v) => (Math.round(v * 1000) / 1000).toString();
   const io = gsap.parseEase('power2.inOut');
-  const insWrap = $('.ch__insets', ch);
+  const eo = gsap.parseEase('power3.out');
+  const ei = gsap.parseEase('power2.in');
+
+  // transition progress INTO chapter i (0 → 1) at chapter-time t; chapter 0 is always in, nothing follows the last
+  const wipe = (t, i) => {
+    if (i <= 0) return 1;
+    if (i >= N) return 0;
+    return c01((t - (i - 1) - half) / (1 - DWELL));
+  };
+
+  // pre-load + decode the neighbouring photos so a wipe never reveals an undecoded image
+  const warm = (i) => {
+    const im = imgs[i];
+    if (!im || im.dataset.warm) return;
+    im.dataset.warm = '1';
+    im.loading = 'eager';
+    im.decode?.().catch(() => {});
+  };
+
+  const setActive = (idx) => {
+    if (idx === active) return;
+    active = idx;
+    blocks.forEach((b, i) => { b.inert = i !== idx; });
+    ticks.forEach((t, i) => t.classList.toggle('is-on', i === idx));
+    warm(idx + 1); warm(idx + 2); warm(idx - 1);
+  };
+
   const render = (p) => {
     const t = Math.min(N - 1, Math.max(0, p * (N - 1)));
-    let pourY = null;
+    let T = 0; // eased chapter position (plateaus at integers)
     for (let i = 0; i < N; i++) {
-      const rawIn = i === 0 ? 1 : wipeAt(t, i);
-      const wIn = io(rawIn);
-      const wOut = i === N - 1 ? 0 : io(wipeAt(t, i + 1));
-      if (i) phs[i].style.clipPath = `inset(${(1 - wIn) * 100}% 0 0 0)`;
-      imgs[i].style.transform = `translateY(${-8 * wOut}%) scale(${1.18 - 0.18 * wIn})`;
-      imgs[i].style.filter = wOut > 0 ? `saturate(0.92) contrast(1.06) brightness(${1 - 0.55 * wOut})` : '';
-      if (i && rawIn > 0 && rawIn < 1) pourY = (1 - wIn) * 100;
-      const vis = i === 0 ? 1 - Math.min(1, Math.max(0, (wipeAt(t, 1) - 0.35) / 0.4)) : Math.min(1, Math.max(0, (rawIn - 0.35) / 0.4)) * (i === N - 1 ? 1 : 1 - Math.min(1, Math.max(0, (wipeAt(t, i + 1) - 0.35) / 0.4)));
-      insets[i].style.opacity = String(vis);
-      insets[i].style.transform = `translateY(${(1 - Math.min(1, rawIn)) * 40}px)`;
+      const a = wipe(t, i);
+      const b = wipe(t, i + 1);
+      const wIn = io(a);
+      const wOut = io(b);
+      if (i) T += wIn;
+
+      // photo: panel rises, photo counter-translates (stays put on screen), outgoing photo darkens + drifts
+      const shown = a > 0 && b < 1;
+      put(phs[i], 'visibility', shown ? 'visible' : 'hidden');
+      if (shown) {
+        put(phs[i], 'transform', `translate3d(0,${f2((1 - wIn) * 100)}%,0)`);
+        put(imgs[i], 'transform', `translate3d(0,${f2(-(1 - wIn) * 100 - 8 * wOut)}%,0) scale(${f3(1.18 - 0.18 * wIn)})`);
+        put(shades[i], 'opacity', f3(0.55 * wOut));
+        put(edges[i], 'opacity', a > 0 && a < 1 ? '1' : '0');
+      }
+
+      // inset photo: crossfade + slide
+      if (insets[i]) {
+        const vIn = c01((a - 0.35) / 0.4);
+        const vOut = c01((b - 0.35) / 0.4);
+        put(insets[i], 'opacity', f3(vIn * (1 - vOut)));
+        put(insets[i], 'transform', `translate3d(0,${f2((1 - eo(vIn)) * 40 - ei(vOut) * 24)}px,0)`);
+      }
+
+      // text: outgoing parts leave in the first half of the wipe, incoming parts arrive in the second
+      const ps = parts[i];
+      const n = ps.length;
+      const st = Math.min(0.05, 0.2 / Math.max(1, n - 1));
+      let any = false;
+      for (let k = 0; k < n; k++) {
+        const kIn = eo(c01((a - 0.42 - k * st) / 0.34));
+        const kOut = ei(c01((b - k * st * 0.6) / 0.3));
+        const el = ps[k];
+        if (el.parentElement.classList.contains('line')) {
+          // display lines: masked slide, translateY only
+          put(el, 'transform', `translate3d(0,${f2((1 - kIn) * 105 - kOut * 105)}%,0)`);
+          if (kIn > 0 && kOut < 1) any = true;
+        } else {
+          const o = kIn * (1 - kOut);
+          put(el, 'opacity', f3(o));
+          put(el, 'transform', `translate3d(0,${f2((1 - kIn) * 22 - kOut * 14)}px,0)`);
+          if (o > 0) any = true;
+        }
+      }
+      put(blocks[i], 'visibility', any ? 'visible' : 'hidden');
     }
-    if (pourY == null) pour.style.opacity = '0';
-    else { pour.style.opacity = '1'; pour.style.top = `${pourY}%`; }
-    const local = t - Math.floor(t);
-    if (insWrap) insWrap.style.transform = `translateY(${(0.5 - local) * 40}px)`;
-    const idx = Math.round(t);
-    if (idx !== active) { const prev = active; active = idx; setBlock(idx, prev); }
+    // numeral strip rolls continuously with the same eased position
+    put(strip, 'transform', `translate3d(0,${f3(-(100 / N) * T)}%,0)`);
+    setActive(Math.round(T));
   };
 
   const st = ScrollTrigger.create({
@@ -191,6 +237,8 @@ if (ch && !reduced) {
     onUpdate: (self) => render(self.progress),
     onRefresh: (self) => render(self.progress),
   });
+  // start fetching the first photos before the curtain arrives
+  ScrollTrigger.create({ trigger: ch, start: 'top bottom+=100%', once: true, onEnter: () => { warm(0); warm(1); warm(2); } });
   render(0);
 
   ticks.forEach((b) => b.addEventListener('click', () => {

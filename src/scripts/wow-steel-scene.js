@@ -132,7 +132,7 @@ export function init(root, { gsap, ScrollTrigger }) {
 
   // ---------------------------------------------------------------- renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: POSTER });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, POSTER ? 2 : mobile ? 1.25 : 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, POSTER ? 2 : mobile ? 1.25 : 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
@@ -167,7 +167,7 @@ export function init(root, { gsap, ScrollTrigger }) {
   scene.add(key, key.target);
   if (desk) {
     key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.mapSize.set(1024, 1024);
     key.shadow.bias = -0.0004;
     key.shadow.normalBias = 0.02;
     key.shadow.camera.near = 6;
@@ -924,7 +924,9 @@ export function init(root, { gsap, ScrollTrigger }) {
   // ---------------------------------------------------------------- loop
   let raf = 0;
   let last = performance.now();
-  let inView = true;
+  let inView = false; // the observer decides; nothing renders before the section is near
+  let warmed = false;
+  let idle = 0;
   let running = false;
   let disposed = false;
 
@@ -955,7 +957,9 @@ export function init(root, { gsap, ScrollTrigger }) {
     dust.visible = POSTER ? false : p < 0.93;
     renderer.render(scene, camera);
     updateDom(now);
-    const busy = Math.abs(pT - p) > 1e-5 || camMoving || swinging || sparks.visible || flashing || (now - shakeT0 < 160) || dust.visible;
+    // render on demand: dust only drifts while something else is moving, so an idle pinned
+    // section costs nothing
+    const busy = Math.abs(pT - p) > 1e-5 || camMoving || swinging || sparks.visible || flashing || (now - shakeT0 < 160);
     if (busy && inView && !document.hidden) raf = requestAnimationFrame(frame);
     else running = false;
   }
@@ -982,7 +986,14 @@ export function init(root, { gsap, ScrollTrigger }) {
   pT = p = pPrev = st.progress;
 
   const vis = new IntersectionObserver((entries) => {
+    const was = inView;
     inView = entries.some((e) => e.isIntersecting);
+    if (inView && !was) {
+      // re-entry: nothing on screen changed while away, so land on the current scroll
+      // position instead of sweeping through the frames that were skipped
+      p = pPrev = pT;
+      first = true;
+    }
     if (inView) kick();
   });
   vis.observe(root);
@@ -1010,6 +1021,7 @@ export function init(root, { gsap, ScrollTrigger }) {
     if (disposed) return;
     disposed = true;
     cancelAnimationFrame(raf);
+    if ('cancelIdleCallback' in window) cancelIdleCallback(idle); else clearTimeout(idle);
     st.kill();
     vis.disconnect();
     window.removeEventListener('resize', onResize);
@@ -1042,7 +1054,20 @@ export function init(root, { gsap, ScrollTrigger }) {
   resize();
   ScrollTrigger.refresh();
   pT = p = pPrev = st.progress;
-  kick();
+  // warm-up during idle time, before the section reaches the viewport: compile every program
+  // (hidden sparks included) and upload textures, so the first visible frame does not hitch
+  const warm = () => {
+    if (disposed || warmed) return;
+    warmed = true;
+    try {
+      renderer.compile(scene, camera);
+      [shadowTex, haloTex, shaftTex, dotTex, envTex].forEach((t) => t && renderer.initTexture(t));
+      // one off-screen draw builds the shadow-depth programs and fills the GPU buffers
+      if (desk) renderer.render(scene, camera);
+    } catch (e) { /* the first visible frame compiles instead */ }
+    kick();
+  };
+  idle = 'requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 1500 }) : setTimeout(warm, 120);
   if (import.meta.env && import.meta.env.DEV) window.__wowSteel = { get p() { return p; }, get pT() { return pT; }, renderer, scene, camera };
   root.__wowSteel = { dispose };
   return root.__wowSteel;

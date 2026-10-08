@@ -204,7 +204,7 @@ const description = cut(about.story[0]);
     .ab-story__media { position: relative; top: 0; }
     .ab-story__h { font-size: min(var(--fs-display-3), calc((100vw - 2 * var(--gutter)) / (8.6 * 0.92))); }
   }
-  @media (max-width: 639px) { .ab-story__h { font-size: calc((100vw - 2 * var(--gutter)) / 5.6); } }
+  @media (max-width: 639px) { .ab-story__h { font-size: calc((100vw - 2 * var(--gutter)) / 7.4); } }
 
   /* ---- values ----------------------------------------------------------- */
   .ab-values { background: var(--navy-900); color: var(--white); overflow: clip; }
@@ -228,7 +228,7 @@ const description = cut(about.story[0]);
   .ab-v__n {
     position: absolute; z-index: -1; right: calc(-1 * var(--ab-pad) - 0.04em); top: calc(-1 * var(--ab-pad) - 0.12em);
     font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed);
-    font-size: clamp(7rem, 4rem + 9vw, 15rem); line-height: 1; font-variant-numeric: tabular-nums;
+    font-size: clamp(5.25rem, 3rem + 6.75vw, 11.25rem); line-height: 1; font-variant-numeric: tabular-nums;
     color: var(--navy-800);
     transition: color var(--dur-base) var(--ease-out-soft);
   }
@@ -249,7 +249,7 @@ const description = cut(about.story[0]);
     .ab-values__grid { grid-template-columns: 1fr; }
     .ab-v { min-height: 0; }
     .ab-v__in { gap: var(--space-7); }
-    .ab-v__n { font-size: 7rem; }
+    .ab-v__n { font-size: 5.25rem; }
   }
 
   /* ---- how we work ------------------------------------------------------ */

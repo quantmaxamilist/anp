@@ -71,9 +71,9 @@ const seq = clients.flatMap((c, i) => [{ type: 'name', text: c.name }, { type: '
   .proof__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--grid-gap); }
   .proof__head { grid-column: 1 / 5; display: grid; gap: var(--space-5); align-content: start; }
   .proof__h { font-size: min(var(--fs-h2), 4.2vw); font-size: var(--fs-h2); font-stretch: 100%; line-height: var(--lh-heading); }
-  .tq { grid-column: 5 / -1; position: relative; padding-top: clamp(4rem, 9vw, 9rem); }
+  .tq { grid-column: 5 / -1; position: relative; padding-top: clamp(3rem, 6.75vw, 6.75rem); }
   .tq__glyph {
-    position: absolute; left: -0.06em; top: -0.12em; font-size: clamp(8rem, 16vw, 18rem); line-height: 1;
+    position: absolute; left: -0.06em; top: -0.12em; font-size: clamp(6rem, 12vw, 13.5rem); line-height: 1;
     color: var(--mint-500); font-stretch: 100%; pointer-events: none; z-index: 0;
   }
   .tq__stack { display: grid; position: relative; z-index: 1; }

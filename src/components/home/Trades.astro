@@ -8,8 +8,9 @@ const chapters = services.map((s, i) => {
   const inset = s.images[(s.cover + 1) % s.images.length];
   return { ...s, i, num: n2(i), cover, inset, zone: zones[s.slug], lines: wrap(s.name.toUpperCase(), 12) };
 });
+// Stage photos use the -sm/-md variants only (the 1600px masters are not needed at ~58vw)
 const srcset = (im: { src: string; sm: string; md?: string; w: number }) =>
-  [`${im.sm} 720w`, im.md ? `${im.md} 1200w` : '', `${im.src} ${im.w}w`].filter(Boolean).join(', ');
+  im.md ? `${im.sm} 720w, ${im.md} 1200w` : `${im.sm} 720w, ${im.src} ${im.w}w`;
 const headLines = ['Quality', 'Construction.', 'Trusted', 'Results.'];
 const words = home.intro.split(' ');
 ---
@@ -35,10 +36,11 @@ const words = home.intro.split(' ');
       <div class="ch__photo" aria-hidden="true">
         {chapters.map((c) => (
           <figure class="ch__ph" data-ch-ph={c.i}>
-            <img class="grade" src={c.cover.src} srcset={srcset(c.cover)} sizes="(min-width: 900px) 58vw, 100vw" width={c.cover.w} height={c.cover.h} alt="" loading={c.i < 2 ? 'eager' : 'lazy'} decoding="async" />
+            <img class="grade" src={c.cover.md || c.cover.src} srcset={srcset(c.cover)} sizes="(min-width: 900px) 58vw, 100vw" width={c.cover.w} height={c.cover.h} alt="" loading={c.i < 2 ? 'eager' : 'lazy'} decoding="async" />
+            <i class="ch__shade" data-ch-shade></i>
+            <i class="pour ch__edge" data-ch-edge></i>
           </figure>
         ))}
-        <i class="pour ch__pour" data-ch-pour></i>
         <div class="ch__insets">
           {chapters.map((c) => (
             <figure class="ch__inset" data-ch-inset={c.i}>
@@ -141,10 +143,14 @@ const words = home.intro.split(' ');
     border-radius: inherit;
   }
   .ch__photo { grid-column: 6 / -1; grid-row: 1; position: relative; overflow: clip; background: var(--navy-950); }
-  .ch__ph { position: absolute; inset: 0; margin: 0; overflow: clip; will-change: clip-path; }
-  .ch__ph img { width: 100%; height: 100%; object-fit: cover; will-change: transform, filter; }
-  .ch__ph:not(:first-child) { clip-path: inset(100% 0 0 0); }
-  .ch__pour { opacity: 0; top: 100%; }
+  /* Wipe = composited transforms only: the panel rises while its photo counter-translates; the outgoing
+     photo darkens under a navy shade (opacity), never a per-frame filter or clip-path. */
+  .ch__ph { position: absolute; inset: 0; margin: 0; overflow: hidden; will-change: transform; }
+  .ch__ph img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+  .ch__ph:not(:first-child) { transform: translate3d(0, 100%, 0); visibility: hidden; }
+  .ch__ph:not(:first-child) img { transform: translate3d(0, -100%, 0) scale(1.18); }
+  .ch__shade { position: absolute; inset: 0; background: var(--navy-950); opacity: 0; pointer-events: none; will-change: opacity; }
+  .ch__edge { top: 0; }
   .ch__insets {
     position: absolute; left: clamp(1rem, 3vw, 3rem); bottom: clamp(1rem, 6svh, 4rem);
     width: clamp(120px, 15vw, 260px); aspect-ratio: 4 / 5; z-index: 4;
@@ -162,7 +168,7 @@ const words = home.intro.split(' ');
   }
   .ch__num {
     display: flex; font-stretch: var(--wdth-condensed);
-    font-size: min(var(--fs-numeral), 30svh); line-height: 0.8; color: var(--navy-700);
+    font-size: min(var(--fs-numeral), 22svh); line-height: 0.8; color: var(--navy-700);
     height: 0.8em; overflow: clip; margin-left: -0.04em;
   }
   .ch__num-col { display: block; height: 0.8em; overflow: clip; }
@@ -170,11 +176,13 @@ const words = home.intro.split(' ');
   .ch__num-strip span { display: block; height: 0.8em; line-height: 0.8; }
   .ch__blocks { display: grid; grid-template-columns: minmax(0, 1fr); }
   .ch__block { grid-area: 1 / 1; display: grid; gap: clamp(0.5rem, 1.6svh, 1.25rem); align-content: start; }
+  /* pre-state; once JS runs it owns visibility, opacity and translateY per frame (scroll-driven) */
   .ch__block[inert] { visibility: hidden; }
+  .ch__block > *, .ch__block .line > span { will-change: transform, opacity; }
   .ch__tag { color: var(--concrete-600); }
   .ch__tagn { color: var(--navy-700); margin-right: 0.8em; }
   .ch__name {
-    font-size: min(var(--fs-display-3), 7svh, calc(29vw / 7.4));
+    font-size: min(var(--fs-display-3), 5.6svh, calc(23vw / 7.4));
     font-stretch: 100%; color: var(--navy-700);
   }
   .ch__quote { font-size: var(--fs-body); max-width: min(100%, 44ch); color: var(--concrete-800); line-height: 1.5; }

@@ -6,8 +6,8 @@ import sitemap from '@astrojs/sitemap';
 const SITE = 'https://www.anpconstruction.co.uk';
 
 // Old Wix URLs → new routes. Static builds emit an instant-redirect page for each;
-// real 301s live in public/_redirects (Netlify / Cloudflare) and REDIRECTS.md has
-// the nginx equivalent.
+// real 301s live in vercel.json (Vercel, the live host), public/_redirects (Netlify /
+// Cloudflare) and REDIRECTS.md has the nginx equivalent.
 export const oldUrls = {
   '/aboutus': '/about',
   '/out-team': '/team',
@@ -24,10 +24,12 @@ export const oldUrls = {
 
 export default defineConfig({
   site: SITE,
-  trailingSlash: 'never',
+  trailingSlash: 'ignore',
+  // Vercel serves about.html at /about via cleanUrls (vercel.json); canonicals stay slash-less.
   build: { format: 'file' },
   server: { port: 4339 },
   devToolbar: { enabled: false },
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   // Class-based scoping so parent styles reach elements rendered by child components
   // (e.g. headings built by Split.astro) through the passed-in class prop.
   scopedStyleStrategy: 'class',

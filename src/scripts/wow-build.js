@@ -1,5 +1,5 @@
-// WOW A, "The Build": light page wiring. Nothing heavy loads until the section is within
-// 150% of the viewport; then the three.js scene (wow-build-scene.js) is imported lazily.
+// WOW A, "The Build": light page wiring. Nothing heavy is built until the section is within
+// 200% of the viewport (the module itself is fetched + parsed during idle time after load); then the three.js scene (wow-build-scene.js) is imported lazily.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { restP, TOTAL, START } from './wow-build-time.js';
@@ -44,8 +44,11 @@ function setup(root) {
     if (!es.some((x) => x.isIntersecting)) return;
     io.disconnect(); io = null;
     init(root).catch(() => root.classList.add('is-static'));
-  }, { rootMargin: '150% 0px' });
+  }, { rootMargin: '200% 0px' });
   io.observe(root);
+  const pre = () => { import('./wow-build-scene.js').catch(() => {}); };
+  const onLoad = () => ('requestIdleCallback' in window ? requestIdleCallback(pre, { timeout: 4000 }) : setTimeout(pre, 1500));
+  if (document.readyState === 'complete') onLoad(); else window.addEventListener('load', onLoad, { once: true });
   // bfcache: a disposed scene re-initialises when the page is shown again
   window.addEventListener('pageshow', (ev) => { if (ev.persisted && root.dataset.wowBuildState === 'disposed') { root.dataset.wowBuildState = ''; setup(root); } }, { once: true });
 }
@@ -146,6 +149,11 @@ async function init(root) {
     requestAnimationFrame(measure);
   }
 
+  const varCache = new WeakMap();
+  const setVar = (el, k, v) => {
+    let m = varCache.get(el); if (!m) varCache.set(el, (m = {}));
+    if (m[k] !== v) { m[k] = v; el.style.setProperty(k, v); }
+  };
   const onFrame = ({ p, step, tag: tp, pins: pp, finalK }) => {
     if (step !== shown) setStep(step);
     if (tag) {
@@ -168,10 +176,12 @@ async function init(root) {
         el.classList.toggle('is-r', x > stage.clientWidth - 200);
       });
     }
-    root.style.setProperty('--wow-build-final', finalK.toFixed(3));
-    if (skip) skip.style.setProperty('--wow-build-prog', p.toFixed(3));
+    // write custom properties only when they change: a write on the section root restyles
+    // its whole subtree, which is what made idle frames stutter
+    setVar(root, '--wow-build-final', finalK.toFixed(3));
+    if (skip) setVar(skip, '--wow-build-prog', p.toFixed(3));
     const s = p * TOTAL;
-    rail.forEach((b) => b.style.setProperty('--wow-build-p', Math.min(1, Math.max(0, s - START[+b.dataset.wowBuildGo + 1])).toFixed(3)));
+    rail.forEach((b) => setVar(b, '--wow-build-p', Math.min(1, Math.max(0, s - START[+b.dataset.wowBuildGo + 1])).toFixed(3)));
   };
 
   const scene = mod.mount(gl, { mobile, onFrame });

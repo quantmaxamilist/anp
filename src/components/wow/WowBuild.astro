@@ -128,7 +128,7 @@ const trades = services.map((s, i) => ({
   .wow-build__num {
     position: absolute; z-index: 0; pointer-events: none; right: calc(var(--gutter) + 2.25rem); top: calc(var(--wow-build-top) - 0.5rem);
     display: flex; font-family: var(--font-display); font-weight: 900; font-stretch: var(--wdth-condensed);
-    font-size: min(var(--fs-numeral), 36svh); line-height: 1; font-variant-numeric: tabular-nums;
+    font-size: min(var(--fs-numeral), 30svh); line-height: 1; font-variant-numeric: tabular-nums;
     color: transparent; -webkit-text-stroke: 1.5px var(--mint-500);
     opacity: 0; transform: translateY(8%); transition: opacity 0.6s var(--ease-out), transform 0.9s var(--ease-out);
   }
@@ -280,7 +280,7 @@ const trades = services.map((s, i) => ({
     display: flex; align-items: baseline; gap: 0.9rem; padding: 0.3rem 0; pointer-events: none;
     color: var(--white); text-decoration: none; text-transform: uppercase;
     font-family: var(--font-display); font-weight: var(--wght-display-soft); font-stretch: 100%;
-    font-size: clamp(1rem, 0.75rem + 0.7vw, 1.5rem); line-height: 1.05; letter-spacing: var(--tr-heading);
+    font-size: clamp(0.9375rem, 0.75rem + 0.5vw, 1.25rem); line-height: 1.05; letter-spacing: var(--tr-heading);
     transition: color var(--dur-fast) var(--ease-out-soft);
   }
   .wow-build__legend span { color: var(--mint-500); }
@@ -305,7 +305,7 @@ const trades = services.map((s, i) => ({
     .wow-build__quote { font-size: 0.875rem; line-height: 1.5; max-width: 46ch; }
     .wow-build__pill { height: 44px; }
     .wow-build__pill i { width: 30px; height: 30px; }
-    .wow-build__num { top: 46%; bottom: auto; right: var(--gutter); left: auto; font-size: 6.5rem; }
+    .wow-build__num { top: 46%; bottom: auto; right: var(--gutter); left: auto; font-size: 5rem; }
     .wow-build.is-trade .wow-build__num { opacity: 0.5; }
     .wow-build__skip { bottom: calc(clamp(1.5rem, 4svh, 2.5rem) + 4.25rem); min-height: 44px; padding: 0 0.4rem 0 1rem; }
     .wow-build__skip i { width: 30px; height: 30px; }

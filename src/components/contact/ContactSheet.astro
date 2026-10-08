@@ -103,14 +103,14 @@ const a = company.address;
   .ct-phone {
     --ct-ph-em: 9.68; /* measured: 9.075em digits at 125% + 0.58em arrow */
     position: relative; display: flex; align-items: center; gap: 0; width: max-content; max-width: 100%;
-    font-size: min(17rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-ph-em)));
+    font-size: min(12.75rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * var(--ct-k, 0.75) / var(--ct-ph-em)));
     line-height: 1; color: var(--navy-700);
     letter-spacing: -0.01em;
     transition: color var(--dur-fast) var(--ease-out-soft);
   }
   @media (max-width: 1199px) { .ct-phone { --ct-ph-em: 9.12; } }
   @media (max-width: 899px) { .ct-phone { --ct-ph-em: 7.66; } }
-  @media (max-width: 639px) { .ct-phone { --ct-ph-em: 6.06; } }
+  @media (max-width: 639px) { .ct-phone { --ct-ph-em: 6.06; --ct-k: 0.86; } }
   .ct-dg { display: inline-block; height: 1em; overflow: clip; }
   .ct-col { display: flex; flex-direction: column; transform: translateY(calc((10 + var(--d)) * -100% / 30)); will-change: transform; }
   .ct-col > span { display: block; height: 1em; line-height: 1; text-align: center; }
@@ -133,14 +133,14 @@ const a = company.address;
     --ct-ml-em: 15.3;
     display: block; width: fit-content; max-width: 100%;
     font-family: var(--font-display); font-weight: 800; font-stretch: 100%;
-    font-size: min(6.5rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-ml-em)));
+    font-size: min(4.875rem, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * var(--ct-k, 0.75) / var(--ct-ml-em)));
     line-height: 1.02; letter-spacing: -0.025em; color: var(--navy-700);
     background: linear-gradient(var(--mint-500), var(--mint-500)) left 92% / 0% 0.14em no-repeat;
     transition: background-size var(--dur-base) var(--ease-out), color var(--dur-fast);
   }
   .ct-mail:hover, .ct-mail:focus-visible { background-size: 100% 0.14em; color: var(--navy-950); }
-  @media (max-width: 899px) { .ct-mail__u, .ct-mail__d { display: block; } .ct-mail { --ct-ml-em: 12.2; } }
-  @media (max-width: 639px) { .ct-mail { --ct-ml-em: 10.4; font-stretch: 85%; } }
+  @media (max-width: 899px) { .ct-mail__u, .ct-mail__d { display: block; } .ct-mail { --ct-ml-em: 12.2; --ct-k: 0.9; } }
+  @media (max-width: 639px) { .ct-mail { --ct-ml-em: 10.4; --ct-k: 1; font-stretch: 85%; } }
 
   .ct-copy {
     display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 8px;
@@ -181,13 +181,13 @@ const a = company.address;
   .ct-post__t {
     --ct-pc-em: 4.58;
     display: block; white-space: nowrap;
-    font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) / var(--ct-pc-em));
+    font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * var(--ct-k, 0.75) / var(--ct-pc-em));
     line-height: 0.8; padding-top: 0.06em;
     color: transparent; -webkit-text-stroke: 1.5px var(--navy-700);
   }
   .ct-post__fill { position: absolute; inset: 0 var(--gutter); color: var(--navy-700); -webkit-text-stroke: 0; }
   @media (max-width: 899px) { .ct-post__t { --ct-pc-em: 4.24; } }
-  @media (max-width: 639px) { .ct-post__t { --ct-pc-em: 2.9; -webkit-text-stroke-width: 1px; } }
+  @media (max-width: 639px) { .ct-post__t { --ct-pc-em: 2.9; --ct-k: 0.8; -webkit-text-stroke-width: 1px; } }
 
   @media (max-width: 899px) {
     .ct-row--cells { grid-template-columns: 1fr; }

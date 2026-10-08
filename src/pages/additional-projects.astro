@@ -95,9 +95,10 @@ const dover = projects.find((p) => p.name === '31 Dover Street')!;
   .ap__chip[aria-pressed='true'] .ap__chip-n { color: var(--navy-700); }
   .ap__status { flex: none; padding-right: var(--space-4); color: var(--navy-200); }
 
-  /* Grid: 3 / 2 / 1 columns; the middle column sits lower and drifts with scroll (work.js sets --ap-par) */
+  /* Grid: 3 / 2 / 1 columns; the middle column sits lower (static `translate`) and drifts with scroll
+     (work.js writes `transform` on those cells only, so the grid is never restyled per frame) */
   .ap__grid {
-    --ap-off: 0px; --ap-par: 0;
+    --ap-off: 0px;
     list-style: none; margin: 0; padding: var(--space-fluid-l) 0 0;
     display: grid; grid-template-columns: 1fr; gap: var(--space-fluid-m) var(--grid-gap);
   }
@@ -105,12 +106,12 @@ const dover = projects.find((p) => p.name === '31 Dover Street')!;
   @media (max-width: 559px) { .ap__cell :global(.pc__frame) { aspect-ratio: 4 / 3; } }
   @media (min-width: 560px) {
     .ap__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); --ap-off: clamp(2.5rem, 6vw, 5rem); padding-bottom: calc(var(--ap-off) + 2rem); }
-    .ap__cell[data-c2='1'] { transform: translateY(calc(var(--ap-off) + var(--ap-par) * 2rem)); }
+    .ap__cell[data-c2='1'] { translate: 0 var(--ap-off); }
   }
   @media (min-width: 1024px) {
     .ap__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); --ap-off: clamp(4rem, 7vw, 8rem); }
-    .ap__cell[data-c2='1'] { transform: none; }
-    .ap__cell[data-c3='1'] { transform: translateY(calc(var(--ap-off) + var(--ap-par) * 3rem)); }
+    .ap__cell[data-c2='1'] { translate: none; }
+    .ap__cell[data-c3='1'] { translate: 0 var(--ap-off); }
   }
   :global(html.js:not(.rm)) .ap__cell:not(.is-in) { opacity: 0; }
 

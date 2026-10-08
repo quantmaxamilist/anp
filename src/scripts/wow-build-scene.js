@@ -795,7 +795,13 @@ export function mount(stage, { mobile = false, onFrame } = {}) {
     setProgress(v2) { target = clamp01(v2); if (first) { p = target; first = false; } markDirty(); },
     setEntry(v2) { eTarget = clamp01(v2); markDirty(); },
     setHover(n) { hover = n; markDirty(); },
-    setActive(b) { active = !!b; if (active) markDirty(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } },
+    setActive(b) {
+      const was = active; active = !!b;
+      // coming back on screen: land on the current scroll position rather than sweeping
+      // through the frames that were skipped while off-screen
+      if (active && !was) { p = target; e = eTarget; }
+      if (active) markDirty(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    },
     resize,
     dispose() {
       destroyed = true; if (raf) cancelAnimationFrame(raf); raf = 0;

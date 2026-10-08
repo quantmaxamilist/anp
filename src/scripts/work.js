@@ -17,6 +17,21 @@ const onReady = (fn) => {
 };
 const refresh = () => (A().ScrollTrigger || ScrollTrigger).refresh();
 
+// Column drift: write a composited transform on the offset cells only (the static offset is CSS `translate`).
+// Animating a custom property on the grid instead restyled every card and image on every scroll frame.
+const drift = (grid, pick, amp) => ScrollTrigger.create({
+  trigger: grid, start: 'top bottom', end: 'bottom top',
+  onUpdate(self) {
+    const v = ((1 - 2 * self.progress) * amp).toFixed(1);
+    for (const c of grid.children) {
+      const t = !c.hidden && pick(c) ? `translate3d(0, ${v}px, 0)` : '';
+      if (c._dt !== t) { c.style.transform = t; c._dt = t; }
+    }
+  },
+  onRefresh(self) { self.vars.onUpdate(self); },
+});
+const undrift = (grid) => { for (const c of grid.children) { c.style.transform = ''; c._dt = ''; } };
+
 // Smooth or instant programmatic scroll through Lenis when present.
 const scrollToY = (y, immediate) => {
   const { lenis } = A();
@@ -110,13 +125,12 @@ if (chapters.length && !reduced) {
 
     // Desktop: the right-hand card column drifts against the left one.
     mm.add('(min-width: 900px)', () => {
+      const made = [];
       document.querySelectorAll('[data-cl-grid]').forEach((grid) => {
         if (grid.children.length < 2) return;
-        gsap.fromTo(grid, { '--cl-par': 1 }, {
-          '--cl-par': -1, ease: 'none',
-          scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: true },
-        });
+        made.push(drift(grid, (c) => [...grid.children].indexOf(c) % 2 === 1, 48));
       });
+      return () => { made.forEach((st) => { st.kill(); undrift(st.trigger); }); };
     });
     refresh();
   });
@@ -194,17 +208,17 @@ if (ap) {
       return;
     }
     busy = gsap.to(grid, {
-      opacity: 0, y: 14, duration: 0.24, ease: 'power2.in',
+      opacity: 0, duration: 0.18, ease: 'power2.in',
       onComplete: () => {
         toggleCells(key);
         settleScroll();
         refresh();
-        gsap.set(grid, { opacity: 1, y: 0 });
+        gsap.set(grid, { opacity: 1 });
         const shown = cells.filter((c) => !c.hidden);
         shown.forEach((c) => c.classList.add('is-in'));
         const near = shown.filter((c) => c.getBoundingClientRect().top < innerHeight * 1.1);
-        busy = gsap.fromTo(near.map((c) => c.firstElementChild), { y: 44, opacity: 0 }, {
-          y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.06, clearProps: 'transform,opacity',
+        busy = gsap.fromTo(near.map((c) => c.firstElementChild), { y: 18, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 0.55, ease: 'power3.out', stagger: 0.04, clearProps: 'transform,opacity',
         });
       },
     });
@@ -223,7 +237,7 @@ if (ap) {
     cells.forEach((c) => c.classList.add('is-in'));
   } else {
     // Safety net: never leave cards invisible if the reveal system doesn't boot.
-    const fallback = setTimeout(() => cells.forEach((c) => c.classList.add('is-in')), 6000);
+    const fallback = setTimeout(() => cells.forEach((c) => c.classList.add('is-in')), 2500);
     onReady(() => {
       clearTimeout(fallback);
       ScrollTrigger.batch(cells, {
@@ -231,16 +245,16 @@ if (ap) {
         onEnter: (batch) => {
           const fresh = batch.filter((c) => !c.classList.contains('is-in'));
           fresh.forEach((c) => c.classList.add('is-in'));
-          gsap.fromTo(fresh.map((c) => c.firstElementChild), { y: 56, opacity: 0 }, {
-            y: 0, opacity: 1, duration: 1.1, ease: 'expo.out', stagger: 0.08, clearProps: 'transform,opacity',
+          gsap.fromTo(fresh.map((c) => c.firstElementChild), { y: 24, opacity: 0 }, {
+            y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', stagger: 0.05, clearProps: 'transform,opacity',
           });
         },
       });
-      mm.add('(min-width: 560px)', () => {
-        gsap.fromTo(grid, { '--ap-par': 1 }, {
-          '--ap-par': -1, ease: 'none',
-          scrollTrigger: { trigger: grid, start: 'top bottom', end: 'bottom top', scrub: true },
-        });
+      mm.add({ two: '(min-width: 560px) and (max-width: 1023px)', three: '(min-width: 1024px)' }, (ctx) => {
+        const { two, three } = ctx.conditions;
+        if (!two && !three) return undefined;
+        const st = three ? drift(grid, (c) => c.dataset.c3 === '1', 48) : drift(grid, (c) => c.dataset.c2 === '1', 32);
+        return () => { st.kill(); undrift(grid); };
       });
       refresh();
     });

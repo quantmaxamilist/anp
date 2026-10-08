@@ -1,0 +1,71 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/aboutus",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/out-team",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/soft-strip-out",
+      "destination": "/services/soft-strip-out",
+      "permanent": true
+    },
+    {
+      "source": "/structural-alterations-demolition",
+      "destination": "/services/structural-alterations-demolition",
+      "permanent": true
+    },
+    {
+      "source": "/diamond-drilling",
+      "destination": "/services/diamond-drilling",
+      "permanent": true
+    },
+    {
+      "source": "/groundworks-and-drainage",
+      "destination": "/services/groundworks-and-drainage",
+      "permanent": true
+    },
+    {
+      "source": "/structural-steelwork",
+      "destination": "/services/structural-steelwork",
+      "permanent": true
+    },
+    {
+      "source": "/copy-of-structural-steelwork",
+      "destination": "/services/structural-carpentry",
+      "permanent": true
+    },
+    {
+      "source": "/composite-flooring",
+      "destination": "/services/composite-flooring",
+      "permanent": true
+    },
+    {
+      "source": "/landscaping-and-external-works",
+      "destination": "/services/landscaping-and-external-works",
+      "permanent": true
+    },
+    {
+      "source": "/screeding",
+      "destination": "/services/screeding",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "permanent": true
+    },
+    {
+      "source": "/pages-sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "permanent": true
+    }
+  ]
+}

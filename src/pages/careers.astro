@@ -125,7 +125,7 @@ const [mailUser, mailDomain] = company.email.split('@');
   .cr-role__n { color: var(--mint-500); padding-top: 0.6em; }
   .cr-role__t {
     position: relative; display: block; font-stretch: 75%; line-height: 0.84;
-    font-size: min(var(--fs-display-1), calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - var(--cr-numw)) / 9.6));
+    font-size: min(var(--fs-display-1), calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - var(--cr-numw)) / 12.8));
   }
   .cr-role__o { display: block; color: rgb(255 255 255 / 0.1); }
   .cr-role__f { position: absolute; inset: 0; display: block; color: var(--white); transition: color var(--dur-base) var(--ease-out-soft); }
@@ -133,7 +133,7 @@ const [mailUser, mailDomain] = company.email.split('@');
   @media (hover: hover) and (pointer: fine) { .cr-role:hover .cr-role__f { color: var(--mint-500); } }
   @media (max-width: 639px) {
     .cr-role__w { display: block; }
-    .cr-role__t { font-size: calc((100vw - 2 * var(--gutter) - var(--cr-numw)) / 4.7); }
+    .cr-role__t { font-size: calc((100vw - 2 * var(--gutter) - var(--cr-numw)) / 6.2); }
   }
   .cr-roles :global(.cr-roles__mark) {
     position: absolute; z-index: -1; right: calc(var(--gutter) * -1); bottom: calc(var(--section-y) * -0.4);

@@ -1,5 +1,6 @@
 // WOW C "Steel Mark" loader. Only observes the section; three.js and the scene module are
-// dynamically imported on first approach (rootMargin 150%). Hidden variants never intersect.
+// dynamically imported on first approach (rootMargin 200%; the module is also fetched and
+// parsed during idle time after load). Hidden variants never intersect.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -53,7 +54,14 @@ if (root && !root.dataset.wowSteelInit) {
           ScrollTrigger.refresh();
         });
     },
-    { rootMargin: '150% 0px' }
+    { rootMargin: '200% 0px' }
   );
   io.observe(root);
+  // fetch + parse three.js while the visitor reads the top of the page, so the approach to the
+  // section only has to build the scene (not download and evaluate the library as well)
+  if (!reduced) {
+    const pre = () => { import('./wow-steel-scene.js').catch(() => {}); };
+    const onLoad = () => ('requestIdleCallback' in window ? requestIdleCallback(pre, { timeout: 4000 }) : setTimeout(pre, 1500));
+    if (document.readyState === 'complete') onLoad(); else window.addEventListener('load', onLoad, { once: true });
+  }
 }

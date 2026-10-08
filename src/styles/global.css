@@ -164,7 +164,7 @@ html.js:not(.rm) [data-reveal='lines'] .line > span { transform: translateY(110%
 
 /* Pour line used by every photo wipe */
 .pour {
-  position: absolute; left: 0; right: 0; height: 2px; background: var(--mint-500);
+  position: absolute; left: 0; right: 0; top: 0; height: 2px; will-change: transform; background: var(--mint-500);
   z-index: 3; pointer-events: none; opacity: 0;
 }
 
@@ -209,7 +209,9 @@ html.has-cursor .cursor { display: block; }
   pointer-events: none;
   visibility: hidden;
 }
-html.pt-arrive .pt { clip-path: inset(0); visibility: visible; }
+html.pt-arrive .pt { clip-path: inset(0); visibility: visible; animation: pt-safety 0.35s var(--ease-in-out) 1.2s forwards; }
+/* Safety net: if core.js is slow to boot, the arrival panel still lifts on its own. */
+@keyframes pt-safety { to { clip-path: inset(0 0 100% 0); visibility: hidden; } }
 .pt__mark { width: clamp(96px, 12vw, 180px); height: auto; overflow: visible; }
 .pt__mark path, .mark-svg path {
   fill: none; stroke: var(--mint-500); stroke-width: 19; stroke-linejoin: round; stroke-linecap: round;
